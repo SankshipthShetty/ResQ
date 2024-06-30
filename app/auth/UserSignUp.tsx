@@ -1,3 +1,5 @@
+//user signup page 
+
 import React, { useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View, Alert ,Image,Pressable} from 'react-native';
 import { addDoc, collection } from "firebase/firestore";
@@ -58,7 +60,7 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
     >
       <Image source={require('../../assets/images/image19.png')} style={styles.logoImage} />
       <Text style={styles.logoText}>ResQ</Text>
-      <Text style={styles.SignUpText}>Sign Up</Text>
+      <Text style={styles.SignUpText}>User Sign Up</Text>
 
       <View style={styles.inputContainer}>
         <TextInput
@@ -138,11 +140,11 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
         onPress={handleRegister}
         style={styles.button}
       >
-        <Text style={styles.buttonText}>Register</Text>
+        <Text style={styles.buttonText} >Register</Text>
       </TouchableOpacity>
 
       <Text style={styles.footerText}>Already have an account?</Text>
-      <Pressable onPress={() => router.push('./login')}>
+      <Pressable onPress={() => router.push('./MainLogin')}>
         <Text style={styles.signInText}>Sign In</Text>
       </Pressable>
     </KeyboardAwareScrollView>
