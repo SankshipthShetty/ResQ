@@ -1,4 +1,4 @@
-//rescue team login redirection page 
+//user loginn redirection page 
 
 
 import React, { useState, useEffect } from 'react';
@@ -63,7 +63,7 @@ const LoginScreen = ({ navigation }: any) => {
     <View style={styles.container}>
       <Image source={logo} style={styles.logoImage} />
       <Text style={styles.logoText}>ResQ</Text>
-      <Text style={styles.loginText}>ResueTeam Login</Text>
+      <Text style={styles.loginText}>User Login</Text>
       <TextInput
         placeholder="Email"
         value={email}
@@ -94,7 +94,7 @@ const LoginScreen = ({ navigation }: any) => {
      
       <View style={styles.signupTextContainer}>
         <Text style={styles.signupText}>Don't have an account?</Text>
-        <Pressable onPress={() => router.push('./RescueTeam')}>
+        <Pressable onPress={() => router.push('./UserSignUp')}>
           <Text style={styles.signupLink}>Sign Up</Text>
         </Pressable>
         

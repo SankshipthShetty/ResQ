@@ -1,8 +1,9 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
+    "jsx": "react",
     "strict": true,
-    "types": ["nativewind/types"],
+    "types": ["nativewind/types","node"],
     "paths": {
       "@/*": [
         "./*"
@@ -13,7 +14,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".expo/types/**/*.ts",
-    "expo-env.d.ts"
+    "expo-env.d.ts",
   ]
 }
 
