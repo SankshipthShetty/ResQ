@@ -1,4 +1,4 @@
-//main register page 
+//main signup page 
 import React from "react";
 import { Pressable } from "react-native";
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
@@ -15,40 +15,40 @@ export default function RegisterScreen() {
 
       <TouchableOpacity
         style={styles.loginButton}
-        onPress={() => router.push("../auth/UserLogin")}
+        onPress={() => router.push("../auth/UserSignUp")}
       >
         <Image
           style={styles.loginIcon}
           source={require("../../assets/images/man.png")}
         />
-        <Text style={styles.loginButtonText}>Login as a User</Text>
+        <Text style={styles.loginButtonText}>Register as a User</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.loginButton}
-        onPress={() => router.push("../auth/RescueTeamLogin")}
+        onPress={() => router.push("../auth/RescueTeam")}
       >
         <Image
           style={styles.loginIcon}
           source={require("../../assets/images/Team.png")}
         />
-        <Text style={styles.loginButtonText}>Login as a Rescue Team</Text>
+        <Text style={styles.loginButtonText}>Register as a Rescue Team</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.loginButton}
-        onPress={() => router.push("../auth/MiddleBodyLogin")}
+        onPress={() => router.push("../auth/MiddleBody")}
       >
         <Image
           style={styles.loginIcon}
           source={require("../../assets/images/middlebody.png")}
         />
-        <Text style={styles.loginButtonText}>Login as a Middle Body</Text>
+        <Text style={styles.loginButtonText}>Register as a Middle Body</Text>
       </TouchableOpacity>
 
       <Text style={styles.footerText}>
         Don't have an account?
-        <Pressable onPress={() => router.push("../auth/MainSignup")}>
+        <Pressable onPress={() => router.push("one register page ")}>
           <Text style={styles.signupLink}>Sign Up</Text>
         </Pressable>
       </Text>
