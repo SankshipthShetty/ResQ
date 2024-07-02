@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
   Image: {
     width: 400,
     height: 350,
-    marginBottom: 10,
+    marginBottom: 30,
   },
   btext: {
     color: '#A53821',

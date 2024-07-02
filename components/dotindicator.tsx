@@ -6,7 +6,7 @@ const DotIndicator = ({ currentIndex }: { currentIndex: number }) => {
     <View style={styles.container}>
       <View style={[styles.dot, currentIndex === 0 && styles.activeDot]} />
       <View style={[styles.dot, currentIndex === 1 && styles.activeDot]} />
-      {/* <View style={[styles.dot, currentIndex === 2 && styles.activeDot]} /> */}
+      <View style={[styles.dot, currentIndex === 2 && styles.activeDot]} />
     </View>
   );
 };

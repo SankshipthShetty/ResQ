@@ -21,10 +21,10 @@ const SplashScreen2=()=>{
       <Text style={styles.title}>Stay Informed and Prepared</Text>
       <Text style={styles.text}>Receive real-time alerts and updates during disasters. Connect with local resources and volunteers. Together, we can ensure safety and resilience.</Text>
       <DotIndicator currentIndex={1} />
-      <Pressable onPress={() => router.push('../auth/UserLogin')} style={styles.button}>
+      <Pressable onPress={() => router.push('./screen3')} style={styles.button}>
         <Text style={{ color: 'white' ,fontSize:17,}}>Next</Text>
       </Pressable>
-    </View>
+    </View> 
   );
 };
 

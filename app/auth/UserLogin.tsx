@@ -5,15 +5,16 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { auth } from '../../constants/firebaseConfig';
 import {useRouter} from 'expo-router';
 
-
-
 import logo from '../../assets/images/image1.png';
+
+
 const LoginScreen = ({ navigation }: any) => {
   
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
+
 
   const setData=async()=>
     {
@@ -23,28 +24,10 @@ const LoginScreen = ({ navigation }: any) => {
       const name=await AsyncStorage.getItem("data");
       console.warn(name);
     }
-
-  // useEffect(() => {
-  //   const checkUser = async () => {
-  //     const user = await AsyncStorage.getItem('user');
-  //     if (user) {
-  //       navigation.navigate('Main');
-  //     }
-  //   };
-  //   checkUser();
-  // }, []);
-
-  // useEffect(() => {
-  //   const unsubscribe = onAuthStateChanged(auth, (user) => {
-  //     if (user) {
-  //       AsyncStorage.setItem('user', JSON.stringify(user));
-  //       navigation.navigate('Main');
-  //     } else {
-  //       AsyncStorage.removeItem('user');
-  //     }
-  //   });
-  //   return () => unsubscribe();
-  // }, []);
+    const removedata=async()=>{
+      await AsyncStorage.removeItem("data");
+    }
+ 
 
   const handleLogin = async () => {
     try {
@@ -77,9 +60,11 @@ const LoginScreen = ({ navigation }: any) => {
         placeholderTextColor="#a9a9a9"
       />
       {error && <Text style={styles.errorText}>{error}</Text>}
-      <TouchableOpacity onPress={() => { setData}}>
-        <Text style={styles.forgotPasswordText}>Forget Password ?</Text>
+      <TouchableOpacity onPress={() => { }}>
+        <Text style={styles.forgotPasswordText}>Forgot Password ?</Text>
       </TouchableOpacity>
+      {/* <Button title="Set Data" onPress={setData} />
+      <Button title="Get Data" onPress={getData} /> */}
       <TouchableOpacity onPress={handleLogin} style={styles.loginButton}>
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>

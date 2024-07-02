@@ -142,7 +142,7 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
       </TouchableOpacity>
 
       <Text style={styles.footerText}>Already have an account?</Text>
-      <Pressable onPress={() => router.push('./login')}>
+      <Pressable onPress={() => router.push('./UserLogin')}>
         <Text style={styles.signInText}>Sign In</Text>
       </Pressable>
     </KeyboardAwareScrollView>
