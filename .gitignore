@@ -21,6 +21,5 @@ expo-env.d.ts
 
 .env
 api.tsx
-
 /app/google-services.json
 /constants/firebaseConfig.ts

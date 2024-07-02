@@ -1,15 +1,18 @@
-import React from 'react';
-import { View, Text, Button, StyleSheet, Image, Pressable } from 'react-native';
-import { useRouter } from 'expo-router';
-import DotIndicator from '@/components/dotindicator';
 
-import logo from '../../assets/images/image4.png';
+//-----------------real screen
+
+import React from "react";
+import { View, Text, Button, StyleSheet, Image, Pressable } from "react-native";
+import { useRouter } from "expo-router";
+import DotIndicator from "@/components/dotindicator";
+
+import logo from "../../assets/images/image4.png";
 
 const SplashScreen1 = () => {
   const router = useRouter();
 
   const handleSkip = () => {
-    router.replace('/onboarding/screen2');
+    router.replace("../auth/MainLogin");
   };
 
   return (
@@ -24,8 +27,8 @@ const SplashScreen1 = () => {
         Together, we can make a difference.
       </Text>
       <DotIndicator currentIndex={0} />
-      <Pressable onPress={() => router.push('./screen2')} style={styles.button}>
-        <Text style={{ color: 'white', fontSize: 17 }}>Next</Text>
+      <Pressable onPress={() => router.push("./screen2")} style={styles.button}>
+        <Text style={{ color: "white", fontSize: 17 }}>Next</Text>
       </Pressable>
     </View>
   );
@@ -35,8 +38,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     top: -45,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     padding: 16,
   },
   title: {
@@ -45,7 +48,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 16,
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: 16,
     marginLeft: 15,
     marginRight: 15,
@@ -56,12 +59,12 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   btext: {
-    color: '#A53821',
+    color: "#A53821",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   skipButton: {
-    position: 'absolute',
+    position: "absolute",
     top: 70,
     right: 20,
     padding: 10,
@@ -69,13 +72,13 @@ const styles = StyleSheet.create({
   button: {
     width: 80,
     height: 50,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     paddingVertical: 10,
     paddingHorizontal: 10,
     borderRadius: 5,
-    backgroundColor: '#A53821',
-    position: 'absolute',
+    backgroundColor: "#A53821",
+    position: "absolute",
     bottom: 50,
   },
 });

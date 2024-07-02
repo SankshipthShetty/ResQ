@@ -1,3 +1,6 @@
+//user loginn redirection page 
+
+
 import React, { useState, useEffect } from 'react';
 import { View, TextInput, Button, Text, StyleSheet, TouchableOpacity, Image , Pressable} from 'react-native';
 import { signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
@@ -17,7 +20,7 @@ const LoginScreen = ({ navigation }: any) => {
 
 
   const setData=async()=>
-    {
+    { 
      await AsyncStorage.setItem("data","Sankshipth")
     }
     const getData=async()=>{
@@ -27,12 +30,13 @@ const LoginScreen = ({ navigation }: any) => {
     const removedata=async()=>{
       await AsyncStorage.removeItem("data");
     }
+  
  
 
   const handleLogin = async () => {
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      console.log("SUCCESS")
+      const userCred=await signInWithEmailAndPassword(auth, email, password);
+      console.log(userCred)
       
     } catch (err) {
       setError((err as Error).message);
@@ -43,7 +47,7 @@ const LoginScreen = ({ navigation }: any) => {
     <View style={styles.container}>
       <Image source={logo} style={styles.logoImage} />
       <Text style={styles.logoText}>ResQ</Text>
-      <Text style={styles.loginText}>Log In</Text>
+      <Text style={styles.loginText}>User Login</Text>
       <TextInput
         placeholder="Email"
         value={email}
