@@ -27,28 +27,6 @@ const LoginScreen = ({ navigation }: any) => {
       console.warn(name);
     }
 
-  // useEffect(() => {
-  //   const checkUser = async () => {
-  //     const user = await AsyncStorage.getItem('user');
-  //     if (user) {
-  //       navigation.navigate('Main');
-  //     }
-  //   };
-  //   checkUser();
-  // }, []);
-
-  // useEffect(() => {
-  //   const unsubscribe = onAuthStateChanged(auth, (user) => {
-  //     if (user) {
-  //       AsyncStorage.setItem('user', JSON.stringify(user));
-  //       navigation.navigate('Main');
-  //     } else {
-  //       AsyncStorage.removeItem('user');
-  //     }
-  //   });
-  //   return () => unsubscribe();
-  // }, []);
-
   const handleLogin = async () => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
@@ -79,7 +57,9 @@ const LoginScreen = ({ navigation }: any) => {
         style={styles.input}
         placeholderTextColor="#a9a9a9"
       />
+      
       {error && <Text style={styles.errorText}>{error}</Text>}
+
       <TouchableOpacity onPress={() => { setData}}>
         <Text style={styles.forgotPasswordText}>Forget Password ?</Text>
       </TouchableOpacity>
@@ -94,7 +74,7 @@ const LoginScreen = ({ navigation }: any) => {
      
       <View style={styles.signupTextContainer}>
         <Text style={styles.signupText}>Don't have an account?</Text>
-        <Pressable onPress={() => router.push('./UserSignUp')}>
+        <Pressable onPress={() => router.push('../User/Userpage1')}>
           <Text style={styles.signupLink}>Sign Up</Text>
         </Pressable>
         
