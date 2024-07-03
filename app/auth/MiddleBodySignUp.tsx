@@ -91,7 +91,7 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
       enableOnAndroid={true}
       extraScrollHeight={20}
     >
-      <Image source={require('../../assets/images/image19.png')} style={styles.logoImage} />
+      <Image source={require('../../assets/images/image2.png')} style={styles.logoImage} />
       <Text style={styles.logoText}>ResQ</Text>
       <Text style={styles.SignUpText}>MiddleBody Sign Up</Text>
 
@@ -132,7 +132,7 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
           placeholderTextColor="#a9a9a9"
         />
         <TextInput
-          placeholder="password"
+          placeholder="Password"
           value={password}
           onChangeText={text => setPassword(text)}
           style={styles.input}
@@ -160,12 +160,12 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     justifyContent: 'center',
-    backgroundColor: 'white',
+    // backgroundColor: 'white',
     paddingHorizontal: 20,
     
   },
   logoImage: {
-    width: 250,
+    width: 350,
     height: 220,
     alignSelf: 'center',
   },

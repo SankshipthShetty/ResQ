@@ -166,20 +166,20 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     justifyContent: 'center',
-    backgroundColor: 'white', // Light background color
+    // backgroundColor: 'white', // Light background color
     paddingHorizontal: 25,
   },
   logoImage: {
-    width: 350,
+    width: 320,
     height: 220,
     alignSelf: 'center',
     marginBottom:-10,
   },
   logoText: {
-    fontSize: 45,
+    fontSize: 36,
     fontWeight:'bold',
     textAlign: 'center',
-    marginBottom: 5,
+    marginBottom: 20,
     color: '#000',
   },
   SignUpText: {

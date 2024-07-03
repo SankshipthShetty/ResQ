@@ -55,6 +55,7 @@ const LoginScreen = ({ navigation }: any) => {
     }
   };
 
+
   const navigateToRoleBasedScreen = (Role: string) => {
     switch (Role) {
       case 'User':
@@ -122,14 +123,14 @@ const LoginScreen = ({ navigation }: any) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    top: -15,
+    top: -25,
     justifyContent: 'center',
     padding: 16,
-    backgroundColor: '#fff',
+    // backgroundColor: '#fff',
   },
   logoImage: {
-    width: 350,
-    height: 200,
+    width: 400,
+    height: 250,
     alignSelf: 'center',
   },
   logoText: {

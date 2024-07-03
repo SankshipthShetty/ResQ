@@ -74,6 +74,7 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
         FirstName: firstName,
         LastName: lastName,
         Pincode: pincode,
+        Password: password,
         State: state,
         Street: street,
         CityTownVillage: cityTownVillage,
@@ -82,7 +83,7 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
       });
 
       console.log('User registered and data submitted successfully');
-      router.push('login');
+      router.push('./Login');
     } catch (error: any) {
       console.log(error.message);
       Alert.alert("Error", error.message);
@@ -193,7 +194,7 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     justifyContent: 'center',
-    backgroundColor: 'white', // Light background color
+    // backgroundColor: 'white', // Light background color
     paddingHorizontal: 20,
   },
   logoImage: {

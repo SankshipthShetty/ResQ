@@ -25,7 +25,7 @@ export default function RegisterScreen() {
 
       <TouchableOpacity
         style={styles.loginButton}
-        onPress={() => router.push("../auth/RescueTeam")}
+        onPress={() => router.push("../auth/RescueTeamSignUp")}
       >
         <Image
           style={styles.loginIcon}
@@ -36,7 +36,7 @@ export default function RegisterScreen() {
 
       <TouchableOpacity
         style={styles.loginButton}
-        onPress={() => router.push("../auth/MiddleBody")}
+        onPress={() => router.push("../auth/MiddleBodySignUp")}
       >
         <Image
           style={styles.loginIcon}
@@ -46,7 +46,7 @@ export default function RegisterScreen() {
       </TouchableOpacity>
 
       <Text style={styles.footerText}>Already have an account?</Text>
-      <Pressable onPress={() => router.push('./MiddleBody')}>
+      <Pressable onPress={() => router.push('./Login')}>
         <Text style={styles.signInText}>Sign In</Text>
       </Pressable>
 
@@ -59,14 +59,14 @@ export default function RegisterScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    top: 70,
+    flex:1,
+    top: 15,
     alignItems: "center",
-    padding: 16,
-    backgroundColor: "#fff",
+    padding: 16
   },
   logoImage: {
-    width: 350,
-    height: 200,
+    width: 400,
+    height: 250,
     alignSelf: "center",
   
   },

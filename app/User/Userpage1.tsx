@@ -90,16 +90,18 @@ export default function App() {
 const styles = StyleSheet.create({
  
   container: {
+    top:-30,
     display:"flex",
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 36,
-    backgroundColor: "#f0f0f0",
+    backgroundColor: "white",
+    height: "100%",
     width: "100%",
-    height: 926,
     overflow:"hidden",
-    marginTop: -100,
+    marginBottom: -40,
+    marginTop: -40,
+    
   },
   textContainer: {
     width: '100%',
@@ -135,13 +137,13 @@ const styles = StyleSheet.create({
   resq: {
     top: 0,
     left: -25,
-    marginTop: 30,
+    marginTop: 20,
     fontSize: 25,
     fontWeight: "800",
     display: "flex",
     alignItems: "center",
     width: 173,
-    height: 59,
+    height: 29,
     position: "absolute",
     color: "#000000",
   },
