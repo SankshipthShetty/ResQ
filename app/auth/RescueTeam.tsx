@@ -5,6 +5,7 @@ import { auth, firestore, createUser } from '../../constants/firebaseConfig';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import {useRouter} from 'expo-router';
 
+
 //import logo from '../../assets/images/image10.png';
 
 const RegisterScreen = ({ navigation }: { navigation: any }) => {

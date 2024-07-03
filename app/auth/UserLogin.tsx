@@ -27,11 +27,6 @@ const LoginScreen = ({ navigation }: any) => {
       const name=await AsyncStorage.getItem("data");
       console.warn(name);
     }
-    const removedata=async()=>{
-      await AsyncStorage.removeItem("data");
-    }
-  
- 
 
   const handleLogin = async () => {
     try {
@@ -63,9 +58,11 @@ const LoginScreen = ({ navigation }: any) => {
         style={styles.input}
         placeholderTextColor="#a9a9a9"
       />
+      
       {error && <Text style={styles.errorText}>{error}</Text>}
-      <TouchableOpacity onPress={() => { }}>
-        <Text style={styles.forgotPasswordText}>Forgot Password ?</Text>
+
+      <TouchableOpacity onPress={() => { setData}}>
+        <Text style={styles.forgotPasswordText}>Forget Password ?</Text>
       </TouchableOpacity>
       {/* <Button title="Set Data" onPress={setData} />
       <Button title="Get Data" onPress={getData} /> */}
@@ -80,7 +77,7 @@ const LoginScreen = ({ navigation }: any) => {
      
       <View style={styles.signupTextContainer}>
         <Text style={styles.signupText}>Don't have an account?</Text>
-        <Pressable onPress={() => router.push('./UserSignUp')}>
+        <Pressable onPress={() => router.push('../User/Userpage1')}>
           <Text style={styles.signupLink}>Sign Up</Text>
         </Pressable>
         

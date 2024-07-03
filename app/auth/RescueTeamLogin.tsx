@@ -63,7 +63,7 @@ const LoginScreen = ({ navigation }: any) => {
     <View style={styles.container}>
       <Image source={logo} style={styles.logoImage} />
       <Text style={styles.logoText}>ResQ</Text>
-      <Text style={styles.loginText}>ResueTeam Login</Text>
+      <Text style={styles.loginText}>RescueTeam Login</Text>
       <TextInput
         placeholder="Email"
         value={email}

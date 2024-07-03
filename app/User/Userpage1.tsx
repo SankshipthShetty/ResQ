@@ -9,12 +9,12 @@ import {
   TouchableOpacity,
 } from "react-native";
 import React from "react";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 
 export default function App() {
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.box}>
+      <TouchableOpacity onPress={() => router.push("./Userpage2")} style={styles.box}>
         <Image
           style={styles.post5Icon}
           source={require("../../assets/images/alert.png")}
@@ -55,6 +55,7 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: {
+    display:"flex",
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
@@ -62,7 +63,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f0f0f0",
     width: "100%",
     height: 926,
-    overflow: "hidden",
+    overflow:"hidden",
     marginTop: -100,
   },
   box: {
