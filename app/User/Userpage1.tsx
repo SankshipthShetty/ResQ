@@ -7,11 +7,24 @@ import {
   Image,
   StyleSheet,
   TouchableOpacity,
+  Pressable,
 } from "react-native";
 import React from "react";
 import { Link, router } from "expo-router";
+import { signOut } from "firebase/auth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { auth } from "@/constants/firebaseConfig";
 
 export default function App() {
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+      await AsyncStorage.removeItem('isLoggedIn');
+      router.replace('../auth/Login'); // Adjust the path to your login page
+    } catch (error) {
+      console.error('Error signing out: ', error);
+    }
+  };
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={() => router.push("./Userpage2")} style={styles.box}>
@@ -45,7 +58,9 @@ export default function App() {
         />
         <Text style={styles.boxText}>Your History</Text>
       </TouchableOpacity>
-
+      <TouchableOpacity onPress={handleSignOut} style={styles.signOutButton}>
+        <Text style={styles.signOutText}>Sign Out</Text>
+      </TouchableOpacity>
       <View>
         <Text style={styles.resq}>ResQ</Text>
       </View>
@@ -67,8 +82,8 @@ const styles = StyleSheet.create({
     marginTop: -100,
   },
   box: {
-    width: 400,
-    height: 150,
+    width: 360,
+    height: 130,
     backgroundColor: "#FFFFFF",
     borderRadius: 10,
     justifyContent: "center",
@@ -81,7 +96,6 @@ const styles = StyleSheet.create({
     color: "#000000",
     fontSize: 24,
     paddingLeft: 20,
-    fontFamily: "Poppins-ExtraBold",
     fontWeight: "800",
     marginLeft: 120,
   },
@@ -91,7 +105,6 @@ const styles = StyleSheet.create({
     marginTop: 30,
     fontSize: 25,
     fontWeight: "800",
-    fontFamily: "Poppins-ExtraBold",
     display: "flex",
     alignItems: "center",
     width: 173,
@@ -106,5 +119,19 @@ const styles = StyleSheet.create({
     height: 80,
     position: "absolute",
     fontSize: 6,
+  },
+  signOutButton: {
+    width: 150,
+    height: 50,
+    backgroundColor: "#A53821",
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 20,
+  },
+  signOutText: {
+    color: "#FFFFFF",
+    fontSize: 18,
+    fontWeight: "bold",
   },
 });

@@ -5,9 +5,8 @@ import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import logo from "../../assets/images/image1.png";
 import { useRouter } from "expo-router";
 
-const router = useRouter();
-
 export default function RegisterScreen() {
+  const router = useRouter();
   return (
     <View style={styles.container}>
       <Image source={logo} style={styles.logoImage} />
@@ -46,12 +45,11 @@ export default function RegisterScreen() {
         <Text style={styles.loginButtonText}>Register as a Middle Body</Text>
       </TouchableOpacity>
 
-      <Text style={styles.footerText}>
-        Don't have an account?
-        <Pressable onPress={() => router.push("one register page ")}>
-          <Text style={styles.signupLink}>Sign Up</Text>
-        </Pressable>
-      </Text>
+      <Text style={styles.footerText}>Already have an account?</Text>
+      <Pressable onPress={() => router.push('./MiddleBody')}>
+        <Text style={styles.signInText}>Sign In</Text>
+      </Pressable>
+
       <Text style={styles.mottoText}>
         Strength is found in unity, and hope in our shared humanity.
       </Text>
@@ -61,7 +59,7 @@ export default function RegisterScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    top: 110,
+    top: 70,
     alignItems: "center",
     padding: 16,
     backgroundColor: "#fff",
@@ -70,6 +68,7 @@ const styles = StyleSheet.create({
     width: 350,
     height: 200,
     alignSelf: "center",
+  
   },
   logoText: {
     fontSize: 36,
@@ -98,7 +97,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   loginButtonText: {
-    fontSize: 20,
+    fontSize:18,
   },
   footerText: {
     textAlign: "center",
@@ -110,7 +109,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   mottoText: {
-    marginTop: 30,
+    marginTop: 10,
     fontSize: 14,
     textAlign: "center",
     color: "#888",
@@ -119,5 +118,12 @@ const styles = StyleSheet.create({
     color: "#A53821",
     marginLeft: 5,
     fontWeight: "bold",
+  },
+  signInText: {
+    fontSize: 16,
+    textAlign: 'center',
+    color: '#A53821',
+    fontWeight: 'bold',
+    marginBottom: 30,
   },
 });

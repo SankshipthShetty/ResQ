@@ -9,7 +9,7 @@ const SplashScreen2 = () => {
   const router = useRouter();
 
   const handleSkip = () => {
-    router.replace("../auth/MainLogin");
+    router.replace("../auth/Login");
   };
 
   return (
@@ -26,7 +26,7 @@ const SplashScreen2 = () => {
       </Text>
       <DotIndicator currentIndex={1} />
       <Pressable
-        onPress={() => router.push("../auth/MainLogin")}
+        onPress={() => router.push("../auth/Login")}
         style={styles.button}
       >
         <Text style={{ color: "white", fontSize: 17 }}>Next</Text>

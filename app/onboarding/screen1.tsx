@@ -12,7 +12,7 @@ const SplashScreen1 = () => {
   const router = useRouter();
 
   const handleSkip = () => {
-    router.replace("../auth/MainLogin");
+    router.replace("../auth/Login");
   };
 
   return (

@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View, Alert ,Image,Pressable} from 'react-native';
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, doc, getDocs, query, setDoc, where } from "firebase/firestore";
 import { auth, firestore, createUser } from '../../constants/firebaseConfig';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import {useRouter} from 'expo-router';
+import debounce from 'lodash.debounce';
 
 
 //import logo from '../../assets/images/image10.png';
@@ -17,11 +18,54 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
   const [password, setPassword] = useState('');
   const [address, setAddress] = useState('');
   const [numMem, setNoOfMembers] = useState('');
+  const [role, setRole] = useState('RescueTeam');
+  const [emailError, setEmailError] = useState('');
+
+  const checkIfUserExists = async (email: string) => {
+    const collections = ["UserData", "RescueTeamData", "MiddleBodyData"]; // Replace with your collection names
+    for (const collectionName of collections) {
+      const userQuery = query(collection(firestore, collectionName), where("Email", "==", email));
+      const querySnapshot = await getDocs(userQuery);
+      if (!querySnapshot.empty) {
+        return true; // User exists in this collection
+      }
+    }
+    return false; // User does not exist in any collection
+  };
+  
+  const debouncedCheckIfUserExists = useCallback(
+    debounce(async (email: string) => {
+      if (email.includes('@gmail.com')) {
+        const userExists = await checkIfUserExists(email);
+        if (userExists) {
+          setEmailError("An account with this email already exists.");
+        } else {
+          setEmailError("");
+        }
+      }
+    }, 500), // Debounce delay in milliseconds
+    []
+  );
+
+  const handleEmailChange = (text: string) => {
+    setEmailID(text);
+    debouncedCheckIfUserExists(text);
+  };
 
   const handleRegister = async () => {
     try {
+
+      const userExists = await checkIfUserExists(email);
+      if (userExists) {
+        Alert.alert("Error", "An account with this email already exists.");
+        return;
+      }
+
+      // Create user with email and password
+      const userCredential = await createUser(auth, email, password);
+      const user = userCredential.user;
       // Add user data to Firestore
-      await addDoc(collection(firestore, "RescueTeamData"), {
+      await setDoc(doc(firestore, "RescueTeamData", user.uid), {
         TeamName: teamName,
         NoOfMembers: numMem,
         Address: address,
@@ -29,19 +73,14 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
         ContactNumber: phoneNumber,
         EmailID: email,
         Password: password,    
+        Role:role
       });
-      console.log('Data submitted successfully');
-      
-      // Create user with email and password
-      await createUser(auth, email, password);
-    } catch (error:any) {
+      console.log('User registered and data submitted successfully');
+      router.push('login');
+    } catch (error: any) {
       console.log(error.message);
       Alert.alert("Error", error.message);
     }
-  };
-
-  const handleLogin = () => {
-    router.push('login');
   };
 
 
@@ -53,7 +92,7 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
     >
       <Image source={require('../../assets/images/image10.png')} style={styles.logoImage} />
       <Text style={styles.logoText}>ResQ</Text>
-      <Text style={styles.SignUpText}>RESCUE TEAM SIGN UP</Text>
+      <Text style={styles.SignUpText}>Sign Up(Rescue Team)</Text>
 
       <View style={styles.inputContainer}>
         <TextInput
@@ -116,7 +155,7 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
       </TouchableOpacity>
 
       <Text style={styles.footerText}>Already have an account?</Text>
-      <Pressable onPress={() => router.push('./login')}>
+      <Pressable onPress={() => router.push('./Login')}>
         <Text style={styles.signInText}>Sign In</Text>
       </Pressable>
     </KeyboardAwareScrollView>
@@ -131,21 +170,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 25,
   },
   logoImage: {
-    width: 300,
-    height: 350,
+    width: 350,
+    height: 220,
     alignSelf: 'center',
-    marginBottom:-85,
+    marginBottom:-10,
   },
   logoText: {
-    fontSize: 50,
+    fontSize: 45,
     fontWeight:'bold',
     textAlign: 'center',
-    marginBottom: 0,
+    marginBottom: 5,
     color: '#000',
   },
   SignUpText: {
     fontSize: 20,
-    textAlign: 'center',
+    textAlign: 'left',
     paddingLeft:20,
     fontWeight:'bold',
     marginBottom: 20,
