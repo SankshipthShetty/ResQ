@@ -41,6 +41,8 @@ const LoginScreen = ({ navigation }: any) => {
         // Check if the role field exists in the user data
         if (userData && userData.Role) {
           await AsyncStorage.setItem('isLoggedIn', 'true');
+          await AsyncStorage.setItem('FirstName', userData.FirstName);
+          await AsyncStorage.setItem('LastName', userData.LastName);
           navigateToRoleBasedScreen(userData.Role);
         } else {
           setError('User role not found.');

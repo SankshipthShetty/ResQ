@@ -9,13 +9,15 @@ import {
   TouchableOpacity,
   Pressable,
 } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link, router } from "expo-router";
 import { signOut } from "firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { auth } from "@/constants/firebaseConfig";
 
 export default function App() {
+  const [fname, setfName] = useState('');
+  const [lname, setlName] = useState('');
   const handleSignOut = async () => {
     try {
       await signOut(auth);
@@ -25,8 +27,25 @@ export default function App() {
       console.error('Error signing out: ', error);
     }
   };
+
+  useEffect(() => {
+    const fetchName = async () => {
+      const fname = await AsyncStorage.getItem("FirstName");
+      const lname= await AsyncStorage.getItem("LastName");
+      if (fname && lname) {
+        setfName(fname);
+        setlName(lname);
+      }
+    };
+
+    fetchName();
+  }, []);
+
   return (
     <View style={styles.container}>
+      <View style={styles.textContainer}>
+        <Text style={styles.text}>Hi, {fname} {lname} 👋</Text>
+      </View>
       <TouchableOpacity onPress={() => router.push("./Userpage2")} style={styles.box}>
         <Image
           style={styles.post5Icon}
@@ -69,6 +88,7 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
+ 
   container: {
     display:"flex",
     flex: 1,
@@ -80,6 +100,19 @@ const styles = StyleSheet.create({
     height: 926,
     overflow:"hidden",
     marginTop: -100,
+  },
+  textContainer: {
+    width: '100%',
+    textAlign: "left",
+    marginBottom: 0,
+    marginTop:15,
+    marginLeft:55,
+  },
+  text:{
+    fontSize: 30,
+    fontWeight: "bold",
+    marginBottom: 20,
+    textAlign:"left"
   },
   box: {
     width: 360,
@@ -134,4 +167,5 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
   },
+ 
 });
