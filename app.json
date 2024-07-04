@@ -28,6 +28,11 @@
         "android.permission.RECORD_AUDIO"
       ],
       "package": "com.resqapp.resq"
+        "backgroundColor": "#ffffff",
+        "googleServicesFile": "./app/google-services.json"
+        
+      },
+      "package": "com.sankshipthshetty.resq"
     },
     "web": {
       "bundler": "metro",
@@ -54,6 +59,8 @@
         }
       ],
       "expo-video"
+      "expo-secure-store",
+      "@react-native-google-signin/google-signin"
     ],
     "experiments": {
       "typedRoutes": true
@@ -61,9 +68,6 @@
     "extra": {
       "router": {
         "origin": false
-      },
-      "eas": {
-        "projectId": "1e4199b3-577a-496c-8504-c09fbb4db936"
       }
     },
     "owner": "sankshipthshetty"

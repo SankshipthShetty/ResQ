@@ -1,16 +1,15 @@
-//rescue team login redirection page 
-
-
+//user loginn redirection page 
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, Button, Text, StyleSheet, TouchableOpacity, Image , Pressable} from 'react-native';
+import { View, TextInput, Button, Text, StyleSheet, TouchableOpacity, Image , Pressable,Alert} from 'react-native';
 import { signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { auth } from '../../constants/firebaseConfig';
+import { auth, firestore } from '../../constants/firebaseConfig';
 import {useRouter} from 'expo-router';
 
-
-
 import logo from '../../assets/images/image1.png';
+import { doc, getDoc } from 'firebase/firestore';
+
+
 const LoginScreen = ({ navigation }: any) => {
   
   const router = useRouter();
@@ -18,8 +17,9 @@ const LoginScreen = ({ navigation }: any) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
 
+
   const setData=async()=>
-    {
+    { 
      await AsyncStorage.setItem("data","Sankshipth")
     }
     const getData=async()=>{
@@ -27,35 +27,48 @@ const LoginScreen = ({ navigation }: any) => {
       console.warn(name);
     }
 
-  // useEffect(() => {
-  //   const checkUser = async () => {
-  //     const user = await AsyncStorage.getItem('user');
-  //     if (user) {
-  //       navigation.navigate('Main');
-  //     }
-  //   };
-  //   checkUser();
-  // }, []);
-
-  // useEffect(() => {
-  //   const unsubscribe = onAuthStateChanged(auth, (user) => {
-  //     if (user) {
-  //       AsyncStorage.setItem('user', JSON.stringify(user));
-  //       navigation.navigate('Main');
-  //     } else {
-  //       AsyncStorage.removeItem('user');
-  //     }
-  //   });
-  //   return () => unsubscribe();
-  // }, []);
-
   const handleLogin = async () => {
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      console.log("SUCCESS")
+      const userCred = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCred.user;
       
+      // Retrieve user data from Firestore using uid
+      const userDoc = await getDoc(doc(firestore, 'UserData', user.uid));
+      
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+
+        // Check if the role field exists in the user data
+        if (userData && userData.Role) {
+          await AsyncStorage.setItem('isLoggedIn', 'true');
+          await AsyncStorage.setItem('FirstName', userData.FirstName);
+          await AsyncStorage.setItem('LastName', userData.LastName);
+          navigateToRoleBasedScreen(userData.Role);
+        } else {
+          setError('User role not found.');
+        }
+      } else {
+        setError('User data not found in Firestore.');
+      }
     } catch (err) {
-      setError((err as Error).message);
+      Alert.alert('Uh-oh!', "Invalid email or password. \n\nPlease try again.")
+    }
+  };
+
+
+  const navigateToRoleBasedScreen = (Role: string) => {
+    switch (Role) {
+      case 'User':
+        router.push('../User/Userpage1');
+        break;
+      case 'RescueTeam':
+        router.push('../User/Userpage1');
+        break;
+      case 'MiddleBody':
+        router.push('../User/Userpage1');
+        break;
+      default:
+        setError('Invalid role.');
     }
   };
 
@@ -63,7 +76,7 @@ const LoginScreen = ({ navigation }: any) => {
     <View style={styles.container}>
       <Image source={logo} style={styles.logoImage} />
       <Text style={styles.logoText}>ResQ</Text>
-      <Text style={styles.loginText}>RescueTeam Login</Text>
+      <Text style={styles.loginText}>Login</Text>
       <TextInput
         placeholder="Email"
         value={email}
@@ -79,10 +92,14 @@ const LoginScreen = ({ navigation }: any) => {
         style={styles.input}
         placeholderTextColor="#a9a9a9"
       />
+      
       {error && <Text style={styles.errorText}>{error}</Text>}
+
       <TouchableOpacity onPress={() => { setData}}>
         <Text style={styles.forgotPasswordText}>Forget Password ?</Text>
       </TouchableOpacity>
+      {/* <Button title="Set Data" onPress={setData} />
+      <Button title="Get Data" onPress={getData} /> */}
       <TouchableOpacity onPress={handleLogin} style={styles.loginButton}>
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
@@ -94,7 +111,7 @@ const LoginScreen = ({ navigation }: any) => {
      
       <View style={styles.signupTextContainer}>
         <Text style={styles.signupText}>Don't have an account?</Text>
-        <Pressable onPress={() => router.push('./RescueTeam')}>
+        <Pressable onPress={() => router.push('./MainSignup')}>
           <Text style={styles.signupLink}>Sign Up</Text>
         </Pressable>
         
@@ -106,14 +123,14 @@ const LoginScreen = ({ navigation }: any) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    top: -15,
+    top: -25,
     justifyContent: 'center',
     padding: 16,
-    backgroundColor: '#fff',
+    // backgroundColor: '#fff',
   },
   logoImage: {
-    width: 350,
-    height: 200,
+    width: 400,
+    height: 250,
     alignSelf: 'center',
   },
   logoText: {

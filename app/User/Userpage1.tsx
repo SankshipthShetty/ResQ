@@ -7,13 +7,45 @@ import {
   Image,
   StyleSheet,
   TouchableOpacity,
+  Pressable,
 } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link, router } from "expo-router";
+import { signOut } from "firebase/auth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { auth } from "@/constants/firebaseConfig";
 
 export default function App() {
+  const [fname, setfName] = useState('');
+  const [lname, setlName] = useState('');
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+      await AsyncStorage.removeItem('isLoggedIn');
+      router.replace('../auth/Login'); // Adjust the path to your login page
+    } catch (error) {
+      console.error('Error signing out: ', error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchName = async () => {
+      const fname = await AsyncStorage.getItem("FirstName");
+      const lname= await AsyncStorage.getItem("LastName");
+      if (fname && lname) {
+        setfName(fname);
+        setlName(lname);
+      }
+    };
+
+    fetchName();
+  }, []);
+
   return (
     <View style={styles.container}>
+      <View style={styles.textContainer}>
+        <Text style={styles.text}>Hi, {fname} {lname} 👋</Text>
+      </View>
       <TouchableOpacity onPress={() => router.push("./Userpage2")} style={styles.box}>
         <Image
           style={styles.post5Icon}
@@ -45,7 +77,9 @@ export default function App() {
         />
         <Text style={styles.boxText}>Your History</Text>
       </TouchableOpacity>
-
+      <TouchableOpacity onPress={handleSignOut} style={styles.signOutButton}>
+        <Text style={styles.signOutText}>Sign Out</Text>
+      </TouchableOpacity>
       <View>
         <Text style={styles.resq}>ResQ</Text>
       </View>
@@ -54,21 +88,37 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
+ 
   container: {
+    top:-30,
     display:"flex",
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 36,
-    backgroundColor: "#f0f0f0",
+    backgroundColor: "white",
+    height: "100%",
     width: "100%",
-    height: 926,
     overflow:"hidden",
-    marginTop: -100,
+    marginBottom: -40,
+    marginTop: -40,
+    
+  },
+  textContainer: {
+    width: '100%',
+    textAlign: "left",
+    marginBottom: 0,
+    marginTop:15,
+    marginLeft:55,
+  },
+  text:{
+    fontSize: 30,
+    fontWeight: "bold",
+    marginBottom: 20,
+    textAlign:"left"
   },
   box: {
-    width: 400,
-    height: 150,
+    width: 360,
+    height: 130,
     backgroundColor: "#FFFFFF",
     borderRadius: 10,
     justifyContent: "center",
@@ -81,21 +131,19 @@ const styles = StyleSheet.create({
     color: "#000000",
     fontSize: 24,
     paddingLeft: 20,
-    fontFamily: "Poppins-ExtraBold",
     fontWeight: "800",
     marginLeft: 120,
   },
   resq: {
     top: 0,
     left: -25,
-    marginTop: 30,
+    marginTop: 20,
     fontSize: 25,
     fontWeight: "800",
-    fontFamily: "Poppins-ExtraBold",
     display: "flex",
     alignItems: "center",
     width: 173,
-    height: 59,
+    height: 29,
     position: "absolute",
     color: "#000000",
   },
@@ -107,4 +155,19 @@ const styles = StyleSheet.create({
     position: "absolute",
     fontSize: 6,
   },
+  signOutButton: {
+    width: 150,
+    height: 50,
+    backgroundColor: "#A53821",
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 20,
+  },
+  signOutText: {
+    color: "#FFFFFF",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+ 
 });

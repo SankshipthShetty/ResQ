@@ -1,11 +1,10 @@
-//user signup page 
-
-import React, { useState } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View, Alert ,Image,Pressable} from 'react-native';
-import { addDoc, collection } from "firebase/firestore";
+import React, { useState, useCallback } from 'react';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View, Alert, Image, Pressable } from 'react-native';
+import { addDoc, collection, doc, getDocs, query, where, setDoc } from "firebase/firestore";
 import { auth, firestore, createUser } from '../../constants/firebaseConfig';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import {useRouter} from 'expo-router';
+import { useRouter } from 'expo-router';
+import debounce from 'lodash.debounce'; // Import debounce
 
 import logo from '../../assets/images/image19.png';
 
@@ -21,36 +20,75 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
   const [street, setStreet] = useState('');
   const [cityTownVillage, setCityTownVillage] = useState('');
   const [district, setDistrict] = useState('');
+  const [role, setRole] = useState('User');
+  const [emailError, setEmailError] = useState('');
+
+  const checkIfUserExists = async (email: string) => {
+    const collections = ["UserData", "RescueTeamData", "MiddleBodyData"]; // Replace with your collection names
+    for (const collectionName of collections) {
+      const userQuery = query(collection(firestore, collectionName), where("Email", "==", email));
+      const querySnapshot = await getDocs(userQuery);
+      if (!querySnapshot.empty) {
+        return true; // User exists in this collection
+      }
+    }
+    return false; // User does not exist in any collection
+  };
+
+  const debouncedCheckIfUserExists = useCallback(
+    debounce(async (email: string) => {
+      if (email.includes('@gmail.com')) {
+        const userExists = await checkIfUserExists(email);
+        if (userExists) {
+          setEmailError("An account with this email already exists.");
+        } else {
+          setEmailError("");
+        }
+      }
+    }, 500), // Debounce delay in milliseconds
+    []
+  );
+
+  const handleEmailChange = (text: string) => {
+    setEmail(text);
+    debouncedCheckIfUserExists(text);
+  };
 
   const handleRegister = async () => {
     try {
+      // Check if user already exists
+      const userExists = await checkIfUserExists(email);
+      if (userExists) {
+        Alert.alert("Error", "An account with this email already exists.");
+        return;
+      }
+
+      // Create user with email and password
+      const userCredential = await createUser(auth, email, password);
+      const user = userCredential.user;
+
       // Add user data to Firestore
-      await addDoc(collection(firestore, "UserData"), {
+      await setDoc(doc(firestore, "UserData", user.uid), {
         Email: email,
         PhoneNumber: phoneNumber,
         FirstName: firstName,
         LastName: lastName,
-        Password: password,
         Pincode: pincode,
+        Password: password,
         State: state,
         Street: street,
         CityTownVillage: cityTownVillage,
-        District: district
+        District: district,
+        Role: role,
       });
-      console.log('Data submitted successfully');
-      
-      // Create user with email and password
-      await createUser(auth, email, password);
-    } catch (error:any) {
+
+      console.log('User registered and data submitted successfully');
+      router.push('./Login');
+    } catch (error: any) {
       console.log(error.message);
       Alert.alert("Error", error.message);
     }
   };
-
-  const handleLogin = () => {
-    router.push('login');
-  };
-
 
   return (
     <KeyboardAwareScrollView
@@ -80,10 +118,11 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
         <TextInput
           placeholder="Email"
           value={email}
-          onChangeText={text => setEmail(text)}
-          style={styles.input}
+          onChangeText={handleEmailChange}
+          style={[styles.input, emailError ? styles.errorInput : null]} // Add conditional style
           placeholderTextColor="#a9a9a9"
         />
+        {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
         <TextInput
           placeholder="Phone Number"
           value={phoneNumber}
@@ -140,11 +179,11 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
         onPress={handleRegister}
         style={styles.button}
       >
-        <Text style={styles.buttonText} >Register</Text>
+        <Text style={styles.buttonText}>Register</Text>
       </TouchableOpacity>
 
       <Text style={styles.footerText}>Already have an account?</Text>
-      <Pressable onPress={() => router.push('./MainLogin')}>
+      <Pressable onPress={() => router.push('./Login')}>
         <Text style={styles.signInText}>Sign In</Text>
       </Pressable>
     </KeyboardAwareScrollView>
@@ -155,7 +194,7 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     justifyContent: 'center',
-    backgroundColor: 'white', // Light background color
+    // backgroundColor: 'white', // Light background color
     paddingHorizontal: 20,
   },
   logoImage: {
@@ -173,8 +212,8 @@ const styles = StyleSheet.create({
   SignUpText: {
     fontSize: 20,
     textAlign: 'left',
-    paddingLeft:20,
-    fontWeight:'bold',
+    paddingLeft: 20,
+    fontWeight: 'bold',
     marginBottom: 20,
   },
   title: {
@@ -226,6 +265,15 @@ const styles = StyleSheet.create({
     color: '#A53821',
     fontWeight: 'bold',
     marginBottom: 30,
+  },
+  errorInput: {
+    borderColor: 'red',
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 14,
+    marginBottom: 10,
+    textAlign: 'center',
   },
 });
 
