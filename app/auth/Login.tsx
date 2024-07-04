@@ -18,15 +18,6 @@ const LoginScreen = ({ navigation }: any) => {
   const [error, setError] = useState<string | null>(null);
 
 
-  const setData=async()=>
-    { 
-     await AsyncStorage.setItem("data","Sankshipth")
-    }
-    const getData=async()=>{
-      const name=await AsyncStorage.getItem("data");
-      console.warn(name);
-    }
-
   const handleLogin = async () => {
     try {
       const userCred = await signInWithEmailAndPassword(auth, email, password);
@@ -95,8 +86,8 @@ const LoginScreen = ({ navigation }: any) => {
       
       {error && <Text style={styles.errorText}>{error}</Text>}
 
-      <TouchableOpacity onPress={() => { setData}}>
-        <Text style={styles.forgotPasswordText}>Forget Password ?</Text>
+      <TouchableOpacity>
+        <Text style={styles.forgotPasswordText}>Forgot Password ?</Text>
       </TouchableOpacity>
       {/* <Button title="Set Data" onPress={setData} />
       <Button title="Get Data" onPress={getData} /> */}
