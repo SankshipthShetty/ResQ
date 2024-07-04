@@ -10,12 +10,9 @@ import { router } from "expo-router";
 
 export default function Userpage2() {
   const [cameraPermission, requestCameraPermission] = useCameraPermissions();
-  const [microphonePermission, requestMicrophonePermission] = useMicrophonePermissions();
   const [mediaLibraryPermission, requestMediaLibraryPermission] = usePermissions();
-
-  const [showCameraModal, setShowCameraModal] = useState(false);
-  const [showMicrophoneModal, setShowMicrophoneModal] = useState(false);
   const [showMediaLibraryModal, setShowMediaLibraryModal] = useState(false);
+  const [showCameraModal, setShowCameraModal] = useState(false);
 
   useEffect(() => {
     setShowCameraModal(true);
@@ -28,17 +25,6 @@ export default function Userpage2() {
       return false;
     }
     setShowCameraModal(false);
-    setShowMicrophoneModal(true);
-    return true;
-  };
-
-  const handleMicrophonePermission = async () => {
-    const microphoneStatus = await requestMicrophonePermission();
-    if (!microphoneStatus.granted) {
-      Alert.alert("Error", "Microphone permission is required.");
-      return false;
-    }
-    setShowMicrophoneModal(false);
     setShowMediaLibraryModal(true);
     return true;
   };
@@ -64,15 +50,6 @@ export default function Userpage2() {
         onRequestPermission={handleCameraPermission}
         onClose={() => {
           Alert.alert("Error", "Camera permission is required.");
-        }}
-      />
-      <PermissionModal
-        visible={showMicrophoneModal}
-        title="Microphone Permission"
-        description="🎙️ For taking videos with audio"
-        onRequestPermission={handleMicrophonePermission}
-        onClose={() => {
-          Alert.alert("Error", "Microphone permission is required.");
         }}
       />
       <PermissionModal

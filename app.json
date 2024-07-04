@@ -27,12 +27,9 @@
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO"
       ],
-      "package": "com.resqapp.resq"
-        "backgroundColor": "#ffffff",
-        "googleServicesFile": "./app/google-services.json"
-        
-      },
-      "package": "com.sankshipthshetty.resq"
+      "package": "com.resqapp.resq",
+      "backgroundColor": "#ffffff",
+      "googleServicesFile": "./app/google-services.json"
     },
     "web": {
       "bundler": "metro",
@@ -40,8 +37,6 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-       "expo-secure-store",
-      "expo-router",
       [
         "expo-media-library",
         {
@@ -58,7 +53,7 @@
           "recordAudioAndroid": true
         }
       ],
-      "expo-video"
+      "expo-video",
       "expo-secure-store",
       "@react-native-google-signin/google-signin"
     ],

@@ -3,9 +3,14 @@
   "compilerOptions": {
     "jsx": "react",
     "strict": true,
-    "types": ["nativewind/types","node"],
+    "types": [
+      "nativewind/types",
+      "node"
+    ],
     "paths": {
-      "@firebase/auth": ["./node_modules/@firebase/auth/dist/index.rn.d.ts"],
+      "@firebase/auth": [
+        "./node_modules/@firebase/auth/dist/index.rn.d.ts"
+      ],
       "@/*": [
         "./*"
       ]
@@ -15,7 +20,6 @@
     "**/*.ts",
     "**/*.tsx",
     ".expo/types/**/*.ts",
-    "expo-env.d.ts",
+    "expo-env.d.ts"
   ]
 }
-
