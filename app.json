@@ -18,9 +18,16 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/image2.png",
-        "backgroundColor": "#ffffff",
-        "googleServicesFile": "./app/google-services.json"
-      }
+        "backgroundColor": "#ffffff"
+      },
+      "permissions": [
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.ACCESS_MEDIA_LOCATION",
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.resqapp.resq"
     },
     "web": {
       "bundler": "metro",
@@ -28,8 +35,25 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
+       "expo-secure-store",
       "expo-router",
-      "expo-secure-store"
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Allow $(PRODUCT_NAME) to access your photos.",
+          "savePhotosPermission": "Allow $(PRODUCT_NAME) to save photos.",
+          "isAccessMediaLocationEnabled": true
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
+          "recordAudioAndroid": true
+        }
+      ],
+      "expo-video"
     ],
     "experiments": {
       "typedRoutes": true
