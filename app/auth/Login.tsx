@@ -15,6 +15,7 @@ const LoginScreen = ({ navigation }: any) => {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
 
@@ -75,14 +76,29 @@ const LoginScreen = ({ navigation }: any) => {
         style={styles.input}
         placeholderTextColor="#a9a9a9"
       />
-      <TextInput
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-        style={styles.input}
-        placeholderTextColor="#a9a9a9"
-      />
+
+      
+      <View style={styles.passwordContainer}>
+        <TextInput
+          placeholder="Password"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry={!isPasswordVisible}
+          style={styles.passwordInput}
+          placeholderTextColor="#a9a9a9"
+        />
+        <TouchableOpacity
+          onPress={() => setIsPasswordVisible(!isPasswordVisible)}
+          style={styles.eyeIconContainer}
+        >
+          <Image
+            source={isPasswordVisible ? require('../../assets/images/visible.png') : require('../../assets/images/hide.png')}
+            style={styles.eyeIcon}
+          />
+        </TouchableOpacity>
+      </View>
+
+
       
       {error && <Text style={styles.errorText}>{error}</Text>}
 
@@ -147,6 +163,28 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     width: '90%',
     alignSelf: 'center',
+  },
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderColor: 'gray',
+    borderWidth: 1,
+    borderRadius: 5,
+    width: '90%',
+    alignSelf: 'center',
+    marginBottom: 12,
+  },
+  passwordInput: {
+    flex: 1,
+    height: 50,
+    paddingHorizontal: 16,
+  },
+  eyeIconContainer: {
+    padding: 10,
+  },
+  eyeIcon: {
+    width: 24,
+    height: 24,
   },
   errorText: {
     color: 'red',
