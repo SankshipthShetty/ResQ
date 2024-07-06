@@ -54,7 +54,7 @@ export default function App() {
         <Text style={styles.boxText}>Report a Disaster</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.box}>
+      <TouchableOpacity onPress={() => router.push("./Userpage5")} style={styles.box}>
         <Image
           style={styles.post5Icon}
           source={require("../../assets/images/map.png")}
