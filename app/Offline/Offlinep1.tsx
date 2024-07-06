@@ -2,10 +2,14 @@
 //This page is displayed when the user is offline and the network is not found
 
 
-import { View, Text, Image, StyleSheet } from "react-native";
+import { View, Text, Image, StyleSheet, Pressable } from "react-native";
 import React from "react";
+import {useRouter} from 'expo-router';
+
+
 
 export default function App() {
+  const router = useRouter();
   return (
     <View style={styles.container}>
       <Text style={[styles.uhOhNetwork, styles.uhOhNetworkTypo]}>
@@ -13,6 +17,12 @@ export default function App() {
       </Text>
       <Text style={[styles.youreOffline, styles.uhOhNetworkTypo]}>
         You’re Offline!
+      </Text>
+      <Text style={ styles.uhOhNetworkTypo1}>
+        Turn on Internet to gain full access
+      </Text>
+      <Text style={ styles.uhOhNetworkTypo2}>
+        Incase of emergency and no cellular network 
       </Text>
 
       <Image
@@ -24,10 +34,11 @@ export default function App() {
         source={require("../../assets/images/wifi.png")}
       />
 
-      <View style={styles.offlinePage1Item} />
+      <Pressable style={styles.Red} onPress={() => router.push("./offlinep2") }>
       <Text style={[styles.enableBluetooth, styles.noWifi1IconPosition]}>
-        Enable Bluetooth
+        Continue
       </Text>
+      </Pressable>
     </View>
   );
 }
@@ -50,6 +61,28 @@ const styles = StyleSheet.create({
   uhOhNetworkTypo: {
     fontWeight: "700",
     fontSize: 28,
+    letterSpacing: -0.6,
+    lineHeight: 34,
+    textAlign: "center",
+    color: "#000000",
+    width: "100%",
+    position: "absolute",
+  },
+  uhOhNetworkTypo1: {
+    fontWeight: "700",
+    fontSize: 20,
+    top: 360,
+    letterSpacing: -0.6,
+    lineHeight: 34,
+    textAlign: "center",
+    color: "#000000",
+    width: "100%",
+    position: "absolute",
+  },
+  uhOhNetworkTypo2: {
+    fontWeight: "700",
+    fontSize: 20,
+    top: 770,
     letterSpacing: -0.6,
     lineHeight: 34,
     textAlign: "center",
@@ -85,8 +118,8 @@ const styles = StyleSheet.create({
     transform: [{ translateX: -58.5 }],
     position: "absolute",
   },
-  offlinePage1Item: {
-    top: 760,
+  Red: {
+    top: 840,
     justifyContent: "center",
     borderRadius: 24,
     backgroundColor: "#A52A2A",
@@ -101,14 +134,14 @@ const styles = StyleSheet.create({
     position: "absolute",
   },
   enableBluetooth: {
-    top: 769,
+    top: 10,
     fontSize: 16,
     textTransform: "capitalize",
     fontWeight: "800",
     fontFamily: '"Gothic A1", sans-serif',
     color: "#FFFFFF",
     lineHeight: 24,
-    left: "60%",
+    left: "86%",
     transform: [{ translateX: -110.5 }],
     textAlign: "center",
   },

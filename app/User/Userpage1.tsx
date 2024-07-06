@@ -70,7 +70,7 @@ export default function App() {
         <Text style={styles.boxText}>Donation</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.box}>
+      <TouchableOpacity onPress={() => router.push("../Offline/Offlinep1")} style={styles.box}>
         <Image
           style={styles.post5Icon}
           source={require("../../assets/images/history.png")}

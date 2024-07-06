@@ -1,28 +1,27 @@
-//allow bluetooth Page
-
 import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { useRouter } from 'expo-router';
 
 export default function NetworkErrorScreen() {
+  const router = useRouter();
+
   return (
-    <View style={styles.containermain}>
     <View style={styles.container}>
-      <Text style={styles.networkErrorText}>Uh Oh! Network Not found</Text>
+      <Text style={styles.networkErrorText}>Offline Connection!!</Text>
       
       <View style={styles.bluetoothContainer}>
         <Image style={styles.bluetoothIcon} source={require('../../assets/images/Bluetooth.png')} />
-        <Text style={styles.bluetoothText}>Bluetooth</Text>
-        <Text style={styles.bluetoothSubText}>Allow ResQ to access your Bluetooth?</Text>
+
+        <Text style={styles.bluetoothSubText}>Allow ResQ to access your Bluetooth and Wifi?</Text>
         
-        <TouchableOpacity style={styles.allowButton}>
+        <TouchableOpacity style={styles.allowButton} onPress={() => router.push("./offlinep4")}>
           <Text style={styles.buttonText}>Allow</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.skipButton}>
+        <TouchableOpacity style={styles.skipButton} onPress={() => router.push("./Offlinep1")}>
           <Text style={styles.skipButtonText}>Skip for now</Text>
         </TouchableOpacity>
       </View>
-    </View>
     </View>
   );
 }
@@ -30,24 +29,9 @@ export default function NetworkErrorScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: '110%', 
-    //height: '100%', 
-
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#f0f0f0',
-   // padding: 20,
-  },
-  containermain: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 36,
-    backgroundColor: "#f0f0f0",
-    width: "100%",
-    height: 926,
-    overflow: "hidden",
-    marginTop: -100,
   },
   networkErrorText: {
     fontSize: 35,
@@ -57,7 +41,6 @@ const styles = StyleSheet.create({
   },
   bluetoothContainer: {
     width: '80%',
-    height:'50%',
     backgroundColor: '#fff',
     borderRadius: 10,
     alignItems: 'center',
@@ -66,23 +49,16 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   bluetoothIcon: {
-    width: 100,
+    width: 180,
     height: 100,
     marginBottom: 20,
-    top:80,
-  },
-  bluetoothText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    top:100,
+    borderRadius: 50,
   },
   bluetoothSubText: {
     fontSize: 16,
     textAlign: 'center',
     marginBottom: 30,
     color: '#666',
-    top:100,
   },
   allowButton: {
     backgroundColor: '#A52A2A',
@@ -90,11 +66,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 40,
     borderRadius: 5,
     marginBottom: 10,
-    top:100,
   },
   buttonText: {
     color: '#fff',
     fontSize: 16,
+    fontWeight: 'bold',
   },
   skipButton: {
     borderColor: '#A52A2A',
@@ -102,10 +78,11 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 40,
     borderRadius: 5,
-    top:120
+    marginTop: 10,
   },
   skipButtonText: {
     color: '#A52A2A',
     fontSize: 16,
-  }
+    fontWeight: 'bold',
+  },
 });
