@@ -1,10 +1,11 @@
 import * as React from "react";
-import { SafeAreaView, View } from "react-native";
+import { SafeAreaView, View, TouchableOpacity, Text, StyleSheet } from "react-native";
 import { CameraMode, CameraView, FlashMode } from "expo-camera";
-import * as WebBrowser from "expo-web-browser";
+import { useRouter } from 'expo-router';
 import MainRowActions from "@/components/MainRowActions";
 import CameraTools from "@/components/CameraTools";
 import PictureView from "@/components/PictureView";
+import IconButton from "@/components/IconButton";
 
 export default function Userpage3() {
   const cameraRef = React.useRef<CameraView>(null);
@@ -14,6 +15,7 @@ export default function Userpage3() {
   const [cameraFacing, setCameraFacing] = React.useState<"front" | "back">("back");
   const [picture, setPicture] = React.useState<string>(""); // "https://picsum.photos/seed/696/3000/2000"
   const [cameraZoom, setCameraZoom] = React.useState<number>(0);
+  const router = useRouter(); // Use the useRouter hook
 
   async function handleTakePicture() {
     const response = await cameraRef.current?.takePictureAsync({});
@@ -37,6 +39,12 @@ export default function Userpage3() {
       >
         <SafeAreaView style={{ flex: 1 }}>
           <View style={{ flex: 1 }}>
+            <IconButton
+            onPress={() => router.push('./Userpage1')}
+            iosName={"xmark"}
+            androidName="close"
+            />
+
             <CameraTools
               cameraZoom={cameraZoom}
               cameraFlash={cameraFlash}
@@ -57,3 +65,21 @@ export default function Userpage3() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  closeButton: {
+    alignSelf: 'flex-start',
+    alignItems: 'center',
+    backgroundColor: 'red',
+    borderRadius: 5,
+    padding: 10,
+    position: 'absolute',
+    top: 40,
+    left: 20,
+    zIndex: 1,
+  },
+  text: {
+    fontSize: 18,
+    color: 'white',
+  },
+});

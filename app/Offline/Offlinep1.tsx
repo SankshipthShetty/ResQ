@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textTransform: "capitalize",
     fontWeight: "800",
-    fontFamily: '"Gothic A1", sans-serif',
+    // fontFamily: '"Gothic A1", sans-serif',
     color: "#FFFFFF",
     lineHeight: 24,
     left: "86%",

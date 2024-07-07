@@ -44,28 +44,28 @@ const LoginScreen = ({ navigation }: any) => {
         }
       }
       else if (userDocRT.exists()) {
-        const userData = userDocRT.data();
+        const ResData = userDocRT.data();
 
         // Check if the role field exists in the user data
-        if (userData && userData.Role) {
+        if (ResData && ResData.Role) {
           await AsyncStorage.setItem('isLoggedIn', 'true');
-          await AsyncStorage.setItem('FirstName', userData.TeamName);
+          await AsyncStorage.setItem('FirstName', ResData.TeamName);
           await AsyncStorage.setItem('RescueId', user.uid);
-          navigateToRoleBasedScreen(userData.Role);
+          navigateToRoleBasedScreen(ResData.Role);
         } else {
           setError('User role not found.');
         }
       }
       else if (userDocMB.exists()) {
-        const userData = userDocMB.data();
+        const MidData = userDocMB.data();
 
         // Check if the role field exists in the user data
-        if (userData && userData.Role) {
+        if (MidData && MidData.Role) {
           await AsyncStorage.setItem('isLoggedIn', 'true');
-          await AsyncStorage.setItem('FirstName', userData.FirstName);
-          await AsyncStorage.setItem('LastName', userData.LastName);
+          await AsyncStorage.setItem('FirstName', MidData.FirstName);
+          await AsyncStorage.setItem('LastName', MidData.LastName);
           await AsyncStorage.setItem('MiddleId', user.uid);
-          navigateToRoleBasedScreen(userData.Role);
+          navigateToRoleBasedScreen(MidData.Role);
         } else {
           setError('User role not found.');
         }

@@ -18,7 +18,7 @@ const UserDetailsScreen = () => {
         if (typeof userId === 'string') {
           storedUserId = userId;
         } else {
-          storedUserId = await AsyncStorage.getItem('userId');
+          storedUserId = await AsyncStorage.getItem('UserId');
         }
 
         if (storedUserId) {
