@@ -1,145 +1,148 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, Modal, Alert, TouchableOpacity, Linking } from "react-native";
-import { useRouter } from "expo-router";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as Network from "expo-network";
-import BleManager from "react-native-ble-manager";
+//Uh Oh! Network Not found PAGE 
+//This page is displayed when the user is offline and the network is not found
 
-export default function Userpage2() {
-  const [showBluetoothModal, setShowBluetoothModal] = useState(false);
-  const [showWiFiModal, setShowWiFiModal] = useState(false);
+
+import { View, Text, Image, StyleSheet, Pressable } from "react-native";
+import React from "react";
+import {useRouter} from 'expo-router';
+
+
+
+export default function App() {
   const router = useRouter();
-
-  useEffect(() => {
-    BleManager.start({ showAlert: false });
-    setShowBluetoothModal(true);
-  }, []);
-
-  const handleBluetoothPermission = async () => {
-    try {
-      await BleManager.enableBluetooth();
-      setShowBluetoothModal(false);
-      setShowWiFiModal(true);
-      return true;
-    } catch (error) {
-      Alert.alert("Error", "Unable to enable Bluetooth.");
-      return false;
-    }
-  };
-
-  const handleWiFiPermission = async () => {
-    const networkState = await Network.getNetworkStateAsync();
-    if (!networkState.isConnected || networkState.type !== Network.NetworkStateType.WIFI) {
-      Alert.alert(
-        "WiFi is off",
-        "Please enable WiFi from settings",
-        [
-          { text: "Cancel", style: "cancel" },
-          { text: "Open Settings", onPress: () => openSettings() },
-        ],
-        { cancelable: false }
-      );
-      return false;
-    }
-    setShowWiFiModal(false);
-    await AsyncStorage.setItem("hasOpened", "true");
-    router.push("./Userpage3");
-    return true;
-  };
-
-  const openSettings = () => {
-    Linking.openSettings();
-  };
-
   return (
     <View style={styles.container}>
-      <PermissionModal
-        visible={showBluetoothModal}
-        title="Bluetooth Permission"
-        description="🔵 Allow access to Bluetooth"
-        onRequestPermission={handleBluetoothPermission}
-        onClose={() => {
-          Alert.alert("Error", "Bluetooth permission is required.");
-        }}
+      <Text style={[styles.uhOhNetwork, styles.uhOhNetworkTypo]}>
+        Uh Oh! Network Not found
+      </Text>
+      <Text style={[styles.youreOffline, styles.uhOhNetworkTypo]}>
+        You’re Offline!
+      </Text>
+      <Text style={ styles.uhOhNetworkTypo1}>
+        Turn on Internet to gain full access
+      </Text>
+      <Text style={ styles.uhOhNetworkTypo2}>
+        Incase of emergency and no cellular network 
+      </Text>
+
+      <Image
+        style={styles.offlinePage1Child}
+        source={require("../../assets/images/peaceamoeba.png")}
       />
-      <PermissionModal
-        visible={showWiFiModal}
-        title="WiFi Permission"
-        description="📶 Allow access to WiFi"
-        onRequestPermission={handleWiFiPermission}
-        onClose={() => {
-          Alert.alert("Error", "WiFi permission is required.");
-        }}
+      <Image
+        style={[styles.noWifi1Icon, styles.noWifi1IconPosition]}
+        source={require("../../assets/images/wifi.png")}
       />
+
+      <Pressable style={styles.Red} onPress={() => router.push("./offlinep2") }>
+      <Text style={[styles.enableBluetooth, styles.noWifi1IconPosition]}>
+        Continue
+      </Text>
+      </Pressable>
     </View>
   );
 }
-
-interface PermissionModalProps {
-  visible: boolean;
-  title: string;
-  description: string;
-  onRequestPermission: () => void;
-  onClose: () => void;
-}
-
-const PermissionModal: React.FC<PermissionModalProps> = ({ visible, title, description, onRequestPermission, onClose }) => (
-  <Modal visible={visible} transparent={true} animationType="slide">
-    <View style={styles.modalOverlay}>
-      <View style={styles.modalContainer}>
-        <Text style={styles.modalTitle}>{title}</Text>
-        <Text style={styles.modalDescription}>{description}</Text>
-        <TouchableOpacity style={styles.modalButton} onPress={onRequestPermission}>
-          <Text style={styles.modalButtonText}>Allow</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.modalButton} onPress={onClose}>
-          <Text style={styles.modalButtonText}>Cancel</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  </Modal>
-);
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    borderRadius: 36,
     backgroundColor: "#f0f0f0",
+    width: "100%",
+    height: 926,
+    overflow: "hidden",
+    marginTop: -100,
   },
-  modalOverlay: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  uhOhNetwork: {
+    top: 250,
   },
-  modalContainer: {
-    width: 300,
-    padding: 20,
-    backgroundColor: "white",
-    borderRadius: 10,
-    alignItems: "center",
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  modalDescription: {
-    fontSize: 16,
+  uhOhNetworkTypo: {
+    fontWeight: "700",
+    fontSize: 28,
+    letterSpacing: -0.6,
+    lineHeight: 34,
     textAlign: "center",
-    marginBottom: 20,
+    color: "#000000",
+    width: "100%",
+    position: "absolute",
   },
-  modalButton: {
-    backgroundColor: "#1e90ff",
-    padding: 10,
-    borderRadius: 5,
-    marginVertical: 5,
-    width: '80%',
-    alignItems: "center",
-  },    
-  modalButtonText: {
-    color: "white",
-    fontWeight: "bold",
-   },
- });
+  uhOhNetworkTypo1: {
+    fontWeight: "700",
+    fontSize: 20,
+    top: 360,
+    letterSpacing: -0.6,
+    lineHeight: 34,
+    textAlign: "center",
+    color: "#000000",
+    width: "100%",
+    position: "absolute",
+  },
+  uhOhNetworkTypo2: {
+    fontWeight: "700",
+    fontSize: 20,
+    top: 770,
+    letterSpacing: -0.6,
+    lineHeight: 34,
+    textAlign: "center",
+    color: "#000000",
+    width: "100%",
+    position: "absolute",
+  },
+  youreOffline: {
+    top: 305,
+    textAlign: "center",
+    color: "#000000",
+    fontSize: 28,
+    fontWeight: "700",
+    letterSpacing: -0.6,
+    lineHeight: 34,
+    width: "100%",
+    position: "absolute",
+  },
+  offlinePage1Child: {
+    top: 420,
+    width: 300,
+    justifyContent: "center",
+    height: 255,
+    left: "40%",
+    transform: [{ translateX: -106 }],
+    position: "absolute",
+  },
+  noWifi1Icon: {
+    top: 460,
+    width: 187,
+    height: 181,
+    left: "40%",
+    transform: [{ translateX: -58.5 }],
+    position: "absolute",
+  },
+  Red: {
+    top: 840,
+    justifyContent: "center",
+    borderRadius: 24,
+    backgroundColor: "#A52A2A",
+    width: 221,
+    height: 48,
+    left: "50%",
+    transform: [{ translateX: -110.5 }],
+    position: "absolute",
+  },
+  noWifi1IconPosition: {
+    textAlign: "center",
+    position: "absolute",
+  },
+  enableBluetooth: {
+    top: 10,
+    fontSize: 16,
+    textTransform: "capitalize",
+    fontWeight: "800",
+    fontFamily: '"Gothic A1", sans-serif',
+    color: "#FFFFFF",
+    lineHeight: 24,
+    left: "86%",
+    transform: [{ translateX: -110.5 }],
+    textAlign: "center",
+  },
+});
