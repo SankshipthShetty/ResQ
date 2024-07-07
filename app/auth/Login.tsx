@@ -26,7 +26,9 @@ const LoginScreen = ({ navigation }: any) => {
       
       // Retrieve user data from Firestore using uid
       const userDoc = await getDoc(doc(firestore, 'UserData', user.uid));
-      
+      const userDocMB = await getDoc(doc(firestore, 'MiddleBodyData', user.uid));
+      const userDocRT = await getDoc(doc(firestore, 'RescueTeamData', user.uid));
+    
       if (userDoc.exists()) {
         const userData = userDoc.data();
 
@@ -35,11 +37,40 @@ const LoginScreen = ({ navigation }: any) => {
           await AsyncStorage.setItem('isLoggedIn', 'true');
           await AsyncStorage.setItem('FirstName', userData.FirstName);
           await AsyncStorage.setItem('LastName', userData.LastName);
+          await AsyncStorage.setItem('UserId', user.uid);
           navigateToRoleBasedScreen(userData.Role);
         } else {
           setError('User role not found.');
         }
-      } else {
+      }
+      else if (userDocRT.exists()) {
+        const userData = userDocRT.data();
+
+        // Check if the role field exists in the user data
+        if (userData && userData.Role) {
+          await AsyncStorage.setItem('isLoggedIn', 'true');
+          await AsyncStorage.setItem('FirstName', userData.TeamName);
+          await AsyncStorage.setItem('RescueId', user.uid);
+          navigateToRoleBasedScreen(userData.Role);
+        } else {
+          setError('User role not found.');
+        }
+      }
+      else if (userDocMB.exists()) {
+        const userData = userDocMB.data();
+
+        // Check if the role field exists in the user data
+        if (userData && userData.Role) {
+          await AsyncStorage.setItem('isLoggedIn', 'true');
+          await AsyncStorage.setItem('FirstName', userData.FirstName);
+          await AsyncStorage.setItem('LastName', userData.LastName);
+          await AsyncStorage.setItem('MiddleId', user.uid);
+          navigateToRoleBasedScreen(userData.Role);
+        } else {
+          setError('User role not found.');
+        }
+      }
+      else {
         setError('User data not found in Firestore.');
       }
     } catch (err) {
@@ -54,10 +85,10 @@ const LoginScreen = ({ navigation }: any) => {
         router.push('../User/Userpage1');
         break;
       case 'RescueTeam':
-        router.push('../User/Userpage1');
+        router.push('../RescueTeams/RT1');
         break;
       case 'MiddleBody':
-        router.push('../User/Userpage1');
+        router.push('../User/MB1');
         break;
       default:
         setError('Invalid role.');

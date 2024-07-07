@@ -44,6 +44,17 @@ export default function App() {
   return (
     <View style={styles.container}>
       <View style={styles.textContainer}>
+
+      <View style={styles.headerContainer}>
+        <Text style={styles.header}>User Details</Text>
+        <TouchableOpacity onPress={() => router.push("../../ProfilePageEdit/UserProf")} style={styles.profileButton}>
+          <Image
+            source={require('../../assets/images/profilepic.png')} // Adjust the path to your image
+            style={styles.headerImage}
+          />
+        </TouchableOpacity>
+      </View>
+
         <Text style={styles.text}>Hi, {fname} {lname} 👋</Text>
       </View>
       <TouchableOpacity onPress={() => router.push("./Userpage2")} style={styles.box}>
@@ -62,7 +73,7 @@ export default function App() {
         <Text style={styles.boxText}>Disaster in your area</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.box}>
+      <TouchableOpacity style={styles.box} onPress={() => router.push("../../ProfilePageEdit/RescueProf")}>
         <Image
           style={styles.post5Icon}
           source={require("../../assets/images/Donation.png")}
@@ -168,6 +179,33 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 18,
     fontWeight: "bold",
+  },
+  headerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginBottom: 20,
+    top:-35
+    
+  },
+  header: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    color: '#333',
+    left:270
+  },
+  profileButton: {
+    borderRadius: 25, // Adjust the value to make the image round based on its size
+    overflow: 'hidden',
+    width: 50, // Adjust the width and height as needed
+    height: 50,
+    left:-50
+  },
+  headerImage: {
+    width: '100%',
+    height: '100%',
+    
   },
  
 });
