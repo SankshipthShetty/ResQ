@@ -62,7 +62,7 @@ export default function App() {
         <Text style={styles.boxText}>Disaster in your area</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.box}>
+      <TouchableOpacity style={styles.box} onPress={() => router.push("./Userpage6")} >
         <Image
           style={styles.post5Icon}
           source={require("../../assets/images/Donation.png")}
