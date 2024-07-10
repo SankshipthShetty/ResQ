@@ -80,6 +80,8 @@ const RealTimeChecker = () => {
       Alert.alert('Invalid location format');
     }
   };
+
+  
   
 
   if (loading) {
