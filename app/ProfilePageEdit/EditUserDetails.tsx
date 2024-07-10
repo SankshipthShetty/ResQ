@@ -53,7 +53,7 @@ const EditUserDetailsScreen = () => {
 
   const handleUpdate = async () => {
     try {
-      const storedUserId = await AsyncStorage.getItem('userId');
+      const storedUserId = await AsyncStorage.getItem('UserId');
       if (!storedUserId) {
         Alert.alert('Error', 'User ID not found in AsyncStorage.');
         return;
