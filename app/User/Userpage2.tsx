@@ -1,18 +1,16 @@
-// PERMISSIONS FOR CAMERA
-
-
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, Modal, Alert, TouchableOpacity } from "react-native";
-import { useCameraPermissions, useMicrophonePermissions } from "expo-camera";
+import { View, Text, StyleSheet, Modal, TouchableOpacity, Alert } from "react-native";
+import { useCameraPermissions } from "expo-camera";
 import { usePermissions } from "expo-media-library";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
 
 export default function Userpage2() {
   const [cameraPermission, requestCameraPermission] = useCameraPermissions();
   const [mediaLibraryPermission, requestMediaLibraryPermission] = usePermissions();
   const [showMediaLibraryModal, setShowMediaLibraryModal] = useState(false);
   const [showCameraModal, setShowCameraModal] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     setShowCameraModal(true);
@@ -37,7 +35,7 @@ export default function Userpage2() {
     }
     setShowMediaLibraryModal(false);
     await AsyncStorage.setItem("hasOpened", "true");
-    router.push("./Userpage3") // Change the route to Userpage3
+    router.push("./Userpage3"); // Change the route to Userpage3
     return true;
   };
 
@@ -49,7 +47,7 @@ export default function Userpage2() {
         description="🎥 For taking pictures"
         onRequestPermission={handleCameraPermission}
         onClose={() => {
-          Alert.alert("Error", "Camera permission is required.");
+          Alert.alert("Permission Denied", "You denied camera permission.");
         }}
       />
       <PermissionModal
@@ -58,7 +56,7 @@ export default function Userpage2() {
         description="📸 To save/view the images"
         onRequestPermission={handleMediaLibraryPermission}
         onClose={() => {
-          Alert.alert("Error", "Media Library permission is required.");
+          Alert.alert("Permission Denied", "You denied media library permission.");
         }}
       />
     </View>
@@ -73,22 +71,33 @@ interface PermissionModalProps {
   onClose: () => void;
 }
 
-const PermissionModal: React.FC<PermissionModalProps> = ({ visible, title, description, onRequestPermission, onClose }) => (
-  <Modal visible={visible} transparent={true} animationType="slide">
-    <View style={styles.modalOverlay}>
-      <View style={styles.modalContainer}>
-        <Text style={styles.modalTitle}>{title}</Text>
-        <Text style={styles.modalDescription}>{description}</Text>
-        <TouchableOpacity style={styles.modalButton} onPress={onRequestPermission}>
-          <Text style={styles.modalButtonText}>Allow</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.modalButton} onPress={onClose}>
-          <Text style={styles.modalButtonText}>Cancel</Text>
-        </TouchableOpacity>
+const PermissionModal: React.FC<PermissionModalProps> = ({ visible, title, description, onRequestPermission, onClose }) => {
+  const router = useRouter();
+
+  const goBack = () => {
+    router.back(); // Navigate back to previous page
+  };
+
+  return (
+    <Modal visible={visible} transparent={true} animationType="slide">
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalContainer}>
+          <Text style={styles.modalTitle}>{title}</Text>
+          <Text style={styles.modalDescription}>{description}</Text>
+          <TouchableOpacity style={styles.modalButton} onPress={onRequestPermission}>
+            <Text style={styles.modalButtonText}>Allow</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.modalButton} onPress={onClose}>
+            <Text style={styles.modalButtonText}>Cancel</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.modalButton} onPress={goBack}>
+            <Text style={styles.modalButtonText}>Go Back</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
-  </Modal>
-);
+    </Modal>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -96,11 +105,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#f0f0f0",
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
   },
   modalOverlay: {
     flex: 1,
@@ -130,7 +134,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
     marginVertical: 5,
-    width: '80%',
+    width: "80%",
     alignItems: "center",
   },
   modalButtonText: {

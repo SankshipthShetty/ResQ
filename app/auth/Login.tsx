@@ -37,32 +37,35 @@ const LoginScreen = ({ navigation }: any) => {
           await AsyncStorage.setItem('isLoggedIn', 'true');
           await AsyncStorage.setItem('FirstName', userData.FirstName);
           await AsyncStorage.setItem('LastName', userData.LastName);
+          await AsyncStorage.setItem('UserId', user.uid);
           navigateToRoleBasedScreen(userData.Role);
         } else {
           setError('User role not found.');
         }
       }
       else if (userDocRT.exists()) {
-        const userData = userDocRT.data();
+        const ResData = userDocRT.data();
 
         // Check if the role field exists in the user data
-        if (userData && userData.Role) {
+        if (ResData && ResData.Role) {
           await AsyncStorage.setItem('isLoggedIn', 'true');
-          await AsyncStorage.setItem('FirstName', userData.TeamName);
-          navigateToRoleBasedScreen(userData.Role);
+          await AsyncStorage.setItem('FirstName', ResData.TeamName);
+          await AsyncStorage.setItem('RescueId', user.uid);
+          navigateToRoleBasedScreen(ResData.Role);
         } else {
           setError('User role not found.');
         }
       }
       else if (userDocMB.exists()) {
-        const userData = userDocMB.data();
+        const MidData = userDocMB.data();
 
         // Check if the role field exists in the user data
-        if (userData && userData.Role) {
+        if (MidData && MidData.Role) {
           await AsyncStorage.setItem('isLoggedIn', 'true');
-          await AsyncStorage.setItem('FirstName', userData.FirstName);
-          await AsyncStorage.setItem('LastName', userData.LastName);
-          navigateToRoleBasedScreen(userData.Role);
+          await AsyncStorage.setItem('FirstName', MidData.FirstName);
+          await AsyncStorage.setItem('LastName', MidData.LastName);
+          await AsyncStorage.setItem('MiddleId', user.uid);
+          navigateToRoleBasedScreen(MidData.Role);
         } else {
           setError('User role not found.');
         }
@@ -85,7 +88,7 @@ const LoginScreen = ({ navigation }: any) => {
         router.push('../RescueTeams/RT1');
         break;
       case 'MiddleBody':
-        router.push('../User/Userpage1');
+        router.push('../User/MB1');
         break;
       default:
         setError('Invalid role.');
