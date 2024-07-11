@@ -42,7 +42,7 @@ const RealTimeChecker = () => {
           NAME: docData.name,
           PHONE: docData.phoneNumber,
           dutystatus: docData.onduty,
-          reqstatus: docData.requirements,
+          reqstatus: docData.requirementstatus,
           timestamp: formattedTimestamp,
         } as TestData;
       });

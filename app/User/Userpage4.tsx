@@ -18,7 +18,7 @@ export default function Userpage4() {
   const [loading, setLoading] = useState(false);
   const [locationLoading, setLocationLoading] = useState(false);
   const [onduty, setOnduty] = useState('None');
-  const [requirements, setRequirements] = useState('Not uploaded');
+  const [requirementstatus, setRequirements] = useState(false);
 
   const router = useRouter();
 
@@ -32,7 +32,7 @@ export default function Userpage4() {
         phoneNumber,
         imageUrl: decodedImageUrl,
         onduty,
-        requirements,
+        requirementstatus,
         timestamp: new Date() 
       });
       Alert.alert(
