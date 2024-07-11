@@ -50,9 +50,14 @@ import {
           <Text style={styles.text}>Hi, {fname} 👋</Text>
         </View>
         <TouchableOpacity onPress={handleSignOut} style={styles.signOutButton}>
+       
           <Text style={styles.signOutText}>Sign Out</Text>
         </TouchableOpacity>
+        <TouchableOpacity style={styles.signOutButton} onPress={() => router.push("./MB2")}  >
+        <Text style={styles.signOutText} > Donate</Text>
+        </TouchableOpacity>
         <View>
+          
           <Text style={styles.resq}>ResQ</Text>
         </View>
       </View>
@@ -101,6 +106,7 @@ import {
       color: "#FFFFFF",
       fontSize: 18,
       fontWeight: "bold",
+      
     },
     headerContainer: {
       flexDirection: 'row',

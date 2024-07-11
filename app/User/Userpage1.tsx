@@ -73,7 +73,7 @@ export default function App() {
         <Text style={styles.boxText}>Disaster in your area</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.box} onPress={() => router.push("./Userpage6")} >
+      <TouchableOpacity style={styles.box} onPress={() => router.push("./Userpage7")} >
         <Image
           style={styles.post5Icon}
           source={require("../../assets/images/Donation.png")}
@@ -82,6 +82,7 @@ export default function App() {
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => router.push("../Offline/Offlinep1")} style={styles.box}>
+      
         <Image
           style={styles.post5Icon}
           source={require("../../assets/images/history.png")}
