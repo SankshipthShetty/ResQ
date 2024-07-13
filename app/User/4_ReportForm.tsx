@@ -41,7 +41,7 @@ export default function Userpage4() {
         [
           {
             text: "OK",
-            onPress: () => router.push('./Userpage1'),
+            onPress: () => router.push('./1_HomePage'),
           },
         ]
       );

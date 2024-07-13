@@ -1,10 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Alert, ScrollView, Image } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Alert, ScrollView } from 'react-native';
 import * as Location from 'expo-location';
 import Slider from '@react-native-community/slider';
 import axios from 'axios';
-import remove from '../../assets/images/remove.png';
-import check from '../../assets/images/check.png';
+import { firestore } from '@/constants/firebaseConfig';
+import { doc, getDoc } from 'firebase/firestore';
+import { useRouter, useGlobalSearchParams } from 'expo-router';
+
+interface Requirement {
+  type: string;
+  quantityNeeded: number;
+}
 
 interface FruitDetail {
   fruit: string;
@@ -12,9 +18,8 @@ interface FruitDetail {
   donationMessage: string;
   canDonate: boolean;
   sliderValue: number;
+  quantityNeeded: number;
 }
-
-const requirements: string[] = ['Apple', 'Banana', 'Grapes', 'Jackfruit', 'Lemon', 'Litchi', 'Mango', 'Papaya'];
 
 const fruitPayloads: Record<string, object> = {
   Apple: { Fruit_Apple: true, Fruit_Banana: false, Fruit_Grapes: false, Fruit_Jackfruit: false, Fruit_Lemon: false, Fruit_Litchi: false, Fruit_Mango: false, Fruit_Papaya: false, Fruit_Plum: false, Fruit_Tomato: false },
@@ -33,6 +38,9 @@ export default function App() {
   const [temperature, setTemperature] = useState<number | null>(null);
   const [humidity, setHumidity] = useState<number | null>(null);
   const [fruitDetails, setFruitDetails] = useState<FruitDetail[]>([]);
+  const [requirements, setRequirements] = useState<Requirement[]>([]);
+  const router = useRouter();
+  const { param } = useGlobalSearchParams();
 
   useEffect(() => {
     const getLocation = async () => {
@@ -53,6 +61,26 @@ export default function App() {
       }
     };
     getLocation();
+
+    // Fetch the requirements from Firestore
+    const fetchRequirements = async () => {
+      const disasterDocRef = doc(firestore, 'DisasterReports', param as string);
+      try {
+        const disasterDoc = await getDoc(disasterDocRef);
+        if (disasterDoc.exists()) {
+          const disasterData = disasterDoc.data();
+          const fetchedRequirements = disasterData?.requirements || [];
+          const normalizedRequirements = fetchedRequirements.map((req: any) => ({
+            ...req,
+            quantityNeeded: Number(req.quantityNeeded) || 0, // Ensure quantityNeeded is a number
+          }));
+          setRequirements(normalizedRequirements);
+        }
+      } catch (error) {
+        console.error('Error fetching requirements:', error);
+      }
+    };
+    fetchRequirements();
   }, []);
 
   const fetchWeather = async (latitude: number, longitude: number) => {
@@ -102,21 +130,30 @@ export default function App() {
         },
         body: JSON.stringify(data),
       })
-        .then(response => response.json())
-        .then(data => {
-          const canDonate = data.predicted_days_until_spoilage > 5; // calculated distance to be put here
-          setFruitDetails(prevDetails => [
-            ...prevDetails,
-            {
-              fruit: item,
-              predictedDays: Math.round(data.predicted_days_until_spoilage),
-              donationMessage: canDonate
-                ? `You are allowed to donate this item. `
-                : 'You are not allowed to donate this item. ',
-              canDonate,
-              sliderValue: 0,
-            },
-          ]);
+        .then(response => response.text()) // Get response as text
+        .then(responseText => {
+          try {
+            const data = JSON.parse(responseText); // Try parsing the text to JSON
+            const canDonate = data.predicted_days_until_spoilage > 5; // calculated distance to be put here
+            const requirement = requirements.find(req => req.type === item);
+            const quantityNeeded = requirement ? requirement.quantityNeeded : 0;
+            setFruitDetails(prevDetails => [
+              ...prevDetails,
+              {
+                fruit: item,
+                predictedDays: Math.round(data.predicted_days_until_spoilage),
+                donationMessage: canDonate
+                  ? `You are allowed to donate this item. `
+                  : 'You are not allowed to donate this item. ',
+                canDonate,
+                sliderValue: 0,
+                quantityNeeded,
+              },
+            ]);
+          } catch (error) {
+            console.error('Error parsing JSON:', error);
+            Alert.alert('Error', 'Invalid response from the server');
+          }
         })
         .catch(error => {
           Alert.alert('Error', 'Something went wrong!');
@@ -139,138 +176,126 @@ export default function App() {
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.scrollViewContainer}>
-      <View style={styles.container}>
-        <Text style={styles.header}>Requirements</Text>
-        <View style={styles.requirementsContainer}>
-          {requirements.map((item, index) => {
-            const detail = fruitDetails.find(detail => detail.fruit === item);
-            const backgroundColor = detail ? (detail.canDonate ? '#66ee20' : '#f70925') : '#f7f0ee';
-            return (
-              <TouchableOpacity
-                key={index}
-                style={[styles.requirementItem, styles.button, { backgroundColor }]}
-                onPress={() => handleRequirementClick(item)}
-              >
-                <Text style={styles.requirementText}>{item}</Text>
-              </TouchableOpacity>
-            );
-          })}
-        </View>
-
-        <View style={styles.donationContainer}>
+    <ScrollView contentContainerStyle={styles.container}>
+      <Text style={styles.paragraph}>{text}</Text>
+      <Text style={styles.paragraph}>Temperature: {temperature}°C</Text>
+      <Text style={styles.paragraph}>Humidity: {humidity}%</Text>
+      <Text style={styles.heading}>Select a Fruit:</Text>
+      <View style={styles.requirementsContainer}>
+        {requirements.map((item, index) => (
+          <TouchableOpacity
+            key={index}
+            style={[
+              styles.button,
+              fruitDetails.find(detail => detail.fruit === item.type) ? styles.buttonSelected : null,
+            ]}
+            onPress={() => handleRequirementClick(item.type)}
+          >
+            <Text style={styles.buttonText}>{item.type}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+      {fruitDetails.length > 0 && (
+        <View style={styles.detailsContainer}>
           {fruitDetails.map((detail, index) => (
-            <View key={index} style={styles.donationItem}>
-              <View style={styles.donationHeader}>
-                <Text style={styles.itemTitle}>{detail.fruit}</Text>
-              </View>
-              <Text>{detail.donationMessage} {detail.canDonate ? <Image source={check} style={styles.image} /> : <Image source={remove} style={styles.image} />}</Text>
-              {detail.canDonate ? (
-                <View>
+            <View key={index} style={styles.detail}>
+              <Text style={styles.detailHeading}>{detail.fruit}</Text>
+              <Text style={styles.paragraph}>Days until spoilage: {detail.predictedDays}</Text>
+              <Text style={styles.paragraph}>{detail.donationMessage}</Text>
+              {detail.canDonate && (
+                <>
+                  <Text style={styles.sliderLabel}>Quantity to donate:</Text>
                   <Slider
                     style={styles.slider}
                     minimumValue={0}
-                    maximumValue={30}
+                    maximumValue={detail.quantityNeeded}
                     step={1}
                     value={detail.sliderValue}
-                    thumbTintColor="#10f709"
-                    minimumTrackTintColor="#10f709"
                     onValueChange={(value) => handleSliderChange(value, detail.fruit)}
                   />
-                  <Text>Selected quantity: {detail.sliderValue} L</Text>
-                  <TouchableOpacity style={styles.confirmButton}>
-                    <Text style={styles.buttonText}>Confirm</Text>
+                  <Text style={styles.sliderValue}>Selected quantity: {detail.sliderValue}</Text>
+                  <TouchableOpacity style={styles.donateButton}>
+                    <Text style={styles.buttonText}>Confirm Donation</Text>
                   </TouchableOpacity>
-                </View>
-              ) : null}
+                </>
+              )}
             </View>
           ))}
         </View>
-      </View>
+      )}
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  scrollViewContainer: {
-    flexGrow: 1,
-  },
   container: {
-    flex: 1,
-    backgroundColor: '#fff',
+    flexGrow: 1,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
   },
-  header: {
+  paragraph: {
+    fontSize: 16,
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  heading: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginVertical: 20,
   },
   requirementsContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
-    marginBottom: 20,
-  },
-  requirementItem: {
-    padding: 10,
-    margin: 5,
-    borderRadius: 20,
-    backgroundColor: '#d3d3d3',
-    borderWidth: 1,
-    borderColor: '#a9a9a9',
   },
   button: {
-    backgroundColor: '#f3f3f3',
-    borderColor: '#a9a9a9',
-    borderWidth: 1,
-    borderRadius: 20,
-    padding: 12,
+    backgroundColor: '#1E90FF',
+    padding: 15,
+    borderRadius: 10,
     margin: 5,
   },
-  requirementText: {
-    color: '#000',
-    fontWeight: 'bold',
-  },
-  donationContainer: {
-    width: '100%',
-  },
-  donationItem: {
-    marginBottom: 20,
-    padding: 10,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#ccc',
-  },
-  donationHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  itemTitle: {
-    fontSize: 18,
-    paddingBottom: 7,
-    fontWeight: 'bold',
-  },
-  image: {
-    width: 15,
-    height: 15,
-  },
-  confirmButton: {
-    backgroundColor: 'orange',
-    padding: 10,
-    borderRadius: 5,
-    alignItems: 'center',
-    marginTop: 10,
+  buttonSelected: {
+    backgroundColor: '#32CD32',
   },
   buttonText: {
     color: '#fff',
+    fontSize: 18,
     fontWeight: 'bold',
+  },
+  detailsContainer: {
+    marginTop: 30,
+    width: '100%',
+  },
+  detail: {
+    backgroundColor: '#f8f8f8',
+    padding: 20,
+    borderRadius: 10,
+    marginVertical: 10,
+    alignItems: 'center',
+  },
+  detailHeading: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  sliderLabel: {
+    fontSize: 16,
+    marginTop: 10,
+    marginBottom: 5,
   },
   slider: {
     width: '100%',
     height: 40,
-    marginBottom: 5,
+  },
+  sliderValue: {
+    fontSize: 16,
+    marginTop: 10,
+  },
+  donateButton: {
+    backgroundColor: '#FF6347',
+    padding: 10,
+    borderRadius: 10,
+    marginTop: 20,
   },
 });

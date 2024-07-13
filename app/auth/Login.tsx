@@ -65,6 +65,8 @@ const LoginScreen = ({ navigation }: any) => {
         // Check if the role field exists in the user data
         if (MidData && MidData.Role) {
           await AsyncStorage.setItem('isLoggedIn', 'true');
+          // await AsyncStorage.setItem('FirstName', MidData.FirstName);
+          // await AsyncStorage.setItem('LastName', MidData.LastName);
           await AsyncStorage.setItem('MiddleId', user.uid);
           navigateToRoleBasedScreen(MidData.Role);
         } else {
@@ -83,13 +85,13 @@ const LoginScreen = ({ navigation }: any) => {
   const navigateToRoleBasedScreen = (Role: string) => {
     switch (Role) {
       case 'User':
-        router.push('../User/Userpage1');
+        router.push('../User/1_HomePage');
         break;
       case 'RescueTeam':
-        router.push('../RescueTeams/RT1');
+        router.push('../RescueTeams/0_HomePage');
         break;
       case 'MiddleBody':
-        router.push('../User/MB1');
+        router.push('../MiddleBody/0_HomePage');
         break;
       default:
         setError('Invalid role.');
