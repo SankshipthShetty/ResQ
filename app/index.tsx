@@ -13,7 +13,7 @@ const App = () => {
         const isLoggedIn = await AsyncStorage.getItem('isLoggedIn');
         if (isLoggedIn === 'true') {
           // Redirect to user's home page
-          router.replace('../User/Userpage1'); // Adjust the path according to your structure
+          router.replace('../User/1_HomePage'); // Adjust the path according to your structure
         } else {
           // Redirect to onboarding or login screen
           router.replace('./onboarding/screen1'); // Adjust the path according to your structure

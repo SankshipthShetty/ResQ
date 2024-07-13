@@ -24,11 +24,13 @@ const LoginScreen = ({ navigation }: any) => {
       const userCred = await signInWithEmailAndPassword(auth, email, password);
       const user = userCred.user;
       
+     
       // Retrieve user data from Firestore using uid
       const userDoc = await getDoc(doc(firestore, 'UserData', user.uid));
       const userDocMB = await getDoc(doc(firestore, 'MiddleBodyData', user.uid));
       const userDocRT = await getDoc(doc(firestore, 'RescueTeamData', user.uid));
     
+        console.log(userDocMB.exists())
       if (userDoc.exists()) {
         const userData = userDoc.data();
 
@@ -59,6 +61,7 @@ const LoginScreen = ({ navigation }: any) => {
       else if (userDocMB.exists()) {
         const MidData = userDocMB.data();
 
+        
         // Check if the role field exists in the user data
         if (MidData && MidData.Role) {
           await AsyncStorage.setItem('isLoggedIn', 'true');

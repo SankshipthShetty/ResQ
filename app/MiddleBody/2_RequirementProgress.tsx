@@ -114,7 +114,7 @@ const MB2: React.FC = () => {
       <View style={styles.card2}>
         <Text style={{ textAlign: 'center', fontWeight: 'bold', marginTop: 2, fontSize: 20 }}>Requirements Satisfied:</Text>
         <Text style={{ textAlign: 'center', fontWeight: 'bold', marginTop: 10, fontSize: 22 }}>{`${collectedRatio}`}</Text>
-        <TouchableOpacity style={styles.button}  onPress={() => router.push('./MB3')}>
+        <TouchableOpacity style={styles.button}  onPress={() => router.push('./3_ViewDonors')}>
           <Text style={{ color: '#fff', fontWeight: 'bold',fontSize:20, textAlign:'center' }}>View Donations</Text>
         </TouchableOpacity>
       </View>

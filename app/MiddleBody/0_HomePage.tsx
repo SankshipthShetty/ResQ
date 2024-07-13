@@ -78,7 +78,7 @@ import {
           <Text style={styles.boxText}>Manage Donations</Text>
         </TouchableOpacity>
   
-        <TouchableOpacity onPress={() => router.push("../Offline/Offlinep1")} style={styles.box}>
+        <TouchableOpacity onPress={() => router.push("../MiddleBody/6_UploadBloodDonations")} style={styles.box}>
           <Image
             style={styles.post5Icon}
             source={require("../../assets/images/blood.png")}

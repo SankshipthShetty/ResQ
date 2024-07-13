@@ -104,7 +104,7 @@ const MiddleBody = () => {
   const handleNavigate = () => {
     if (selectedReport) {
       router.push({
-        pathname: './MB2',
+        pathname: './2_RequirementProgress',
         params: { report: JSON.stringify(selectedReport) },
       });
       handleCloseModal();
