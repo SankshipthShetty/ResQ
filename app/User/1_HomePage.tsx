@@ -57,7 +57,7 @@ export default function App() {
 
         <Text style={styles.text}>Hi, {fname} {lname} 👋</Text>
       </View>
-      <TouchableOpacity onPress={() => router.push("./Userpage2")} style={styles.box}>
+      <TouchableOpacity onPress={() => router.push("./2_CamPermission")} style={styles.box}>
         <Image
           style={styles.post5Icon}
           source={require("../../assets/images/alert.png")}
@@ -65,7 +65,7 @@ export default function App() {
         <Text style={styles.boxText}>Report a Disaster</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => router.push("./Userpage5")} style={styles.box}>
+      <TouchableOpacity onPress={() => router.push("./5_DisasterReports")} style={styles.box}>
         <Image
           style={styles.post5Icon}
           source={require("../../assets/images/map.png")}
@@ -73,7 +73,7 @@ export default function App() {
         <Text style={styles.boxText}>Disaster in your area</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.box} onPress={() => router.push("./Userpage6")} >
+      <TouchableOpacity style={styles.box} onPress={() => router.push("./7_DonationReports")} >
         <Image
           style={styles.post5Icon}
           source={require("../../assets/images/Donation.png")}
@@ -84,9 +84,9 @@ export default function App() {
       <TouchableOpacity onPress={() => router.push("../Offline/Offlinep1")} style={styles.box}>
         <Image
           style={styles.post5Icon}
-          source={require("../../assets/images/history.png")}
+          source={require("../../assets/images/blood-test.png")}
         />
-        <Text style={styles.boxText}>Your History</Text>
+        <Text style={styles.boxText}>Blood bank</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={handleSignOut} style={styles.signOutButton}>
         <Text style={styles.signOutText}>Sign Out</Text>

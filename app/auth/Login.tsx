@@ -82,10 +82,10 @@ const LoginScreen = ({ navigation }: any) => {
   const navigateToRoleBasedScreen = (Role: string) => {
     switch (Role) {
       case 'User':
-        router.push('../User/Userpage1');
+        router.push('../User/1_HomePage');
         break;
       case 'RescueTeam':
-        router.push('../RescueTeams/RT1');
+        router.push('../RescueTeams/0_HomePage');
         break;
       case 'MiddleBody':
         router.push('../User/MB1');
