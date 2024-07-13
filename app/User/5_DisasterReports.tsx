@@ -65,8 +65,10 @@ const RealTimeChecker = () => {
     setSelectedReport(null);
   };
 
-  const handleNavigate = () => {
-    router.push('./6_ShelfLife'); // Change './NextPage' to the actual path of your next page
+  const handleNavigate = (selectedReport:TestData) => {
+    const parameter=selectedReport.id;
+    // console.log(parameter);
+    router.push(`./6_ShelfLife?param=${parameter}`); // Change './NextPage' to the actual path of your next page
     handleCloseModal();
   };
 
@@ -145,7 +147,7 @@ const RealTimeChecker = () => {
               <Text style={styles.modalText}>Requirements: {selectedReport.reqstatus ? 'Uploaded' : 'Not uploaded'}</Text>
               <Text style={styles.modalText}>Time: {selectedReport.timestamp}</Text>
               {selectedReport.reqstatus ? (
-                <TouchableOpacity style={styles.navigateButton} onPress={handleNavigate}>
+                <TouchableOpacity style={styles.navigateButton} onPress={()=>handleNavigate(selectedReport)}>
                   <Text style={styles.buttonText}>Go to Requirements</Text>
                 </TouchableOpacity>
               ) : (
