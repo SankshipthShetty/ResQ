@@ -109,7 +109,7 @@ export default function MB2Page() {
             setEmail('');
             setDescription('');
             setUploading(false);
-            router.push('./MB1');
+            router.push('./0_HomePage');
           }
         );
       } else {

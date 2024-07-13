@@ -45,6 +45,7 @@ export default function App() {
   const { param } = useGlobalSearchParams();
 
   useEffect(() => {
+    
     const getLocation = async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
@@ -63,7 +64,7 @@ export default function App() {
       }
     };
     getLocation();
-
+ 
     // Fetch the requirements from Firestore
     const fetchRequirements = async () => {
       const disasterDocRef = doc(firestore, 'DisasterReports', param as string);

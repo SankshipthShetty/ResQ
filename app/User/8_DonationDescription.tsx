@@ -71,7 +71,7 @@ const UserPage8 = () => {
         }}
       >
         <IconButton
-          onPress={() => router.replace('./Userpage7')}
+          onPress={() => router.replace('./7_DonationReports')}
           iosName={'arrow.left.circle'}
           androidName="arrow-back"
         />

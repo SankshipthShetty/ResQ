@@ -70,7 +70,7 @@ import {
           <Text style={styles.boxText}>Disasters in your area</Text>
         </TouchableOpacity>
   
-        <TouchableOpacity style={styles.box} onPress={() => router.push("./6_ShelfLife")} >
+        <TouchableOpacity style={styles.box} onPress={() => router.push("./4_GeneralDonations")} >
           <Image
             style={styles.post5Icon}
             source={require("../../assets/images/Donation.png")}
