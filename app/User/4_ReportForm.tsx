@@ -1,3 +1,5 @@
+//report form
+
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, Image, Alert } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -41,7 +43,7 @@ export default function Userpage4() {
         [
           {
             text: "OK",
-            onPress: () => router.push('./Userpage1'),
+            onPress: () => router.push('./1_HomePage'),
           },
         ]
       );

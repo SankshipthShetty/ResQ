@@ -8,7 +8,7 @@ import React from "react";
 
 const CONTAINER_PADDING = 5;
 const CONTAINER_WIDTH = 40;
-const ICON_SIZE = 30;
+const ICON_SIZE = 25;
 
 interface IconButtonProps {
   iosName: SFSymbol;

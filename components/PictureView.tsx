@@ -48,7 +48,7 @@ export default function PictureView({ picture, setPicture }: PictureViewProps) {
               [
                 {
                   text: "OK",
-                  onPress: () => router.push(`./Userpage4?imageUrl=${encodedUrl}`)
+                  onPress: () => router.push(`./4_ReportForm?imageUrl=${encodedUrl}`)
                 }
               ]
             );

@@ -1,3 +1,5 @@
+//handling permissions
+
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Modal, TouchableOpacity, Alert } from "react-native";
 import { useCameraPermissions } from "expo-camera";
@@ -35,7 +37,7 @@ export default function Userpage2() {
     }
     setShowMediaLibraryModal(false);
     await AsyncStorage.setItem("hasOpened", "true");
-    router.push("./Userpage3"); // Change the route to Userpage3
+    router.push("./3_CamView"); // Change the route to Userpage3
     return true;
   };
 

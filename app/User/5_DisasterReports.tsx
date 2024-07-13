@@ -1,7 +1,9 @@
+//Disasters in ur area
+
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, Pressable, ActivityIndicator, Modal, TouchableOpacity, Linking, Alert } from 'react-native';
 import { firestore } from '../../constants/firebaseConfig';
-import { collection, onSnapshot, updateDoc, doc, DocumentData } from 'firebase/firestore';
+import { collection, onSnapshot, DocumentData } from 'firebase/firestore';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import moment from 'moment';
 import { useRouter } from 'expo-router';
@@ -10,12 +12,12 @@ import IconButton from '@/components/IconButton';
 interface TestData {
   id: string;
   imageURL: string;
-  location: string; // Adjusted to match Firestore field name
-  locationName: string; // Adjusted to match Firestore field name
-  name: string; // Adjusted to match Firestore field name
-  phoneNumber: string; // Adjusted to match Firestore field name
-  onduty: string; // Adjusted to match Firestore field name
-  requirements: boolean; // Adjusted to match Firestore field name
+  lOC: string;
+  NAME: string;
+  PHONE: string;
+  locname: string;
+  dutystatus: string;
+  reqstatus: boolean; // Assuming reqstatus is a boolean
   timestamp: string;
 }
 
@@ -37,12 +39,12 @@ const RealTimeChecker = () => {
         return {
           id: doc.id,
           imageURL: docData.imageUrl,
-          location: docData.location,
-          locationName: docData.locationName,
-          name: docData.name,
-          phoneNumber: docData.phoneNumber,
-          onduty: docData.onduty,
-          requirements: docData.requirements,
+          lOC: docData.location,
+          locname: docData.locationName,
+          NAME: docData.name,
+          PHONE: docData.phoneNumber,
+          dutystatus: docData.onduty,
+          reqstatus: docData.requirements,
           timestamp: formattedTimestamp,
         } as TestData;
       });
@@ -65,7 +67,7 @@ const RealTimeChecker = () => {
   };
 
   const handleNavigate = () => {
-    router.push('./Userpage6'); // Change './Userpage6' to the actual path of your next page
+    router.push('./6_ShelfLife'); // Change './NextPage' to the actual path of your next page
     handleCloseModal();
   };
 
@@ -81,17 +83,8 @@ const RealTimeChecker = () => {
     }
   };
 
-  const handleMarkRequirement = async (report: TestData) => {
-    try {
-      // Perform update operation
-      const reportRef = doc(firestore, 'DisasterReports', report.id);
-      await updateDoc(reportRef, {
-        requirements: true, // Update requirements to true
-      });
-    } catch (error) {
-      console.error('Error marking requirement:', error);
-    }
-  };
+  
+  
 
   if (loading) {
     return (
@@ -117,34 +110,20 @@ const RealTimeChecker = () => {
         }}
       >
         <IconButton
-          onPress={() => router.replace('../auth/Login')} // This will navigate back to the previous screen
+          onPress={() => router.replace('./1_HomePage')} // This will navigate back to the previous screen
           iosName={'arrow.left.circle'}
           androidName="arrow-back"
         />
       </View>
       <Text style={styles.title}>Disasters in your area</Text>
-      {data.map((report, index) => (
-        <Pressable key={index} style={styles.card} onPress={() => handlePress(report)}>
-          <Image source={{ uri: report.imageURL }} style={styles.image} />
+      {data.map((user, index) => (
+        <Pressable key={index} style={styles.card} onPress={() => handlePress(user)}>
+          <Image source={{ uri: user.imageURL }} style={styles.image} />
           <View style={styles.textContainer}>
-            <Text style={styles.location}>{report.locationName}</Text>
-            <Text style={styles.name}>{report.timestamp}</Text>
-            <Text style={styles.phone}>On-duty: {report.onduty}</Text>
-            <Text style={styles.phone}>Requirements: {report.requirements ? 'Uploaded' : 'Not uploaded'}</Text>
-            <Pressable
-              style={[
-                styles.statusButton,
-                report.requirements ? styles.greenBackground : styles.redBackground,
-                //top
-
-              ]}
-              onPress={() => handleMarkRequirement(report)}
-              disabled={report.requirements} // Disable button when requirements are already uploaded
-            >
-              {/* <Text style={styles.buttonText}>
-                {report.requirements ? 'Uploaded' : 'Mark as Uploaded'}
-              </Text> */}
-            </Pressable>
+            <Text style={styles.location}>{user.locname}</Text>
+            <Text style={styles.name}>{user.timestamp}</Text>
+            <Text style={styles.phone}>On-duty: {user.dutystatus}</Text>
+            <Text style={styles.phone}>Requirements: {user.reqstatus ? 'Uploaded' : 'Not uploaded'}</Text>
           </View>
         </Pressable>
       ))}
@@ -160,13 +139,13 @@ const RealTimeChecker = () => {
             <View style={styles.modalContainer}>
               <Text style={styles.modalTitle}>Disaster Details</Text>
               <Image source={{ uri: selectedReport.imageURL }} style={styles.modalImage} />
-              <Text style={styles.modalText}>Location: <Text style={styles.link} onPress={() => handleOpenInMaps(selectedReport.location)}>Open in Maps</Text></Text>
-              <Text style={styles.modalText}>Name: {selectedReport.name}</Text>
-              <Text style={styles.modalText}>Phone: {selectedReport.phoneNumber}</Text>
-              <Text style={styles.modalText}>On-duty: {selectedReport.onduty}</Text>
-              <Text style={styles.modalText}>Requirements: {selectedReport.requirements ? 'Uploaded' : 'Not uploaded'}</Text>
+              <Text style={styles.modalText}>Location: <Text style={styles.link} onPress={() => handleOpenInMaps(selectedReport.lOC)}>Open in Maps</Text></Text>
+              <Text style={styles.modalText}>Name: {selectedReport.NAME}</Text>
+              <Text style={styles.modalText}>Phone: {selectedReport.PHONE}</Text>
+              <Text style={styles.modalText}>On-duty: {selectedReport.dutystatus}</Text>
+              <Text style={styles.modalText}>Requirements: {selectedReport.reqstatus ? 'Uploaded' : 'Not uploaded'}</Text>
               <Text style={styles.modalText}>Time: {selectedReport.timestamp}</Text>
-              {selectedReport.requirements ? (
+              {selectedReport.reqstatus ? (
                 <TouchableOpacity style={styles.navigateButton} onPress={handleNavigate}>
                   <Text style={styles.buttonText}>Go to Requirements</Text>
                 </TouchableOpacity>
@@ -217,8 +196,6 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     flex: 1,
-    top:10,
-    left:-15
   },
   location: {
     fontSize: 16,
@@ -272,39 +249,25 @@ const styles = StyleSheet.create({
   },
   noRequirementsText: {
     fontSize: 16,
+    color: 'red',
     marginBottom: 10,
-    fontStyle: 'italic',
   },
   navigateButton: {
-    backgroundColor: '#A53821',
+    marginTop: 20,
     padding: 10,
-    borderRadius: 5,
-    marginTop: 10,
+    backgroundColor: '#eb8d71',
+    borderRadius: 30,
   },
   closeButton: {
-    backgroundColor: '#A53821',
+    marginTop: 20,
     padding: 10,
-    borderRadius: 5,
-    marginTop: 10,
+    backgroundColor: '#D9534F',
+    borderRadius: 10,
   },
   buttonText: {
-    color: 'white',
-    textAlign: 'center',
+    color: '#FFF',
+    fontSize: 16,
     fontWeight: 'bold',
-  },
-  statusButton: {
-    padding: 10,
-    borderRadius: 50,
-    marginTop: 10,
-    width: 10,
-    left:200,
-    top:-60
-  },
-  greenBackground: {
-    backgroundColor: 'green',
-  },
-  redBackground: {
-    backgroundColor: 'red',
   },
 });
 

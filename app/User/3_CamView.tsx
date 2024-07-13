@@ -1,3 +1,5 @@
+//camera view
+
 import * as React from "react";
 import { SafeAreaView, View, TouchableOpacity, Text, StyleSheet } from "react-native";
 import { CameraMode, CameraView, FlashMode } from "expo-camera";

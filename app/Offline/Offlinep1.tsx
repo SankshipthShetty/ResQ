@@ -5,9 +5,6 @@
 import { View, Text, Image, StyleSheet, Pressable } from "react-native";
 import React from "react";
 import {useRouter} from 'expo-router';
-
-
-
 export default function App() {
   const router = useRouter();
   return (

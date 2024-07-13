@@ -1,11 +1,25 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, Pressable, ActivityIndicator, Modal, TouchableOpacity, Linking, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  Pressable,
+  ActivityIndicator,
+  Modal,
+  Linking,
+  Alert,
+} from 'react-native';
 import { firestore } from '../../constants/firebaseConfig';
 import { collection, onSnapshot, DocumentData } from 'firebase/firestore';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import moment from 'moment';
 import { useRouter } from 'expo-router';
 import IconButton from '@/components/IconButton';
+import { signOut } from 'firebase/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { auth } from '@/constants/firebaseConfig';
 
 interface TestData {
   id: string;
@@ -19,12 +33,24 @@ interface TestData {
   timestamp: string;
 }
 
-const RealTimeChecker = () => {
+const MiddleBody = () => {
+  const [name, setName] = useState('');
   const [data, setData] = useState<TestData[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedReport, setSelectedReport] = useState<TestData | null>(null);
   const router = useRouter();
+
+  useEffect(() => {
+    const fetchName = async () => {
+      const name = await AsyncStorage.getItem('OrgName');
+      if (name) {
+        setName(name);
+      }
+    };
+
+    fetchName();
+  }, []);
 
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(firestore, 'DisasterReports'), (snapshot) => {
@@ -44,6 +70,7 @@ const RealTimeChecker = () => {
           dutystatus: docData.onduty,
           reqstatus: docData.requirements,
           timestamp: formattedTimestamp,
+          requirements: docData.requirements || [],
         } as TestData;
       });
       setData(newData);
@@ -53,6 +80,16 @@ const RealTimeChecker = () => {
     // Clean up the subscription
     return () => unsubscribe();
   }, []);
+
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+      await AsyncStorage.removeItem('isLoggedIn');
+      router.replace('../auth/Login'); // Adjust the path to your login page
+    } catch (error) {
+      console.error('Error signing out: ', error);
+    }
+  };
 
   const handlePress = (report: TestData) => {
     setSelectedReport(report);
@@ -65,8 +102,13 @@ const RealTimeChecker = () => {
   };
 
   const handleNavigate = () => {
-    router.push('./Userpage6'); // Change './NextPage' to the actual path of your next page
-    handleCloseModal();
+    if (selectedReport) {
+      router.push({
+        pathname: './MB2',
+        params: { report: JSON.stringify(selectedReport) },
+      });
+      handleCloseModal();
+    }
   };
 
   const handleOpenInMaps = (location: string) => {
@@ -80,9 +122,6 @@ const RealTimeChecker = () => {
       Alert.alert('Invalid location format');
     }
   };
-
-  
-  
 
   if (loading) {
     return (
@@ -98,22 +137,14 @@ const RealTimeChecker = () => {
       enableOnAndroid={true}
       extraScrollHeight={30}
     >
-      <View
-        style={{
-          position: 'absolute',
-          zIndex: 1,
-          paddingTop: 50,
-          left: 20,
-          top: -38,
-        }}
-      >
-        <IconButton
-          onPress={() => router.replace('./Userpage1')} // This will navigate back to the previous screen
-          iosName={'arrow.left.circle'}
-          androidName="arrow-back"
-        />
+      <View> 
+      {/*style={styles.headerContainer}> */}
+        {/* <Text style={styles.headerText}>Hello, {name} 👋</Text> */}
+        <TouchableOpacity onPress={handleSignOut} style={styles.signOutButton}>
+          <Text style={styles.signOutText}>Sign Out</Text>
+        </TouchableOpacity>
       </View>
-      <Text style={styles.title}>Disasters in your area</Text>
+      <Text style={styles.title}>Disasters in your Locality</Text>
       {data.map((user, index) => (
         <Pressable key={index} style={styles.card} onPress={() => handlePress(user)}>
           <Image source={{ uri: user.imageURL }} style={styles.image} />
@@ -137,19 +168,24 @@ const RealTimeChecker = () => {
             <View style={styles.modalContainer}>
               <Text style={styles.modalTitle}>Disaster Details</Text>
               <Image source={{ uri: selectedReport.imageURL }} style={styles.modalImage} />
-              <Text style={styles.modalText}>Location: <Text style={styles.link} onPress={() => handleOpenInMaps(selectedReport.lOC)}>Open in Maps</Text></Text>
+              <Text style={styles.modalText}>
+                Location:{' '}
+                <Text style={styles.link} onPress={() => handleOpenInMaps(selectedReport.lOC)}>
+                  Open in Maps
+                </Text>
+              </Text>
               <Text style={styles.modalText}>Name: {selectedReport.NAME}</Text>
               <Text style={styles.modalText}>Phone: {selectedReport.PHONE}</Text>
               <Text style={styles.modalText}>On-duty: {selectedReport.dutystatus}</Text>
-              <Text style={styles.modalText}>Requirements: {selectedReport.reqstatus ? 'Uploaded' : 'Not uploaded'}</Text>
+              <Text style={styles.modalText}>
+                Requirements: {selectedReport.reqstatus ? 'Uploaded' : 'Not uploaded'}
+              </Text>
               <Text style={styles.modalText}>Time: {selectedReport.timestamp}</Text>
               {selectedReport.reqstatus ? (
                 <TouchableOpacity style={styles.navigateButton} onPress={handleNavigate}>
-                  <Text style={styles.buttonText}>Go to Requirements</Text>
+                  <Text style={styles.buttonText}>See Details</Text>
                 </TouchableOpacity>
-              ) : (
-                <Text style={styles.noRequirementsText}>Requirements not uploaded</Text>
-              )}
+              ) : null}
               <TouchableOpacity style={styles.closeButton} onPress={handleCloseModal}>
                 <Text style={styles.buttonText}>Close</Text>
               </TouchableOpacity>
@@ -166,47 +202,60 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     padding: 20,
     backgroundColor: '#fff',
+  },
+  headerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
+    marginBottom: 20,
+  },
+  headerText: {
+    fontSize: 25,
+    fontWeight: 'bold',
+  },
+  signOutButton: {
+    backgroundColor: '#A53821',
+    padding: 10,
+    borderRadius: 5,
+  },
+  signOutText: {
+    color: '#fff',
+    fontWeight: 'bold',
   },
   title: {
-    fontSize: 20,
+    fontSize: 25,
     fontWeight: 'bold',
-    marginBottom: 25,
-    top: -5,
+    marginBottom: 10,
+    textAlign:'center',
   },
   card: {
     flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'black',
+    backgroundColor: '#f8f8f8',
+    padding: 15,
     borderRadius: 10,
-    padding: 10,
-    marginVertical: 10,
-    width: 361,
-    height: 120,
+    marginBottom: 10,
+    alignItems: 'center',
   },
   image: {
-    width: 90,
-    height: 90,
-    borderRadius: 5,
-    marginRight: 30,
-    marginLeft: 2,
+    width: 80,
+    height: 80,
+    borderRadius: 0,
+    marginRight: 10,
   },
   textContainer: {
     flex: 1,
   },
   location: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
-    textDecorationLine: 'underline',
   },
   name: {
-    fontSize: 14,
-    marginTop: 5,
+    fontSize: 16,
+    color: '#888',
   },
   phone: {
-    fontSize: 14,
-    marginTop: 5,
+    fontSize: 16,
+    color: '#888',
   },
   loadingContainer: {
     flex: 1,
@@ -220,53 +269,46 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContainer: {
-    width: '80%',
-    backgroundColor: 'white',
-    borderRadius: 10,
+    width: '90%',
+    backgroundColor: '#fff',
     padding: 20,
+    borderRadius: 10,
     alignItems: 'center',
   },
   modalTitle: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
   },
   modalImage: {
-    width: '100%',
+    width: 200,
     height: 200,
-    borderRadius: 10,
     marginBottom: 20,
   },
   modalText: {
-    fontSize: 16,
+    fontSize: 18,
     marginBottom: 10,
-  },
-  link: {
-    color: 'blue',
-    textDecorationLine: 'underline',
-  },
-  noRequirementsText: {
-    fontSize: 16,
-    color: 'red',
-    marginBottom: 10,
-  },
-  navigateButton: {
-    marginTop: 20,
-    padding: 10,
-    backgroundColor: '#eb8d71',
-    borderRadius: 30,
   },
   closeButton: {
-    marginTop: 20,
+    backgroundColor: '#A53821',
     padding: 10,
-    backgroundColor: '#D9534F',
-    borderRadius: 10,
+    borderRadius: 5,
+    marginTop: 10,
+  },
+  navigateButton: {
+    backgroundColor: '#008000',
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 10,
   },
   buttonText: {
-    color: '#FFF',
-    fontSize: 16,
+    color: '#fff',
     fontWeight: 'bold',
+  },
+  link: {
+    color: '#0000FF',
+    textDecorationLine: 'underline',
   },
 });
 
-export default RealTimeChecker;
+export default MiddleBody;

@@ -1,3 +1,5 @@
+//Show requirements posted(AI)
+
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Alert, ScrollView, Image } from 'react-native';
 import * as Location from 'expo-location';
