@@ -55,7 +55,7 @@ export default function App() {
         </TouchableOpacity>
       </View>
 
-        <Text style={styles.text}>Hi, {fname} {lname} 👋</Text>
+        <Text style={styles.text}>Hi,{fname} {lname} 👋</Text>
       </View>
       <TouchableOpacity onPress={() => router.push("./2_CamPermission")} style={styles.box}>
         <Image
@@ -82,6 +82,7 @@ export default function App() {
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => router.push("../Offline/Offlinep1")} style={styles.box}>
+      
         <Image
           style={styles.post5Icon}
           source={require("../../assets/images/blood-test.png")}

@@ -14,11 +14,9 @@ import {
   import { signOut } from "firebase/auth";
   import AsyncStorage from "@react-native-async-storage/async-storage";
   import { auth } from "@/constants/firebaseConfig";
-  import logo from '../../assets/images/image1.png';
   
   export default function App() {
-    const [fname, setfName] = useState('');
-    //const [lname, setlName] = useState('');
+    const [name, setName] = useState('');
     const handleSignOut = async () => {
       try {
         await signOut(auth);
@@ -30,14 +28,12 @@ import {
     };
   
     useEffect(() => {
-      const fetchName = async () => {
-        const fname = await AsyncStorage.getItem("FirstName");
-        //const lname= await AsyncStorage.getItem("LastName");
-        if (fname ) {
-          setfName(fname);
-          //setlName(lname);
-        }
-      };
+        const fetchName = async () => {
+          const name = await AsyncStorage.getItem('OrgName');
+          if (name) {
+            setName(name);
+          }
+        };
   
       fetchName();
     }, []);
@@ -47,8 +43,8 @@ import {
         <View style={styles.textContainer}>
   
         <View style={styles.headerContainer}>
-          <Text style={styles.header}>Rescue Team Details</Text>
-          <TouchableOpacity onPress={() => router.push("../../ProfilePageEdit/RescueProf")} style={styles.profileButton}>
+          <Text style={styles.header}>User Details</Text>
+          <TouchableOpacity onPress={() => router.push("../../ProfilePageEdit/UserProf")} style={styles.profileButton}>
             <Image
               source={require('../../assets/images/profilepic.png')} // Adjust the path to your image
               style={styles.headerImage}
@@ -56,17 +52,9 @@ import {
           </TouchableOpacity>
         </View>
   
-          <Text style={styles.text}>Hi, {fname} 👋</Text>
+          <Text style={styles.text}>Hello, {name}👋</Text>
         </View>
-
-        <View>
-            <Image source={logo} // Adjust the path to your image
-              style={styles.iii}/>
-        </View>
-
-
-        
-        <TouchableOpacity onPress={() => router.push("./")} style={styles.box}>
+        <TouchableOpacity onPress={() => router.push("../User/2_CamPermission")} style={styles.box}>
           <Image
             style={styles.post5Icon}
             source={require("../../assets/images/alert.png")}
@@ -74,14 +62,29 @@ import {
           <Text style={styles.boxText}>Report a Disaster</Text>
         </TouchableOpacity>
   
-        <TouchableOpacity onPress={() => router.push("./4_ConfirmDisaster")} style={styles.box}>
+        <TouchableOpacity onPress={() => router.push("./1_DisasterList")} style={styles.box}>
           <Image
             style={styles.post5Icon}
             source={require("../../assets/images/map.png")}
           />
-          <Text style={styles.boxText}>Disaster in your area</Text>
+          <Text style={styles.boxText}>Disasters in your area</Text>
         </TouchableOpacity>
   
+        <TouchableOpacity style={styles.box} onPress={() => router.push("./6_ShelfLife")} >
+          <Image
+            style={styles.post5Icon}
+            source={require("../../assets/images/Donation.png")}
+          />
+          <Text style={styles.boxText}>Manage Donations</Text>
+        </TouchableOpacity>
+  
+        <TouchableOpacity onPress={() => router.push("../MiddleBody/6_UploadBloodDonations")} style={styles.box}>
+          <Image
+            style={styles.post5Icon}
+            source={require("../../assets/images/blood.png")}
+          />
+          <Text style={styles.boxText}>Blood Donations</Text>
+        </TouchableOpacity>
         <TouchableOpacity onPress={handleSignOut} style={styles.signOutButton}>
           <Text style={styles.signOutText}>Sign Out</Text>
         </TouchableOpacity>
@@ -105,7 +108,7 @@ import {
       width: "100%",
       overflow:"hidden",
       marginBottom: -40,
-      marginTop: -150,
+      marginTop: -40,
       
     },
     textContainer: {
@@ -119,15 +122,7 @@ import {
       fontSize: 30,
       fontWeight: "bold",
       marginBottom: 20,
-      textAlign:"left",
-      top:39
-    },
-    iii:{
-        width: 300,
-        height: 300,
-        alignSelf: 'center',
-        top: 40,
-        left: 0,
+      textAlign:"left"
     },
     box: {
       width: 360,
@@ -188,14 +183,14 @@ import {
       justifyContent: 'space-between',
       width: '100%',
       marginBottom: 20,
-      top:35
+      top:-35
       
     },
     header: {
       fontSize: 15,
       fontWeight: 'bold',
       color: '#333',
-      left:210
+      left:270
     },
     profileButton: {
       borderRadius: 25, // Adjust the value to make the image round based on its size

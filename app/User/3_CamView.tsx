@@ -1,3 +1,5 @@
+//camera view
+
 import * as React from "react";
 import { SafeAreaView, View, TouchableOpacity, Text, StyleSheet } from "react-native";
 import { CameraMode, CameraView, FlashMode } from "expo-camera";
@@ -40,7 +42,7 @@ export default function Userpage3() {
         <SafeAreaView style={{ flex: 1 }}>
           <View style={{ flex: 1 }}>
             <IconButton
-            onPress={() => router.push('./Userpage1')}
+            onPress={() => router.push('./1_HomePage')}
             iosName={"xmark"}
             androidName="close"
             />

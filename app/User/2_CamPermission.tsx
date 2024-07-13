@@ -1,3 +1,5 @@
+//handling permissions
+
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Modal, TouchableOpacity, Alert } from "react-native";
 import { useCameraPermissions } from "expo-camera";

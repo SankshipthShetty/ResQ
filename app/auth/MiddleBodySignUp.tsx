@@ -78,7 +78,7 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
       console.log('Data submitted successfully');
       
       console.log('User registered and data submitted successfully');
-      router.push('login');
+      router.push('./Login');
     } catch (error: any) {
       console.log(error.message);
       Alert.alert("Error", error.message);
@@ -145,7 +145,7 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
         onPress={handleRegister}
         style={styles.button}
         >
-        <Text style={styles.buttonText} onPress={() => router.push('./MainLogin')}>Register</Text>
+        <Text style={styles.buttonText} onPress={() => router.push('./Login')}>Register</Text>
       </TouchableOpacity>
 
       <Text style={styles.footerText}>Already have an account?</Text>

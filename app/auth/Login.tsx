@@ -24,11 +24,13 @@ const LoginScreen = ({ navigation }: any) => {
       const userCred = await signInWithEmailAndPassword(auth, email, password);
       const user = userCred.user;
       
+     
       // Retrieve user data from Firestore using uid
       const userDoc = await getDoc(doc(firestore, 'UserData', user.uid));
       const userDocMB = await getDoc(doc(firestore, 'MiddleBodyData', user.uid));
       const userDocRT = await getDoc(doc(firestore, 'RescueTeamData', user.uid));
     
+        console.log(userDocMB.exists())
       if (userDoc.exists()) {
         const userData = userDoc.data();
 
@@ -59,11 +61,11 @@ const LoginScreen = ({ navigation }: any) => {
       else if (userDocMB.exists()) {
         const MidData = userDocMB.data();
 
+        
         // Check if the role field exists in the user data
         if (MidData && MidData.Role) {
           await AsyncStorage.setItem('isLoggedIn', 'true');
-          await AsyncStorage.setItem('FirstName', MidData.FirstName);
-          await AsyncStorage.setItem('LastName', MidData.LastName);
+          await AsyncStorage.setItem('OrgName', MidData['Organization Name']);
           await AsyncStorage.setItem('MiddleId', user.uid);
           navigateToRoleBasedScreen(MidData.Role);
         } else {
@@ -88,7 +90,7 @@ const LoginScreen = ({ navigation }: any) => {
         router.push('../RescueTeams/0_HomePage');
         break;
       case 'MiddleBody':
-        router.push('../User/MB1');
+        router.push('../MiddleBody/0_HomePage');
         break;
       default:
         setError('Invalid role.');
