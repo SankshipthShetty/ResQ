@@ -74,7 +74,7 @@ const UserPage7 = () => {
         <Pressable
           key={fundraiser.id}
           style={styles.card}
-          onPress={() => router.push({ pathname: './8_DonationDescription', params: { fundraiser: fundraiser.id } })}
+          
         >
           <Image source={{ uri: fundraiser.img }} style={styles.image} />
           <View style={styles.textContainer}>
@@ -82,7 +82,7 @@ const UserPage7 = () => {
             <Text style={styles.organization}>{fundraiser.organization}</Text>
             <Text style={styles.amount}>₹{fundraiser.amount.toLocaleString()} Raised</Text>
             <Pressable style={styles.donateButton}>
-              <Text style={styles.donateButtonText}>Donate</Text>
+              <Text style={styles.donateButtonText} onPress={() => router.push({ pathname: './8_DonationDescription', params: { fundraiser: fundraiser.id } })}>Donate</Text>
             </Pressable>
           </View>
         </Pressable>

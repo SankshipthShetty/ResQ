@@ -88,14 +88,22 @@ import {
         <TouchableOpacity onPress={handleSignOut} style={styles.signOutButton}>
           <Text style={styles.signOutText}>Sign Out</Text>
         </TouchableOpacity>
+        
         <View>
+
+        
+
           <Text style={styles.resq}>ResQ</Text>
         </View>
+
+
+
       </View>
     );
   }
   
   const styles = StyleSheet.create({
+   
    
     container: {
       top:-30,

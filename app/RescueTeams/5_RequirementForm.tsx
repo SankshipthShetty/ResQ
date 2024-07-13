@@ -29,6 +29,27 @@ import {
     const [campCounts, setCampCounts] = useState<string[]>([]);
     const [requirements, setRequirements] = useState<Requirement[]>([]);
     const [newRequirement, setNewRequirement] = useState<Requirement>({ type: '', quantityNeeded: '', quantityCollected: '' });
+    const [TeamName, setTeamName] = useState("def");
+    const [DisasterReportId,setDisasterReportId] =useState('');
+    useEffect(() => {
+      const fetchTeamName = async () => {
+        const name = await AsyncStorage.getItem('FirstName');
+        if (name) {
+          setTeamName(name);
+        }
+      };
+  
+      const fetchDisasterReportId = async () => {
+        const id = await AsyncStorage.getItem('DISID');
+        if (id) {
+          setDisasterReportId(id);
+        }
+      };
+  
+      fetchTeamName();
+      fetchDisasterReportId();
+    }, []);
+
   
     const handleSignOut = async () => {
       try {
@@ -46,19 +67,24 @@ import {
     };
   
     const handleSaveRequirements = async () => {
-      // const disasterId = "some-id"; // Use the actual disaster ID
-      const disasterDocRef = doc(firestore, "DisasterReports",  'ACmOXu42pBGVwDPzWP6g' );
+      if (!DisasterReportId) {
+        console.error("Disaster report ID is not set");
+        return;
+      }
+  
       try {
-        for (let requirement of requirements) {
-          await updateDoc(disasterDocRef, {
-            requirements: arrayUnion(requirement)
-          });
-        }
+        const reportRef = doc(firestore, 'DisasterReports', DisasterReportId);
+        await updateDoc(reportRef, {
+          requirementstatus: true,
+          onduty: TeamName,
+          requirements: arrayUnion(...requirements),
+        });
         console.log("Requirements added successfully!");
+        router.push('./4_ConfirmDisaster');
       } catch (error) {
         console.error("Error adding requirements: ", error);
-      }
-    };
+    }
+  };
   
     const handleNumCampsChange = (value: string) => {
       setNumCamps(value);

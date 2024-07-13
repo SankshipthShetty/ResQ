@@ -94,12 +94,35 @@ export default function App() {
       </TouchableOpacity>
       <View>
         <Text style={styles.resq}>ResQ</Text>
+
+          {/* checking */}
+       <TouchableOpacity style={styles.check}  onPress={() => router.push("../Offline/Offlinep1")} >
+        <Text style={styles.check}>Just for Checking Purpose</Text>
+      </TouchableOpacity>
+      
+      
       </View>
+
+
+     
+
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  check:{
+
+     
+    position: 'absolute',
+    bottom: 370,
+    left: 10,
+    backgroundColor: '#A53821',
+    padding: 10,
+    borderRadius: 10,
+ 
+
+},
  
   container: {
     top:-30,

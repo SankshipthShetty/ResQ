@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, Pressable, ActivityIndicator, Modal, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, Pressable, ActivityIndicator, Modal, TouchableOpacity, ScrollView } from 'react-native';
 import { firestore } from '../../constants/firebaseConfig';
 import { doc, getDoc } from 'firebase/firestore';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -27,7 +27,7 @@ const UserPage8 = () => {
   useEffect(() => {
     if (fundraiser) {
       const fetchFundraiser = async () => {
-        const docRef = doc(firestore, 'Donations', fundraiser);
+        const docRef = doc(firestore, 'Donations', fundraiser as string);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           setFundraiserData(docSnap.data() as FundraiserData);
@@ -56,52 +56,60 @@ const UserPage8 = () => {
   }
 
   return (
-    <KeyboardAwareScrollView
-      contentContainerStyle={styles.container}
+    <View style={{ flex: 1 }}>
+      <KeyboardAwareScrollView
+      contentContainerStyle={[styles.container, { paddingBottom: 1880 }]}
       enableOnAndroid={true}
       extraScrollHeight={30}
-    >
-      <View
-        style={{
-          position: 'absolute',
-          zIndex: 1,
-          paddingTop: 50,
-          left: 20,
-          top: -38,
-        }}
+        
       >
-        <IconButton
-          onPress={() => router.replace('./7_DonationReports')}
-          iosName={'arrow.left.circle'}
-          androidName="arrow-back"
-        />
-      </View>
-      <View style={styles.arange}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Donations</Text>
+        <View
+          style={{
+            position: 'absolute',
+            zIndex: 1,
+            paddingTop: 50,
+            left: 20,
+            top: -38,
+          }}
+        >
+          <IconButton
+            onPress={() => router.replace('./7_DonationReports')}
+            iosName={'arrow.left.circle'}
+            androidName="arrow-back"
+          />
         </View>
-        <View style={styles.header}>
-          <Text style={styles.fundraiserTitle}>{fundraiserData.name}</Text>
+        <View style={styles.arange}>
+          <View style={styles.header}>
+            <Text style={styles.title}>Donations</Text>
+          </View>
+          <View style={styles.header}>
+            <Text style={styles.fundraiserTitle}>{fundraiserData.name}</Text>
+          </View>
+          <View style={styles.imageContainer}>
+            <Image source={{ uri: fundraiserData.img }} style={styles.image} />
+          </View>
+          <Text style={styles.organization}>By {fundraiserData.organization}</Text>
+          <Text style={styles.amount}>₹{fundraiserData.amount.toLocaleString()} Raised</Text>
+          <Text style={styles.description}>{fundraiserData.description}</Text>
         </View>
-        <View style={styles.imageContainer}>
-          <Image source={{ uri: fundraiserData.img }} style={styles.image} />
-        </View>
-        <Text style={styles.organization}>By {fundraiserData.organization}</Text>
-        <Text style={styles.amount}>₹{fundraiserData.amount.toLocaleString()} Raised</Text>
-        <Text style={styles.description}>{fundraiserData.description}</Text>
-        <Pressable style={styles.donateButton} onPress={() => setShowDonationUI(true)}>
-          <Text style={styles.donateButtonText}>Donate</Text>
-        </Pressable>
-      </View>
+      </KeyboardAwareScrollView>
 
-      <Modal visible={showDonationUI}  transparent={true}>
-        <TouchableOpacity style={styles.modalBackground} activeOpacity={1} onPressOut={() => setShowDonationUI(false)}>
+      <Pressable style={styles.donateButton} onPress={() => setShowDonationUI(true)}>
+        <Text style={styles.donateButtonText}>Donate</Text>
+      </Pressable>
+
+      <Modal visible={showDonationUI} transparent={true}>
+        <TouchableOpacity
+          style={styles.modalBackground}
+          activeOpacity={1}
+          onPressOut={() => setShowDonationUI(false)}
+        >
           <View style={styles.modalContent}>
             <DonationUI onClose={() => setShowDonationUI(false)} />
           </View>
         </TouchableOpacity>
       </Modal>
-    </KeyboardAwareScrollView>
+    </View>
   );
 };
 
@@ -110,6 +118,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     padding: 20,
     backgroundColor: '#FAFAFA',
+  
   },
   header: {
     flexDirection: 'row',
@@ -122,7 +131,6 @@ const styles = StyleSheet.create({
     left: 0,
   },
   title: {
-    
     fontSize: 24,
     fontWeight: 'bold',
     color: '#333',
@@ -171,7 +179,11 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingVertical: 15,
     alignItems: 'center',
-    marginTop: 30,
+    justifyContent: 'center',
+    position: 'absolute',
+    bottom: 20, // Adjust bottom position as needed
+    left: 20,
+    right: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,

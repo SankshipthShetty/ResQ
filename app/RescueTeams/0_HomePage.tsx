@@ -88,11 +88,15 @@ import {
         <View>
           <Text style={styles.resq}>ResQ</Text>
         </View>
+        
+       
       </View>
     );
   }
   
   const styles = StyleSheet.create({
+
+    
    
     container: {
       top:-30,

@@ -100,16 +100,9 @@ const RealTimeChecker = () => {
   };
 
   const handleMarkRequirement = async (report: TestData) => {
-    try {
-      // Perform update operation
-      const reportRef = doc(firestore, 'DisasterReports', report.id);
-      await updateDoc(reportRef, {
-        requirementstatus: true, // Update requirements to true
-        onduty: `${TeamName}`,
-      });
-    } catch (error) {
-      console.error('Error marking requirement:', error);
-    }
+   
+     router.push('./5_RequirementForm'); // Change './Userpage6' to the actual path of your next page
+     await AsyncStorage.setItem('DISID', report.id);
   };
 
   if (loading) {
@@ -142,7 +135,9 @@ const RealTimeChecker = () => {
         />
       </View>
       <Text style={styles.title}>Disasters in your area</Text>
-      {data.map((report, index) => (
+      {data
+      .sort((a, b) => (a.requirements === b.requirements ? 0 : a.requirements ? -1 : 1))
+      .map((report, index) => (
         <Pressable key={index} style={styles.card} onPress={() => handlePress(report)}>
           <Image source={{ uri: report.imageURL }} style={styles.image} />
           <View style={styles.textContainer}>
@@ -154,8 +149,6 @@ const RealTimeChecker = () => {
               style={[
                 styles.statusButton,
                 report.requirements ? styles.greenBackground : styles.redBackground,
-                //top
-
               ]}
               onPress={() => handleMarkRequirement(report)}
               disabled={report.requirements} // Disable button when requirements are already uploaded
