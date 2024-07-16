@@ -30,7 +30,7 @@ const LoginScreen = ({ navigation }: any) => {
       const userDocMB = await getDoc(doc(firestore, 'MiddleBodyData', user.uid));
       const userDocRT = await getDoc(doc(firestore, 'RescueTeamData', user.uid));
     
-        console.log(userDocMB.exists())
+        // console.log(userDocMB.exists())
       if (userDoc.exists()) {
         const userData = userDoc.data();
 
@@ -40,6 +40,7 @@ const LoginScreen = ({ navigation }: any) => {
           await AsyncStorage.setItem('FirstName', userData.FirstName);
           await AsyncStorage.setItem('LastName', userData.LastName);
           await AsyncStorage.setItem('UserId', user.uid);
+          await AsyncStorage.setItem('UserRole', userData.Role);
           navigateToRoleBasedScreen(userData.Role);
         } else {
           setError('User role not found.');
@@ -53,6 +54,7 @@ const LoginScreen = ({ navigation }: any) => {
           await AsyncStorage.setItem('isLoggedIn', 'true');
           await AsyncStorage.setItem('FirstName', ResData.TeamName);
           await AsyncStorage.setItem('RescueId', user.uid);
+          await AsyncStorage.setItem('UserRole', ResData.Role);
           navigateToRoleBasedScreen(ResData.Role);
         } else {
           setError('User role not found.');
@@ -67,6 +69,7 @@ const LoginScreen = ({ navigation }: any) => {
           await AsyncStorage.setItem('isLoggedIn', 'true');
           await AsyncStorage.setItem('OrgName', MidData['Organization Name']);
           await AsyncStorage.setItem('MiddleId', user.uid);
+          await AsyncStorage.setItem('UserRole', MidData.Role);
           navigateToRoleBasedScreen(MidData.Role);
         } else {
           setError('User role not found.');
