@@ -140,6 +140,8 @@ const RealTimeChecker = () => {
         />
       </View>
       <Text style={styles.title}>Disasters in your area</Text>
+
+      
       {data
       .sort((a, b) => (a.requirements === b.requirements ? 0 : a.requirements ? -1 : 1))
       .map((report, index) => (
