@@ -82,8 +82,10 @@ const RealTimeChecker = () => {
     setSelectedReport(null);
   };
 
-  const handleNavigate = () => {
-    router.push('./Userpage6'); // Change './Userpage6' to the actual path of your next page
+  const handleNavigate = async (value:any) => {
+    await AsyncStorage.setItem('DISID', value);
+    // console.log(value)
+    router.push('./5_RequirementForm'); // Change './Userpage6' to the actual path of your next page
     handleCloseModal();
   };
 
@@ -99,10 +101,13 @@ const RealTimeChecker = () => {
     }
   };
 
-  const handleMarkRequirement = async (report: TestData) => {
+  const handleMarkRequirement = async (report:TestData) => {
    
+   
+    console.log(setSelectedReport)
      router.push('./5_RequirementForm'); // Change './Userpage6' to the actual path of your next page
-     await AsyncStorage.setItem('DISID', report.id);
+     
+     
   };
 
   if (loading) {
@@ -181,7 +186,7 @@ const RealTimeChecker = () => {
               <Text style={styles.modalText}>Requirements: {selectedReport.requirements ? 'Uploaded' : 'Not uploaded'}</Text>
               <Text style={styles.modalText}>Time: {selectedReport.timestamp}</Text>
               {selectedReport.requirements ? (
-                <TouchableOpacity style={styles.navigateButton} onPress={handleNavigate}>
+                <TouchableOpacity style={styles.navigateButton} onPress={() => handleNavigate(selectedReport.id)}>
                   <Text style={styles.buttonText}>Go to Requirements</Text>
                 </TouchableOpacity>
               ) : (

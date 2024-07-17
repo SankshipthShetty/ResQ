@@ -67,24 +67,24 @@ import {
     };
   
     const handleSaveRequirements = async () => {
-      if (!DisasterReportId) {
-        console.error("Disaster report ID is not set");
-        return;
-      }
+      // if (!DisasterReportId) {
+      //   console.error("Disaster report ID is not set");
+      //   return;
+      // }
   
-      try {
-        const reportRef = doc(firestore, 'DisasterReports', DisasterReportId);
-        await updateDoc(reportRef, {
-          requirementstatus: true,
-          onduty: TeamName,
-          requirements: arrayUnion(...requirements),
-        });
-        console.log("Requirements added successfully!");
-        router.push('./4_ConfirmDisaster');
-      } catch (error) {
-        console.error("Error adding requirements: ", error);
-    }
-  };
+        const disasterDocRef = doc(firestore, "DisasterReports",  'ACmOXu42pBGVwDPzWP6g' );
+        try {
+          for (let requirement of requirements) {
+            await updateDoc(disasterDocRef, {
+              requirements: arrayUnion(requirement)
+            });
+          }
+          console.log("Requirements added successfully!");
+        } catch (error) {
+          console.error("Error adding requirements: ", error);
+        }
+      }
+    
   
     const handleNumCampsChange = (value: string) => {
       setNumCamps(value);

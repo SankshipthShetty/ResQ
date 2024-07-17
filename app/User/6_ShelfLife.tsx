@@ -6,21 +6,24 @@ import * as Location from 'expo-location';
 import Slider from '@react-native-community/slider';
 import axios from 'axios';
 import { firestore } from '@/constants/firebaseConfig';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { useRouter, useGlobalSearchParams } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface Requirement {
   type: string;
   quantityNeeded: number;
+  quantityCollected: number;
 }
 
 interface FruitDetail {
   fruit: string;
   predictedDays: number;
-  donationMessage: string;
+  donationMessage: string; 
   canDonate: boolean;
   sliderValue: number;
   quantityNeeded: number;
+  // quantityCollected: number;
 }
 
 const fruitPayloads: Record<string, object> = {
@@ -41,12 +44,16 @@ export default function App() {
   const [humidity, setHumidity] = useState<number | null>(null);
   const [fruitDetails, setFruitDetails] = useState<FruitDetail[]>([]);
   const [requirements, setRequirements] = useState<Requirement[]>([]);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [dataChanged, setDataChanged] = useState<boolean>(false);
   const router = useRouter();
   const { param } = useGlobalSearchParams();
 
   useEffect(() => {
     
     const getLocation = async () => {
+      const userstate=await AsyncStorage.getItem('UserId');
+      setUserId(userstate);
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         setErrorMsg('Permission to access location was denied');
@@ -69,6 +76,7 @@ export default function App() {
     const fetchRequirements = async () => {
       const disasterDocRef = doc(firestore, 'DisasterReports', param as string);
       try {
+
         const disasterDoc = await getDoc(disasterDocRef);
         if (disasterDoc.exists()) {
           const disasterData = disasterDoc.data();
@@ -78,11 +86,13 @@ export default function App() {
             quantityNeeded: Number(req.quantityNeeded) || 0, // Ensure quantityNeeded is a number
           }));
           setRequirements(normalizedRequirements);
+         
         }
       } catch (error) {
         console.error('Error fetching requirements:', error);
       }
     };
+   
     fetchRequirements();
   }, []);
 
@@ -171,8 +181,108 @@ export default function App() {
     ));
   };
 
+  const handleDonationConfirm = async (fruit: string) => {
+  //   const detail = fruitDetails.find(detail => detail.fruit === fruit);
+  //   if (!detail || !userId) {
+  //     Alert.alert('Error', 'Invalid donation details');
+  //     return;
+  //   }
+
+    
+      // Add the donation record to Firestore
+      
+
+  //     // Update the requirements collection
+  //     const disasterDocRef = doc(firestore, 'DisasterReports', param as string);
+  //     const disasterDoc = await getDoc(disasterDocRef);
+  //     if (disasterDoc.exists()) {
+  //       const disasterData = disasterDoc.data();
+  //       const updatedRequirements = (disasterData?.requirements || []).map((req: any) => 
+  //         req.type === fruit 
+  //           ? { ...req, quantityNeeded: req.quantityNeeded - detail.sliderValue,quantityCollected: req.quantityCollected + detail.sliderValue} 
+  //           : req
+      
+  //       );
+  //       await setDoc(disasterDocRef, { ...disasterData, requirements: updatedRequirements });
+  //     }
+
+  //     Alert.alert('Success', 'Donation confirmed!');
+  //   } catch (error) {
+  //     console.error('Error confirming donation:', error);
+  //     Alert.alert('Error', 'Failed to confirm donation');
+  //   }
+  // };
+  const selectedFruitDetail = fruitDetails.find(detail => detail.fruit === fruit);
+    if (!selectedFruitDetail) return;
+
+    
+
+    Alert.alert(
+      'Confirm Donation',
+      `Are you sure you want to donate ${selectedFruitDetail.sliderValue} units of ${fruit}?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Yes',
+          onPress: async () => {
+            try {
+
+              // const donationData = {
+              //   requirementName: fruit,
+              //   userId: userId,
+              //   quantitySent: selectedFruitDetail.sliderValue,
+              // };
+          
+              // const disasterDonorsRef = doc(firestore, 'DisasterReports', param as string, 'DisasterDonors', `${userId}_${fruit}`);
+              // await setDoc(disasterDonorsRef, donationData);
+
+              const disasterDonorsRef = doc(firestore, 'DisasterReports', param as string, 'DisasterDonors', `${userId}_${fruit}`);
+              const donorDoc = await getDoc(disasterDonorsRef);
+              
+              if (donorDoc.exists()) {
+                await updateDoc(disasterDonorsRef, {
+                  quantitySent: donorDoc.data().quantitySent + selectedFruitDetail.sliderValue,
+                });
+              } else {
+                const donationData = {
+                  requirementName: fruit,
+                  userId: userId,
+                  quantitySent: selectedFruitDetail.sliderValue,
+                };
+                await setDoc(disasterDonorsRef, donationData);
+              }
+
+              
+              const disasterDocRef = doc(firestore, 'DisasterReports', param as string);
+              await updateDoc(disasterDocRef, {
+                requirements: requirements.map(req =>
+                  req.type === fruit
+                    ? {
+                        ...req,
+                        quantityCollected: req.quantityCollected + selectedFruitDetail.sliderValue,
+                        quantityNeeded: req.quantityNeeded - selectedFruitDetail.sliderValue,
+                      }
+                    : req
+                ),
+              });
+
+
+              setDataChanged(true);
+              // Redirect to another page (e.g., a thank you page)
+              router.replace('./1_HomePage');
+            } catch (error) {
+              console.error('Error updating document:', error);
+              Alert.alert('Error', 'An error occurred while updating the donation.');
+            }
+          },
+        },
+      ]
+    );
+  };
+
+
   let text = 'Fetching location...';
-  if (errorMsg) {
+  if (errorMsg) { 
     text = errorMsg;
   } else if (location) {
     text = `Latitude: ${location.coords.latitude}, Longitude: ${location.coords.longitude}`;
@@ -217,7 +327,10 @@ export default function App() {
                     onValueChange={(value) => handleSliderChange(value, detail.fruit)}
                   />
                   <Text style={styles.sliderValue}>Selected quantity: {detail.sliderValue}</Text>
-                  <TouchableOpacity style={styles.donateButton}>
+                  <TouchableOpacity
+                    style={styles.donateButton}
+                    onPress={() => handleDonationConfirm(detail.fruit)}
+                  >
                     <Text style={styles.buttonText}>Confirm Donation</Text>
                   </TouchableOpacity>
                 </>
