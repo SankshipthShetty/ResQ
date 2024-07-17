@@ -6,9 +6,10 @@ import * as Location from 'expo-location';
 import Slider from '@react-native-community/slider';
 import axios from 'axios';
 import { firestore } from '@/constants/firebaseConfig';
-import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { arrayUnion, doc, getDoc, increment, setDoc, updateDoc } from 'firebase/firestore';
 import { useRouter, useGlobalSearchParams } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import moment from 'moment';
 
 interface Requirement {
   type: string;
@@ -181,42 +182,34 @@ export default function App() {
     ));
   };
 
+  
   const handleDonationConfirm = async (fruit: string) => {
-  //   const detail = fruitDetails.find(detail => detail.fruit === fruit);
-  //   if (!detail || !userId) {
-  //     Alert.alert('Error', 'Invalid donation details');
-  //     return;
-  //   }
-
-    
-      // Add the donation record to Firestore
-      
-
-  //     // Update the requirements collection
-  //     const disasterDocRef = doc(firestore, 'DisasterReports', param as string);
-  //     const disasterDoc = await getDoc(disasterDocRef);
-  //     if (disasterDoc.exists()) {
-  //       const disasterData = disasterDoc.data();
-  //       const updatedRequirements = (disasterData?.requirements || []).map((req: any) => 
-  //         req.type === fruit 
-  //           ? { ...req, quantityNeeded: req.quantityNeeded - detail.sliderValue,quantityCollected: req.quantityCollected + detail.sliderValue} 
-  //           : req
-      
-  //       );
-  //       await setDoc(disasterDocRef, { ...disasterData, requirements: updatedRequirements });
-  //     }
-
-  //     Alert.alert('Success', 'Donation confirmed!');
-  //   } catch (error) {
-  //     console.error('Error confirming donation:', error);
-  //     Alert.alert('Error', 'Failed to confirm donation');
-  //   }
-  // };
-  const selectedFruitDetail = fruitDetails.find(detail => detail.fruit === fruit);
-    if (!selectedFruitDetail) return;
-
-    
-
+    const selectedFruitDetail = fruitDetails.find(detail => detail.fruit === fruit);
+    if (!selectedFruitDetail || !userId) {
+      Alert.alert('Error', 'Invalid donation details');
+      return;
+    }
+  
+    // Fetch user data
+    const userDocRef = doc(firestore, 'UserData', userId);
+    const userDoc = await getDoc(userDocRef);
+  
+    if (!userDoc.exists()) {
+      Alert.alert('Error', 'User data not found');
+      return;
+    }
+  
+    const userData = userDoc.data();
+    const donorInfo = {
+      userfname: userData.FirstName || 'Unknown',
+      userlname: userData.LastName || ' ',
+      userId: userId,
+      phoneNumber: userData.PhoneNumber || 'N/A',
+      email: userData.Email || 'N/A',
+      quantityDonated: selectedFruitDetail.sliderValue,
+      donationDate: new Date()
+    };
+  
     Alert.alert(
       'Confirm Donation',
       `Are you sure you want to donate ${selectedFruitDetail.sliderValue} units of ${fruit}?`,
@@ -226,59 +219,76 @@ export default function App() {
           text: 'Yes',
           onPress: async () => {
             try {
-
-              // const donationData = {
-              //   requirementName: fruit,
-              //   userId: userId,
-              //   quantitySent: selectedFruitDetail.sliderValue,
-              // };
-          
-              // const disasterDonorsRef = doc(firestore, 'DisasterReports', param as string, 'DisasterDonors', `${userId}_${fruit}`);
-              // await setDoc(disasterDonorsRef, donationData);
-
-              const disasterDonorsRef = doc(firestore, 'DisasterReports', param as string, 'DisasterDonors', `${userId}_${fruit}`);
-              const donorDoc = await getDoc(disasterDonorsRef);
-              
+              // Update DisasterReports document
+              const disasterDocRef = doc(firestore, 'DisasterReports', param as string);
+              const disasterDoc = await getDoc(disasterDocRef);
+  
+              if (!disasterDoc.exists()) {
+                Alert.alert('Error', 'Disaster report not found');
+                return;
+              }
+  
+              const disasterData = disasterDoc.data();
+              const updatedRequirements = (disasterData?.requirements || []).map((req: any) =>
+                req.type === fruit
+                  ? {
+                      ...req,
+                      quantityCollected: req.quantityCollected + selectedFruitDetail.sliderValue,
+                      quantityNeeded: req.quantityNeeded - selectedFruitDetail.sliderValue,
+                    }
+                  : req
+              );
+              await updateDoc(disasterDocRef, { requirements: updatedRequirements });
+  
+              // Update DisasterDonors subcollection
+              const donorDocRef = doc(firestore, 'DisasterReports', param as string, 'DisasterDonors', fruit);
+              const donorDoc = await getDoc(donorDocRef);
+  
               if (donorDoc.exists()) {
-                await updateDoc(disasterDonorsRef, {
-                  quantitySent: donorDoc.data().quantitySent + selectedFruitDetail.sliderValue,
+                const donorData = donorDoc.data();
+                const existingQuantity = donorData?.TotalQuantityCollected || 0;
+                const existingDonors = donorData?.Donors || [];
+  
+                // Check if the user is already in the Donors list
+                const existingDonorIndex = existingDonors.findIndex((donor: any) => donor.userId === userId);
+                if (existingDonorIndex > -1) {
+                  // Update existing donor
+                  existingDonors[existingDonorIndex] = {
+                    ...existingDonors[existingDonorIndex],
+                    quantityDonated: existingDonors[existingDonorIndex].quantityDonated + selectedFruitDetail.sliderValue,
+                    donationDate: moment().format('YYYY-MM-DD hh:mm:ss A')
+                  };
+                } else {
+                  // Add new donor
+                  existingDonors.push(donorInfo);
+                }
+  
+                await updateDoc(donorDocRef, {
+                  TotalQuantityCollected: existingQuantity + selectedFruitDetail.sliderValue,
+                  QuantityNeeded: (donorData?.QuantityNeeded || 0) - selectedFruitDetail.sliderValue,
+                  Donors: existingDonors,
                 });
               } else {
-                const donationData = {
-                  requirementName: fruit,
-                  userId: userId,
-                  quantitySent: selectedFruitDetail.sliderValue,
-                };
-                await setDoc(disasterDonorsRef, donationData);
+                // Create a new DisasterDonors document
+                await setDoc(donorDocRef, {
+                  TotalQuantityCollected: selectedFruitDetail.sliderValue,
+                  QuantityNeeded: requirements.find(req => req.type === fruit)?.quantityNeeded || 0,
+                  Donors: [donorInfo],
+                });
               }
-
-              
-              const disasterDocRef = doc(firestore, 'DisasterReports', param as string);
-              await updateDoc(disasterDocRef, {
-                requirements: requirements.map(req =>
-                  req.type === fruit
-                    ? {
-                        ...req,
-                        quantityCollected: req.quantityCollected + selectedFruitDetail.sliderValue,
-                        quantityNeeded: req.quantityNeeded - selectedFruitDetail.sliderValue,
-                      }
-                    : req
-                ),
-              });
-
-
+  
               setDataChanged(true);
-              // Redirect to another page (e.g., a thank you page)
               router.replace('./1_HomePage');
             } catch (error) {
-              console.error('Error updating document:', error);
-              Alert.alert('Error', 'An error occurred while updating the donation.');
+              console.error('Error confirming donation:', error);
+              Alert.alert('Error', 'Failed to confirm donation');
             }
           },
         },
       ]
     );
   };
+  
 
 
   let text = 'Fetching location...';
