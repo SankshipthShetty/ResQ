@@ -43,8 +43,8 @@ import {
         <View style={styles.textContainer}>
   
         <View style={styles.headerContainer}>
-          <Text style={styles.header}>User Details</Text>
-          <TouchableOpacity onPress={() => router.push("../../ProfilePageEdit/UserProf")} style={styles.profileButton}>
+          <Text style={styles.header}>Organisation Details</Text>
+          <TouchableOpacity onPress={() => router.push("../../ProfilePageEdit/MBprof")} style={styles.profileButton}>
             <Image
               source={require('../../assets/images/profilepic.png')} // Adjust the path to your image
               style={styles.headerImage}
@@ -198,7 +198,7 @@ import {
       fontSize: 15,
       fontWeight: 'bold',
       color: '#333',
-      left:270
+      left:215
     },
     profileButton: {
       borderRadius: 25, // Adjust the value to make the image round based on its size
