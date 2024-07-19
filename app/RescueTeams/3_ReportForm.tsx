@@ -1,12 +1,13 @@
-//report form
-
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, Image, Alert } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, Image, Alert, Dimensions } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { firestore } from '../../constants/firebaseConfig';
 import { collection, addDoc } from 'firebase/firestore';
 import IconButton from '@/components/IconButton';
 import * as Location from 'expo-location';
+
+// Get screen dimensions
+const { width, height } = Dimensions.get('window');
 
 export default function Userpage4() {
   const params = useLocalSearchParams();
@@ -35,7 +36,7 @@ export default function Userpage4() {
         imageUrl: decodedImageUrl,
         onduty,
         requirementstatus,
-        timestamp: new Date() 
+        timestamp: new Date()
       });
       Alert.alert(
         "Details uploaded successfully!",
@@ -79,9 +80,9 @@ export default function Userpage4() {
         style={{
           position: "absolute",
           zIndex: 1,
-          paddingTop: 50,
-          left: 6,
-          top: -30,
+          paddingTop: height * 0.05,
+          left: width * 0.02,
+          top: -height * 0.03,
         }}
       >
         <IconButton
@@ -142,61 +143,61 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
+    padding: width * 0.05,
     backgroundColor: '#FFF',
   },
   heading: {
-    fontSize: 30,
+    fontSize: width * 0.08,
     fontWeight: 'bold',
-    marginTop: 10,
-    marginBottom: 20,
+    marginTop: height * 0.02,
+    marginBottom: height * 0.03,
     color: 'brown',
   },
   title: {
-    fontSize: 15,
+    fontSize: width * 0.04,
     fontWeight: 'bold',
-    marginBottom: 6,
+    marginBottom: height * 0.01,
     textAlign: 'left', // Align title to the left
     width: '100%', // Ensure it takes full width of container
     color: 'grey',
   },
   image: {
     width: '100%',
-    height: 200,
+    height: height * 0.25,
     borderRadius: 10,
-    marginBottom: 20,
+    marginBottom: height * 0.02,
   },
   input: {
     width: '100%',
-    height: 50,
+    height: height * 0.06,
     borderColor: 'gray',
     borderWidth: 1,
     borderRadius: 10,
-    marginBottom: 15,
-    paddingHorizontal: 15,
-    fontSize: 16,
+    marginBottom: height * 0.02,
+    paddingHorizontal: width * 0.03,
+    fontSize: width * 0.04,
   },
   button: {
     width: '100%',
-    height: 50,
+    height: height * 0.06,
     backgroundColor: '#D9534F',
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 10,
-    marginTop: 20,
+    marginTop: height * 0.03,
   },
   buttonText: {
     color: '#FFF',
-    fontSize: 18,
+    fontSize: width * 0.05,
     fontWeight: 'bold',
   },
   locationButton: {
     width: '100%',
-    height: 50,
+    height: height * 0.06,
     backgroundColor: '#5bc0de',
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 10,
-    marginBottom: 20,
+    marginBottom: height * 0.02,
   },
 });
