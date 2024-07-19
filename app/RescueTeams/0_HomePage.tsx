@@ -66,7 +66,7 @@ import {
 
 
         
-        <TouchableOpacity onPress={() => router.push("./")} style={styles.box}>
+        <TouchableOpacity onPress={() => router.push("./1_CamPermission")} style={styles.box}>
           <Image
             style={styles.post5Icon}
             source={require("../../assets/images/alert.png")}
