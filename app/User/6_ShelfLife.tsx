@@ -305,18 +305,24 @@ export default function App() {
       <Text style={styles.paragraph}>Humidity: {humidity}%</Text>
       <Text style={styles.heading}>Select a Fruit:</Text>
       <View style={styles.requirementsContainer}>
-        {requirements.map((item, index) => (
+        {requirements.map((item, index) => {
+           const detail = fruitDetails.find(detail => detail.fruit === item.type);
+           const backgroundColor = detail ? (detail.canDonate ? '#66ee20' : '#f70925') : '#f7f0ee';
+          
+          return (
           <TouchableOpacity
             key={index}
             style={[
               styles.button,
-              fruitDetails.find(detail => detail.fruit === item.type) ? styles.buttonSelected : null,
+              styles.requirementItem, 
+              { backgroundColor }
             ]}
             onPress={() => handleRequirementClick(item.type)}
           >
             <Text style={styles.buttonText}>{item.type}</Text>
           </TouchableOpacity>
-        ))}
+          );
+})}
       </View>
       {fruitDetails.length > 0 && (
         <View style={styles.detailsContainer}>
@@ -334,6 +340,8 @@ export default function App() {
                     maximumValue={detail.quantityNeeded}
                     step={1}
                     value={detail.sliderValue}
+                    thumbTintColor="#10f709"
+                    minimumTrackTintColor="#10f709"
                     onValueChange={(value) => handleSliderChange(value, detail.fruit)}
                   />
                   <Text style={styles.sliderValue}>Selected quantity: {detail.sliderValue}</Text>
@@ -374,6 +382,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
+     marginBottom: 20
   },
   button: {
     backgroundColor: '#1E90FF',
@@ -385,7 +394,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#32CD32',
   },
   buttonText: {
-    color: '#fff',
+    color: '#000',
     fontSize: 18,
     fontWeight: 'bold',
   },
@@ -419,9 +428,18 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   donateButton: {
-    backgroundColor: '#FF6347',
+    backgroundColor: 'orange',
+    alignItems: 'center',
     padding: 10,
     borderRadius: 10,
     marginTop: 20,
   },
+  requirementItem: {
+    padding: 10,
+    margin: 5,
+    borderRadius: 20,
+    backgroundColor: '#d3d3d3',
+    borderWidth: 1,
+    borderColor: '#a9a9a9',
+  }
 });
