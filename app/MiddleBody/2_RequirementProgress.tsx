@@ -35,7 +35,7 @@ const MB2: React.FC = () => {
 
   // Calculate the ratio of fully collected requirements
   const requirements = parsedReport.requirements || [];
-  const fullyCollectedRequirements = requirements.filter(req => req.quantityCollected === req.quantityNeeded);
+  const fullyCollectedRequirements = requirements.filter(req => req.quantityNeeded == '0' );
   const totalRequirements = requirements.length;
   const collectedRatio = `${fullyCollectedRequirements.length}/${totalRequirements}`;
 
@@ -43,6 +43,13 @@ const MB2: React.FC = () => {
     const [latitude, longitude] = location.split(',');
     const url = `http://maps.google.com/?q=${latitude},${longitude}`;
     Linking.openURL(url);
+  };
+
+  const handleViewDonations =()=>{
+    router.push({
+      pathname: './3_ViewDonors',
+      params: { report: JSON.stringify(parsedReport) }
+    });
   };
 
   return (
@@ -114,7 +121,7 @@ const MB2: React.FC = () => {
       <View style={styles.card2}>
         <Text style={{ textAlign: 'center', fontWeight: 'bold', marginTop: 2, fontSize: 20 }}>Requirements Satisfied:</Text>
         <Text style={{ textAlign: 'center', fontWeight: 'bold', marginTop: 10, fontSize: 22 }}>{`${collectedRatio}`}</Text>
-        <TouchableOpacity style={styles.button}  onPress={() => router.push('./3_ViewDonors')}>
+        <TouchableOpacity style={styles.button}  onPress={handleViewDonations}>
           <Text style={{ color: '#fff', fontWeight: 'bold',fontSize:20, textAlign:'center' }}>View Donations</Text>
         </TouchableOpacity>
       </View>
