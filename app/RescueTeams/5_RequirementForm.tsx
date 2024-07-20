@@ -25,12 +25,13 @@ type Requirement = {
 
 export default function App() {
   const [fname, setfName] = useState('');
-  const [numCamps, setNumCamps] = useState<string>('');
-  const [campCounts, setCampCounts] = useState<string[]>([]);
+  const [numCamps, setNumCamps] = useState<number>(0);
+const [campCounts, setCampCounts] = useState<number[]>([]);
   const [requirements, setRequirements] = useState<Requirement[]>([]);
   const [newRequirement, setNewRequirement] = useState<Requirement>({ type: '', quantityNeeded: 0, quantityCollected: 0 });
   const [TeamName, setTeamName] = useState("def");
   const [DisasterReportId,setDisasterReportId] =useState('');
+
   useEffect(() => {
     const fetchTeamName = async () => {
       const name = await AsyncStorage.getItem('FirstName');
@@ -71,52 +72,51 @@ export default function App() {
       console.error("Disaster report ID is not set");
       return;
     }
-
+  
     try {
       const reportRef = doc(firestore, 'DisasterReports', DisasterReportId);
       await updateDoc(reportRef, {
         requirementstatus: true,
         onduty: TeamName,
         requirements: arrayUnion(...requirements),
+        numCamps: numCamps,
+        campCounts: campCounts,
       });
-
-        const disasterDonorsRef = collection(reportRef, 'DisasterDonors');
-
-    // Process each requirement
-    for (const req of requirements) {
-      const reqDocRef = doc(disasterDonorsRef, req.type); // Use requirement type as document ID
-
-      // Create or update the document in DisasterDonors
-      await setDoc(reqDocRef, {
-        TotalQuantityCollected: 0, // Initialize with 0
-        QuantityNeeded: req.quantityNeeded,
-        // Add other relevant fields if needed
-      }, { merge: true }); // Merge with existing data if needed
+  
+      const disasterDonorsRef = collection(reportRef, 'DisasterDonors');
+  
+      // Process each requirement
+      for (const req of requirements) {
+        const reqDocRef = doc(disasterDonorsRef, req.type);
+  
+        // Create or update the document in DisasterDonors
+        await setDoc(reqDocRef, {
+          TotalQuantityCollected: 0,
+          QuantityNeeded: req.quantityNeeded,
+        }, { merge: true });
+      }
+  
+      console.log("Requirements added successfully!");
+      router.push('./4_ConfirmDisaster');
+    } catch (error) {
+      console.error("Error adding requirements: ", error);
     }
+  };
+  
 
-    console.log("Requirements added successfully!");
-    router.push('./4_ConfirmDisaster');
-  } catch (error) {
-    console.error("Error adding requirements: ", error);
-  }
+const handleNumCampsChange = (value: string) => {
+  const numCampsInt = parseInt(value, 10);
+  setNumCamps(numCampsInt);
+  setCampCounts(Array(numCampsInt).fill(0));
 };
 
-  const handleNumCampsChange = (value: string) => {
-    setNumCamps(value);
-    if (value === '') {
-      setCampCounts([]);
-    } else {
-      const numCampsInt = parseInt(value, 10);
-      const newCampCounts = Array(numCampsInt).fill('');
-      setCampCounts(newCampCounts);
-    }
-  };
+const handleCampCountChange = (index: number, value: string) => {
+  const numMembers = parseInt(value, 10);
+  const newCampCounts = [...campCounts];
+  newCampCounts[index] = numMembers;
+  setCampCounts(newCampCounts);
+};
 
-  const handleCampCountChange = (index: number, value: string) => {
-    const newCampCounts = [...campCounts];
-    newCampCounts[index] = value;
-    setCampCounts(newCampCounts);
-  };
 
   useEffect(() => {
     const fetchName = async () => {
@@ -147,7 +147,7 @@ export default function App() {
       <View style={styles.formContainer}>
         <TextInput
           placeholder="Number of Camps"
-          value={numCamps}
+          value={numCamps.toString()}
           onChangeText={handleNumCampsChange}
           style={styles.input}
           keyboardType="numeric"
@@ -156,7 +156,7 @@ export default function App() {
           <TextInput
             key={index}
             placeholder={`Number of people in camp ${index + 1}`}
-            value={count}
+            value={count.toString()}
             onChangeText={(value) => handleCampCountChange(index, value)}
             style={styles.input}
             keyboardType="numeric"
