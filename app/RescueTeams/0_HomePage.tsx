@@ -1,5 +1,3 @@
-// report a disaster ,disaster in your area , donations page
-
 import {
   View,
   Text,
@@ -7,8 +5,8 @@ import {
   Image,
   StyleSheet,
   TouchableOpacity,
-  Pressable,
-  ScrollView
+  ScrollView,
+  Modal,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Link, router } from "expo-router";
@@ -17,30 +15,40 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { auth } from "@/constants/firebaseConfig";
 import logo from '../../assets/images/image1.png';
 
-import { onSnapshot, collection, query, where } from "firebase/firestore";
+import { onSnapshot, collection, query, where, doc, getDoc } from "firebase/firestore";
 import { firestore } from "@/constants/firebaseConfig";
 import moment from "moment";
 
-
-
-
 export default function App() {
   const [fname, setfName] = useState('');
+  const [modalVisible, setModalVisible] = useState(false);
+  const [requirements, setRequirements] = useState<{ type: string; quantityNeeded: string; quantityCollected: string; }[]>([]);
+  const [selectedReportId, setSelectedReportId] = useState('');
+  const [disasterReports, setDisasterReports] = useState<{ id: string; imageURL: any; location: any; locationName: any; name: any; phoneNumber: any; onduty: any; requirements: any; timestamp: string; }[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [numCamps, setNumCamps] = useState(0);
+  const [campCounts, setCampCounts] = useState<number[]>([]);
 
-interface DisasterReport {
-id: string;
-imageURL: any;
-location: any;
-locationName: any;
-name: any;
-phoneNumber: any;
-onduty: any;
-requirements: any;
-timestamp: string;
-}
-
-const [disasterReports, setDisasterReports] = useState<DisasterReport[]>([]);
-const [loading, setLoading] = useState(true);
+  const fetchRequirements = async (reportId: string) => {
+    try {
+      const reportRef = doc(firestore, 'DisasterReports', reportId);
+      const docSnap = await getDoc(reportRef);
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        const reqs = data.requirements || [];
+        const formattedRequirements = reqs.map((req: any) => ({
+          type: req.type,
+          quantityNeeded: req.quantityNeeded,
+          quantityCollected: req.quantityCollected,
+        }));
+        setRequirements(formattedRequirements);
+        setNumCamps(data.numCamps || 0);
+        setCampCounts(data.campCounts || []);
+      }
+    } catch (error) {
+      console.error("Error fetching requirements: ", error);
+    }
+  };
 
   const handleSignOut = async () => {
     try {
@@ -55,17 +63,13 @@ const [loading, setLoading] = useState(true);
   useEffect(() => {
     const fetchName = async () => {
       const fname = await AsyncStorage.getItem("FirstName");
-      //const lname= await AsyncStorage.getItem("LastName");
-      if (fname ) {
+      if (fname) {
         setfName(fname);
-        //setlName(lname);
       }
     };
 
     fetchName();
   }, []);
-
-
 
   useEffect(() => {
     const unsubscribe = onSnapshot(
@@ -73,9 +77,9 @@ const [loading, setLoading] = useState(true);
       (snapshot) => {
         const newData = snapshot.docs.map((doc) => {
           const docData = doc.data();
-          const timestamp = docData.timestamp?.toDate(); // Convert Firestore Timestamp to JavaScript Date object
+          const timestamp = docData.timestamp?.toDate();
           const formattedTimestamp = timestamp
-            ? moment(timestamp).format("MMM D, YYYY h:mm A") // Format date as 'Jul 10, 2024 3:30 PM'
+            ? moment(timestamp).format("MMM D, YYYY h:mm A")
             : "Unknown Time";
           return {
             id: doc.id,
@@ -90,38 +94,39 @@ const [loading, setLoading] = useState(true);
           };
         });
         setDisasterReports(newData);
-        setLoading(false); // Set loading to false when data is fetched
+        setLoading(false);
       }
     );
-  
+
     // Clean up the subscription
     return () => unsubscribe();
   }, []);
 
+  const handleShowRequirements = (reportId: string) => {
+    fetchRequirements(reportId);
+    setSelectedReportId(reportId);
+    setModalVisible(true);
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.textContainerfirst}>
-
-      <View style={styles.headerContainer}>
-        <Text style={styles.header}>Rescue Team Details</Text>
-        <TouchableOpacity onPress={() => router.push("../../ProfilePageEdit/RescueProf")} style={styles.profileButton}>
-          <Image
-            source={require('../../assets/images/profilepic.png')} // Adjust the path to your image
-            style={styles.headerImage}
-          />
-        </TouchableOpacity>
-      </View>
-
+        <View style={styles.headerContainer}>
+          <Text style={styles.header}>Rescue Team Details</Text>
+          <TouchableOpacity onPress={() => router.push("../../ProfilePageEdit/RescueProf")} style={styles.profileButton}>
+            <Image
+              source={require('../../assets/images/profilepic.png')}
+              style={styles.headerImage}
+            />
+          </TouchableOpacity>
+        </View>
         <Text style={styles.text}>Hi, {fname} 👋</Text>
       </View>
 
       <View>
-          <Image source={logo} // Adjust the path to your image
-            style={styles.iii}/>
+        <Image source={logo} style={styles.iii} />
       </View>
 
-
-      
       <TouchableOpacity onPress={() => router.push("./1_CamPermission")} style={styles.box}>
         <Image
           style={styles.post5Icon}
@@ -138,45 +143,28 @@ const [loading, setLoading] = useState(true);
         <Text style={styles.boxText}>Disaster in your area</Text>
       </TouchableOpacity>
 
-
       <View style={styles.scrollContainer}>
-      <Text style={styles.scrollTitle}>Rescue Operations on Field</Text>
-
-
-       <ScrollView style={styles.scrollBox}>
-      {loading ? (
-        <Text style={styles.scrollText}>Loading...</Text>
-      ) : disasterReports.length === 0 ? (
-        <Text style={styles.scrollText}>
-          No rescue operations currently on field.
-        </Text>
-       ) 
-       : 
-      (
-        disasterReports.map((report) => (
-          <View key={report.id} style={styles.reportCard}>
-            
-            <Image  style={styles.post6Icon}
-          source={require("../../assets/images/Edit.png")} />
-            
-           
-
-            <Image source={{ uri: report.imageURL }} style={styles.image} />
-              <View style={styles.textContainer}>
-                <Text style={styles.location}>{report.locationName}</Text>
-                <Text style={styles.timestamp}>{report.timestamp}</Text>
-                <Text style={styles.details}>On-duty: {report.onduty}</Text>
-                <Text style={styles.details}>Requirements: {report.requirements ? 'Uploaded' : 'Not uploaded'}</Text>
-              </View>
-          </View>
-        ))
-      )
-
-
-      }
-    </ScrollView>
-
-    </View>
+        <Text style={styles.scrollTitle}>Rescue Operations on Field</Text>
+        <ScrollView style={styles.scrollBox}>
+          {loading ? (
+            <Text style={styles.scrollText}>Loading...</Text>
+          ) : disasterReports.length === 0 ? (
+            <Text style={styles.scrollText}>No rescue operations currently on field.</Text>
+          ) : (
+            disasterReports.map((report) => (
+              <TouchableOpacity key={report.id} style={styles.reportCard} onPress={() => handleShowRequirements(report.id)}>
+                <Image source={{ uri: report.imageURL }} style={styles.image} />
+                <View style={styles.textContainer}>
+                  <Text style={styles.location}>{report.locationName}</Text>
+                  <Text style={styles.timestamp}>{report.timestamp}</Text>
+                  <Text style={styles.details}>On-duty: {report.onduty}</Text>
+                  <Text style={styles.details}>Requirements: {report.requirements ? 'Uploaded' : 'Not uploaded'}</Text>
+                </View>
+              </TouchableOpacity>
+            ))
+          )}
+        </ScrollView>
+      </View>
 
       <TouchableOpacity onPress={handleSignOut} style={styles.signOutButton}>
         <Text style={styles.signOutText}>Sign Out</Text>
@@ -184,59 +172,84 @@ const [loading, setLoading] = useState(true);
       <View>
         <Text style={styles.resq}>ResQ</Text>
       </View>
-      
-     
+
+      <Modal
+        visible={modalVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <ScrollView>
+              <Text style={styles.modalTitle}>Submitted Requirements</Text>
+              <Text style={styles.modalSubtitle}>Number of Camps: {numCamps}</Text>
+              {campCounts.map((members, index) => (
+                <Text key={index} style={styles.modalSubtitle}>Members in Camp {index + 1}: {members}</Text>
+              ))}
+              {requirements.map((req, index) => (
+                <View key={index} style={styles.requirementItem}>
+                  <Text style={styles.requirementText}>
+                    {req.type}: {req.quantityNeeded} KG/L needed, {req.quantityCollected} KG/L collected
+                  </Text>
+                </View>
+              ))}
+            </ScrollView>
+
+            
+            <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.modalButton}>
+
+
+
+              <Text style={styles.modalButtonText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-
-  
- 
   container: {
-    top:-10,
-    display:"flex",
+    top: -10,
+    display: "flex",
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "white",
     height: "100%",
     width: "100%",
-    overflow:"hidden",
+    overflow: "hidden",
     marginBottom: -40,
     marginTop: -150,
-    
   },
   textContainer: {
     width: '100%',
     textAlign: "left",
     marginBottom: 0,
-    //marginTop:15,
-    marginLeft:105,
-    top:-90
+    marginLeft: 105,
+    top: -90
   },
   textContainerfirst: {
     width: '100%',
-    // textAlign: "left",
     marginBottom: 0,
-    //marginTop:15,
-    marginLeft:105,
-    top:-10
+    marginLeft: 105,
+    top: -10
   },
-  text:{
+  text: {
     fontSize: 30,
     fontWeight: "bold",
     marginBottom: 20,
-    textAlign:"left",
-    top:39
+    textAlign: "left",
+    top: 39
   },
-  iii:{
-      width: 250,
-      height: 150,
-      alignSelf: 'center',
-      top: 10,
-      left: 0,
+  iii: {
+    width: 250,
+    height: 150,
+    alignSelf: 'center',
+    top: 10,
+    left: 0,
   },
   box: {
     width: 360,
@@ -305,88 +318,123 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: '100%',
     marginTop: 10,
-    top:35,
-    left:-20,
-    
+    top: 35,
+    left: -20,
   },
   header: {
     fontSize: 15,
     fontWeight: 'bold',
     color: '#333',
-    left:210,
+    left: 210,
   },
   profileButton: {
-    borderRadius: 25, // Adjust the value to make the image round based on its size
+    borderRadius: 25,
     overflow: 'hidden',
-    width: 50, // Adjust the width and height as needed
+    width: 50,
     height: 50,
-    left:-50
+    left: -50
   },
   headerImage: {
     width: '100%',
     height: '100%',
-    
   },
-   scrollBox: {
-  width: 360,
-  height: 190,
-  backgroundColor: "#f0f0f0",
-  //bordercolor
- 
-  borderRadius: 25,
-  margin: 10,
-  padding: 10,
-  left:-10
-},
-scrollText: {
-  fontSize: 16,
-  marginBottom: 10,
-  color: "#333",
-},
-scrollContainer: {
-  width: 360,
-  margin: 10,
-},
-scrollTitle: {
-  fontSize: 18,
-  fontWeight: "bold",
-  marginBottom: 2,
-  marginTop:15
-},
-reportCard: {
-  backgroundColor: '#FFFFFF',
-  borderRadius: 10,
-  padding: 10,
-  marginBottom:10,
-  borderWidth: 1,
-  borderColor: '#ddd',
-  height:120
-},
-reportText: {
-  fontSize: 16,
-  color: '#333',
-},
-image: {
-  width: 90,
-  height: 90,
-  borderRadius: 5,
-  marginRight: 30,
-  marginLeft: 2,
-},
-location: {
-  fontSize: 16,
-  fontWeight: 'bold',
-  marginBottom: 5,
-},
-timestamp: {
-  fontSize: 14,
-  color: '#666',
-  marginBottom: 5,
-},
-details: {
-  fontSize: 14,
-  color: '#333',
-  marginBottom: 5,
-},
- 
+  scrollBox: {
+    width: 360,
+    height: 190,
+    backgroundColor: "#f0f0f0",
+    borderRadius: 25,
+    margin: 10,
+    padding: 10,
+    left: -10
+  },
+  scrollText: {
+    fontSize: 16,
+    marginBottom: 10,
+    color: "#333",
+  },
+  scrollContainer: {
+    width: 360,
+    margin: 10,
+  },
+  scrollTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 2,
+    marginTop: 15
+  },
+  reportCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 10,
+    padding: 10,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    height: 120
+  },
+  reportText: {
+    fontSize: 16,
+    color: '#333',
+  },
+  image: {
+    width: 90,
+    height: 90,
+    borderRadius: 5,
+    marginRight: 30,
+    marginLeft: 2,
+  },
+  location: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  timestamp: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 5,
+  },
+  details: {
+    fontSize: 14,
+    color: '#333',
+    marginBottom: 5,
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContainer: {
+    width: '80%',
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  modalSubtitle: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  requirementItem: {
+    marginBottom: 10,
+  },
+  requirementText: {
+    fontSize: 14,
+  },
+  modalButton: {
+    marginTop: 20,
+    backgroundColor: '#A53821',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+  },
+  modalButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
 });
