@@ -216,11 +216,6 @@ export default function App() {
               ))}
             </ScrollView>
 
-           
-            <TouchableOpacity onPress={() => markComp()} style={styles.modalButton}>
-            <Text style={styles.modalButtonText}>Operation Completed</Text>
-            </TouchableOpacity>
-
 
             <TouchableOpacity onPress={() => editpage()} style={styles.modalButton}>
             <Text style={styles.modalButtonText}>Edit</Text>

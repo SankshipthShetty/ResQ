@@ -21,6 +21,7 @@ export default function Userpage4() {
   const [locationLoading, setLocationLoading] = useState(false);
   const [onduty, setOnduty] = useState('None');
   const [requirementstatus, setRequirements] = useState(false);
+  const [completed, setCompleted] = useState(false);
 
   const router = useRouter();
 
@@ -35,6 +36,7 @@ export default function Userpage4() {
         imageUrl: decodedImageUrl,
         onduty,
         requirementstatus,
+        completed: false, // Provide a default value for 'completed'
         timestamp: new Date() 
       });
       Alert.alert(
