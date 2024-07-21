@@ -65,12 +65,20 @@ const RealTimeChecker = () => {
     setSelectedReport(null);
   };
 
-  const handleNavigate = (selectedReport:TestData) => {
-    const parameter=selectedReport.id;
-    // console.log(parameter);
-    router.push(`./6_ShelfLife?param=${parameter}`); // Change './NextPage' to the actual path of your next page
+  const handleNavigate = (selectedReport: TestData) => {
+    const parameter = selectedReport.id;
+    const coordinates = selectedReport.lOC.match(/Lat: ([\d.]+), Lon: ([\d.]+)/);
+  
+    if (coordinates && coordinates.length === 3) {
+      const lat = coordinates[1];
+      const lon = coordinates[2];
+      router.push(`./6_ShelfLife?param=${parameter}&lat=${lat}&lon=${lon}`);
+    } else {
+      Alert.alert('Invalid location format');
+    }
     handleCloseModal();
   };
+  
 
   const handleOpenInMaps = (location: string) => {
     const coordinates = location.match(/Lat: ([\d.]+), Lon: ([\d.]+)/);

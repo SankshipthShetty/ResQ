@@ -27,6 +27,9 @@ interface FruitDetail {
   // quantityCollected: number;
 }
 
+
+
+
 const fruitPayloads: Record<string, object> = {
   Apple: { Fruit_Apple: true, Fruit_Banana: false, Fruit_Grapes: false, Fruit_Jackfruit: false, Fruit_Lemon: false, Fruit_Litchi: false, Fruit_Mango: false, Fruit_Papaya: false, Fruit_Plum: false, Fruit_Tomato: false },
   Banana: { Fruit_Apple: true, Fruit_Banana: true, Fruit_Grapes: false, Fruit_Jackfruit: false, Fruit_Lemon: false, Fruit_Litchi: false, Fruit_Mango: false, Fruit_Papaya: false, Fruit_Plum: false, Fruit_Tomato: false },
@@ -48,10 +51,19 @@ export default function App() {
   const [userId, setUserId] = useState<string | null>(null);
   const [dataChanged, setDataChanged] = useState<boolean>(false);
   const router = useRouter();
-  const { param } = useGlobalSearchParams();
+  const { param ,lat,lon} = useGlobalSearchParams();
+  // const [travelTime, setTravelTime] = useState<string | null>(null);
+  const [travelTime, setTravelTime] = useState<string | null>(null);
 
   useEffect(() => {
-    
+    if (param && lat && lon) {
+      // You can now use param, lat, and lon in your component
+
+      console.log(`disaster Latitude: ${lat}`);
+      console.log(`disaster Longitude: ${lon}`);
+    }
+
+
     const getLocation = async () => {
       const userstate=await AsyncStorage.getItem('UserId');
       setUserId(userstate);
@@ -64,6 +76,8 @@ export default function App() {
         const location = await Location.getCurrentPositionAsync({});
         setLocation(location);
         if (location.coords.latitude && location.coords.longitude) {
+          const travelTime = await fetchRouteDirections(location.coords.latitude, location.coords.longitude, lat, lon);
+          setTravelTime(travelTime);
           fetchWeather(location.coords.latitude, location.coords.longitude);
         }
       } catch (error) {
@@ -96,6 +110,39 @@ export default function App() {
    
     fetchRequirements();
   }, []);
+
+
+  const fetchRouteDirections = async (sourceLat: number, sourceLon: number, destLat: number, destLon: number) => {
+    const apiKey = 'GBbSOvkTtCg7bF3sUzKJFsM0okvNfxAj4B0xPcLcyXGNqO1qNVguJQQJ99AGACYeBjFPDDZUAAAgAZMPw3AT';
+    const apiUrl = `https://atlas.microsoft.com/route/directions/json`;
+  
+    const params = {
+      'subscription-key': apiKey,
+      'api-version': '1.0',
+      query: `${sourceLat},${sourceLon}:${destLat},${destLon}`,
+      travelMode: 'truck',
+      traffic: 'true',
+      departAt: '2025-03-29T08:00:20',
+      computeTravelTimeFor: 'all',
+    };
+  
+    try {
+      const response = await axios.get(apiUrl, { params });
+      if (response.data.routes && response.data.routes.length > 0) {
+        const travelTimeInSeconds = response.data.routes[0].summary.travelTimeInSeconds;
+        const travelTimeInHours = travelTimeInSeconds / 3600
+        const travelTimeIndays = Math.round(travelTimeInHours / 10).toFixed(0);
+        return travelTimeIndays;
+      } else {
+        throw new Error('No route found');
+      }
+      // return response;
+    } catch (error) {
+      console.error('Error fetching route directions:', error.response ? error.response.data : error.message);
+      throw error;
+    }
+  };
+  
 
   const fetchWeather = async (latitude: number, longitude: number) => {
     const options = {
@@ -148,7 +195,7 @@ export default function App() {
         .then(responseText => {
           try {
             const data = JSON.parse(responseText); // Try parsing the text to JSON
-            const canDonate = data.predicted_days_until_spoilage > 5; // calculated distance to be put here
+            const canDonate = travelTime !== null && data.predicted_days_until_spoilage > travelTime; // calculated distance to be put here
             const requirement = requirements.find(req => req.type === item);
             const quantityNeeded = requirement ? requirement.quantityNeeded : 0;
             setFruitDetails(prevDetails => [
@@ -292,17 +339,30 @@ export default function App() {
 
 
   let text = 'Fetching location...';
+  let cur_lat ;
+  let cur_lon ;
   if (errorMsg) { 
     text = errorMsg;
   } else if (location) {
     text = `Latitude: ${location.coords.latitude}, Longitude: ${location.coords.longitude}`;
+     cur_lat = location.coords.latitude;
+     cur_lon = location.coords.longitude;
   }
+  
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.paragraph}>{text}</Text>
+      {/* <View >
+      <Text>Latitude: {lat}</Text>
+      <Text>Longitude: {lon}</Text>
+      {travelTime && (
+        <Text>Travel Time to Disaster Location: {travelTime} days</Text>
+      )}
+    </View>
+      <Text style={styles.paragraph}>{cur_lat}</Text>
       <Text style={styles.paragraph}>Temperature: {temperature}°C</Text>
-      <Text style={styles.paragraph}>Humidity: {humidity}%</Text>
+      <Text style={styles.paragraph}>Humidity: {humidity}%</Text> */}
+     
       <Text style={styles.heading}>Select a Fruit:</Text>
       <View style={styles.requirementsContainer}>
         {requirements.map((item, index) => {
@@ -330,6 +390,9 @@ export default function App() {
             <View key={index} style={styles.detail}>
               <Text style={styles.detailHeading}>{detail.fruit}</Text>
               <Text style={styles.paragraph}>Days until spoilage: {detail.predictedDays}</Text>
+              {travelTime && (
+        <Text>Travel Time to Disaster Location: {travelTime} days</Text>
+      )}
               <Text style={styles.paragraph}>{detail.donationMessage}</Text>
               {detail.canDonate && (
                 <>
