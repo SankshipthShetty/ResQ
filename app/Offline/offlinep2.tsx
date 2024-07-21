@@ -1,6 +1,3 @@
-
-//enable wifi
-
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -9,7 +6,7 @@ import * as Network from 'expo-network';
 
 export default function NetworkErrorScreen() {
   const router = useRouter();
-  const [isWifiEnabled, setIsWifiEnabled] = useState<boolean | undefined>(false);
+  const [isWifiEnabled, setIsWifiEnabled] = useState<boolean | null>(null); // Changed to null
 
   const openWiFiSettings = () => {
     IntentLauncher.startActivityAsync(IntentLauncher.ActivityAction.WIFI_SETTINGS);
@@ -21,7 +18,7 @@ export default function NetworkErrorScreen() {
 
   const checkWifiStatus = async () => {
     const networkState = await Network.getNetworkStateAsync();
-    setIsWifiEnabled(networkState.isConnected && networkState.type === Network.NetworkStateType.WIFI);
+    setIsWifiEnabled(networkState.isConnected && networkState.type === Network.NetworkStateType.WIFI?true:false);
   };
 
   useEffect(() => {
@@ -33,7 +30,7 @@ export default function NetworkErrorScreen() {
   }, []);
 
   const handleContinue = () => {
-    if (isWifiEnabled) {
+    if (isWifiEnabled === true) { // Updated check to handle null
       router.push("./offlinep4");
     } else {
       Alert.alert("WiFi Required", "Please turn on your WiFi.");

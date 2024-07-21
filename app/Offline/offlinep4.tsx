@@ -1,4 +1,4 @@
-//LoRa
+// //LoRa
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -139,3 +139,175 @@ const styles = StyleSheet.create({
 });
 
 export default ExampleScreen;
+
+
+// import React, { useState, useEffect } from 'react';
+// import { View, Text, StyleSheet, Button } from 'react-native';
+// import * as Network from 'expo-network';
+
+// const WifiInfoPage = () => {
+//   const [ipAddress, setIpAddress] = useState('');
+//   const [loading, setLoading] = useState(true);
+
+//   useEffect(() => {
+//     fetchIpAddress();
+//   }, []);
+
+//   const fetchIpAddress = async () => {
+//     setLoading(true);
+//     try {
+//       const ip = await Network.getIpAddressAsync();
+//       setIpAddress(ip);
+//     } catch (error) {
+//       console.error('Failed to get IP address:', error);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   return (
+//     <View style={styles.container}>
+//       <Text style={styles.title}>Connected Wi-Fi Information</Text>
+//       {loading ? (
+//         <Text style={styles.info}>Loading...</Text>
+//       ) : (
+//         <Text style={styles.info}>IP Address: {ipAddress}</Text>
+//       )}
+//       <Button title="Refresh" onPress={fetchIpAddress} />
+//     </View>
+//   );
+// };
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//     padding: 16,
+//   },
+//   title: {
+//     fontSize: 24,
+//     marginBottom: 16,
+//   },
+//   info: {
+//     fontSize: 18,
+//   },
+// });
+
+// export default WifiInfoPage;
+
+// import React, { useState, useEffect } from 'react';
+// import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
+// import * as Network from 'expo-network';
+// import * as NetInfo from '@react-native-community/netinfo';
+
+// const WifiInfoPage = () => {
+//   const [ipAddress, setIpAddress] = useState('192.168.4.2'); // Default IP for your IoT device
+//   const [loading, setLoading] = useState(true);
+//   const [message, setMessage] = useState('');
+//   const [response, setResponse] = useState('');
+//   const [isConnected, setIsConnected] = useState(false);
+
+//   useEffect(() => {
+//     fetchIpAddress();
+//     const unsubscribe = NetInfo.addEventListener(state => {
+//       setIsConnected(state.isConnected);
+//     });
+
+//     return () => {
+//       unsubscribe();
+//     };
+//   }, []);
+
+//   const fetchIpAddress = async () => {
+//     setLoading(true);
+//     try {
+//       const ip = await Network.getIpAddressAsync();
+//       setIpAddress( '192.168.4.2'); // Default to IoT device IP if none found
+//     } catch (error) {
+//       console.error('Failed to get IP address:', error);
+//       setIpAddress('192.168.4.2'); // Default to IoT device IP on error
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const sendMessage = async () => {
+//     if (ipAddress && message) {
+//       try {
+//         const response = await fetch(`http://${ipAddress}/send-message`, {
+//           method: 'POST',
+//           headers: {
+//             'Content-Type': 'application/json',
+//           },
+//           body: JSON.stringify({ message }),
+//         });
+//         const result = await response.json();
+//         setResponse(result.message);
+//       } catch (error) {
+//         console.error('Failed to send message:', error);
+//         setResponse('Failed to send message');
+//       }
+//     } else {
+//       setResponse('IP address or message is missing');
+//     }
+//   };
+
+//   const handleSendMessage = () => {
+//     if (isConnected) {
+//       Alert.alert('Network Info', 'You are connected to the internet. Ensure you are on the same local network as your IoT device.');
+//     }
+//     sendMessage();
+//   };
+
+//   return (
+//     <View style={styles.container}>
+//       <Text style={styles.title}>Connected Wi-Fi Information</Text>
+//       {loading ? (
+//         <Text style={styles.info}>Loading...</Text>
+//       ) : (
+//         <Text style={styles.info}>IP Address: {ipAddress}</Text>
+//       )}
+//       <TextInput
+//         style={styles.input}
+//         placeholder="Enter your message"
+//         value={message}
+//         onChangeText={setMessage}
+//       />
+//       <Button title="Send Message" onPress={handleSendMessage} />
+//       {response ? <Text style={styles.response}>{response}</Text> : null}
+//       <Button title="Refresh IP" onPress={fetchIpAddress} />
+//     </View>
+//   );
+// };
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//     padding: 16,
+//   },
+//   title: {
+//     fontSize: 24,
+//     marginBottom: 16,
+//   },
+//   info: {
+//     fontSize: 18,
+//   },
+//   input: {
+//     height: 40,
+//     borderColor: 'gray',
+//     borderWidth: 1,
+//     width: '80%',
+//     marginBottom: 16,
+//     paddingLeft: 8,
+//   },
+//   response: {
+//     marginTop: 16,
+//     fontSize: 18,
+//     color: 'green',
+//   },
+// });
+
+// export default WifiInfoPage;

@@ -1,16 +1,42 @@
 {
   "cli": {
-    "version": ">= 10.0.3"
+    "version": ">= 10.2.1"
   },
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "env": {
+        "GOOGLE_SERVICES_JSON": "@GOOGLE_SERVICES_JSON",
+        "API_KEY": "@API_KEY",
+        "AUTH_DOMAIN": "@AUTH_DOMAIN",
+        "PROJECT_ID": "@PROJECT_ID",
+        "STORAGE_BUCKET": "@STORAGE_BUCKET",
+        "MESSAGING_SENDER_ID": "@MESSAGING_SENDER_ID",
+        "APP_ID": "@APP_ID"
+      }
     },
     "preview": {
-      "distribution": "internal"
+      "distribution": "internal",
+      "env": {
+        "GOOGLE_SERVICES_JSON": "@GOOGLE_SERVICES_JSON",
+        "API_KEY": "@API_KEY",
+        "AUTH_DOMAIN": "@AUTH_DOMAIN",
+        "PROJECT_ID": "@PROJECT_ID",
+        "STORAGE_BUCKET": "@STORAGE_BUCKET",
+        "APP_ID": "@APP_ID"
+      }
     },
-    "production": {}
+    "production": {
+      "env": {
+        "GOOGLE_SERVICES_JSON": "@GOOGLE_SERVICES_JSON",
+        "API_KEY": "@API_KEY",
+        "AUTH_DOMAIN": "@AUTH_DOMAIN",
+        "PROJECT_ID": "@PROJECT_ID",
+        "STORAGE_BUCKET": "@STORAGE_BUCKET",
+        "APP_ID": "@APP_ID"
+      }
+    }
   },
   "submit": {
     "production": {}
