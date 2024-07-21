@@ -25,12 +25,13 @@ type Requirement = {
 
 export default function App() {
   const [fname, setfName] = useState('');
-  const [numCamps, setNumCamps] = useState<number>(0);
-const [campCounts, setCampCounts] = useState<number[]>([]);
+  const [numCamps, setNumCamps] = useState('');
+  const [campCounts, setCampCounts] = useState<number[]>([]);
   const [requirements, setRequirements] = useState<Requirement[]>([]);
   const [newRequirement, setNewRequirement] = useState<Requirement>({ type: '', quantityNeeded: 0, quantityCollected: 0 });
   const [TeamName, setTeamName] = useState("def");
-  const [DisasterReportId,setDisasterReportId] =useState('');
+  const [DisasterReportId, setDisasterReportId] = useState('');
+  const [numDays, setNumDays] = useState('');
 
   useEffect(() => {
     const fetchTeamName = async () => {
@@ -51,7 +52,6 @@ const [campCounts, setCampCounts] = useState<number[]>([]);
     fetchDisasterReportId();
   }, []);
 
-
   const handleSignOut = async () => {
     try {
       await signOut(auth);
@@ -64,7 +64,7 @@ const [campCounts, setCampCounts] = useState<number[]>([]);
 
   const handleAddRequirement = () => {
     setRequirements([...requirements, newRequirement]);
-    setNewRequirement({ type: '', quantityNeeded:0 , quantityCollected: 0 });
+    setNewRequirement({ type: '', quantityNeeded: 0, quantityCollected: 0 });
   };
 
   const handleSaveRequirements = async () => {
@@ -72,7 +72,7 @@ const [campCounts, setCampCounts] = useState<number[]>([]);
       console.error("Disaster report ID is not set");
       return;
     }
-  
+
     try {
       const reportRef = doc(firestore, 'DisasterReports', DisasterReportId);
       await updateDoc(reportRef, {
@@ -81,42 +81,41 @@ const [campCounts, setCampCounts] = useState<number[]>([]);
         requirements: arrayUnion(...requirements),
         numCamps: numCamps,
         campCounts: campCounts,
+        numDays: numDays,
       });
-  
+
       const disasterDonorsRef = collection(reportRef, 'DisasterDonors');
-  
+
       // Process each requirement
       for (const req of requirements) {
         const reqDocRef = doc(disasterDonorsRef, req.type);
-  
+
         // Create or update the document in DisasterDonors
         await setDoc(reqDocRef, {
           TotalQuantityCollected: 0,
           QuantityNeeded: req.quantityNeeded,
         }, { merge: true });
       }
-  
+
       console.log("Requirements added successfully!");
       router.push('./4_ConfirmDisaster');
     } catch (error) {
       console.error("Error adding requirements: ", error);
     }
   };
-  
 
-const handleNumCampsChange = (value: string) => {
-  const numCampsInt = parseInt(value, 10);
-  setNumCamps(numCampsInt);
-  setCampCounts(Array(numCampsInt).fill(0));
-};
+  const handleNumCampsChange = (value: string) => {
+    const numCampsInt = parseInt(value, 10);
+    setNumCamps(numCampsInt.toString());
+    setCampCounts(Array(numCampsInt).fill(0));
+  };
 
-const handleCampCountChange = (index: number, value: string) => {
-  const numMembers = parseInt(value, 10);
-  const newCampCounts = [...campCounts];
-  newCampCounts[index] = numMembers;
-  setCampCounts(newCampCounts);
-};
-
+  const handleCampCountChange = (index: number, value: string) => {
+    const numMembers = parseInt(value, 10);
+    const newCampCounts = [...campCounts];
+    newCampCounts[index] = numMembers;
+    setCampCounts(newCampCounts);
+  };
 
   useEffect(() => {
     const fetchName = async () => {
@@ -162,6 +161,13 @@ const handleCampCountChange = (index: number, value: string) => {
             keyboardType="numeric"
           />
         ))}
+        <TextInput
+          placeholder="Number of Days"
+          value={numDays.toString()}
+          onChangeText={(value) => setNumDays(parseInt(value, 10).toString())}
+          style={styles.input}
+          keyboardType="numeric"
+        />
         <Picker
           selectedValue={newRequirement.type}
           onValueChange={(itemValue) =>
@@ -179,8 +185,7 @@ const handleCampCountChange = (index: number, value: string) => {
           <Picker.Item label="Litchi" value="Litchi" />
           <Picker.Item label="Mango" value="Mango" />
           <Picker.Item label="Papaya" value="Papaya" />
-          
-        {/* Add more items as needed */}
+          {/* Add more items as needed */}
         </Picker>
         <TextInput
           placeholder="Enter Quantity"
@@ -193,7 +198,6 @@ const handleCampCountChange = (index: number, value: string) => {
           style={styles.input}
           keyboardType="numeric"
         />
-        
         <TouchableOpacity onPress={handleAddRequirement} style={styles.saveButton}>
           <Text style={styles.saveButtonText}>Add Requirements</Text>
         </TouchableOpacity>
@@ -234,11 +238,11 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   heading:{
-fontSize: 20,
-marginTop:10,
-marginBottom: 20,
-textAlign: "center",
-fontWeight: "bold",
+    fontSize: 20,
+    marginTop:10,
+    marginBottom: 20,
+    textAlign: "center",
+    fontWeight: "bold",
   },
   resq: {
     marginTop: 20,
@@ -258,85 +262,88 @@ fontWeight: "bold",
     alignSelf: "center",
   },
   signOutText: {
-    color: "#FFFFFF",
+    color: "#fff",
     fontSize: 18,
     fontWeight: "bold",
   },
-  headerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    width: '100%',
-  },
-  header: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  profileButton: {
-    borderRadius: 30,
-    overflow: 'hidden',
-    width: 60,
-    height: 60,
-  },
-  headerImage: {
-    width: '100%',
-    height: '100%',
-  },
-  formContainer: {
-    width: '100%',
-    marginBottom: 20,
-    backgroundColor: "#fff",
-    padding: 20,
-    borderRadius: 10,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 10,
-    marginVertical: 5,
-    borderRadius: 5,
-    width: '100%',
-  },
-  picker: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    marginVertical: 5,
-    borderRadius: 5,
-    width: '100%',
-  },
-  saveButton: {
-    width: '100%',
+  button: {
+    width: 200,
     height: 50,
-    backgroundColor: "#A53821",
+    backgroundColor: "#007bff",
     borderRadius: 10,
     justifyContent: "center",
     alignItems: "center",
     marginTop: 20,
   },
+  buttonText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  label: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  profileButton: {
+    marginLeft: "auto",
+    marginBottom: 20,
+  },
+  headerContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  headerImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+  },
+  header: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#333",
+  },
+  formContainer: {
+    marginBottom: 30,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 10,
+    padding: 10,
+    fontSize: 18,
+    marginBottom: 10,
+    width: '100%',
+  },
+  picker: {
+    height: 50,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 10,
+    marginBottom: 10,
+    width: '100%',
+  },
+  saveButton: {
+    width: "100%",
+    height: 50,
+    backgroundColor: "#CD853F",
+    borderRadius: 100,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 10,
+    alignSelf: "center",
+  },
   saveButtonText: {
-    color: "#FFFFFF",
+    color: "#fff",
     fontSize: 18,
     fontWeight: "bold",
   },
   requirementItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    marginVertical: 5,
     padding: 10,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    
+    marginVertical: 5,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    elevation: 2,
   },
 });
-

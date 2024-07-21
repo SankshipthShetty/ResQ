@@ -19,7 +19,19 @@ import { onSnapshot, collection, query, where, doc, getDoc } from "firebase/fire
 import { firestore } from "@/constants/firebaseConfig";
 import moment from "moment";
 
+const markComp = () => {
+  console.log("Operation marked as completed");
+};
+
 export default function App() {
+  // Define the editpage function
+  const editpage = () => {
+    console.log("Edit page function called");
+    router.push({
+      pathname: './6_EditForm', // Adjust the path according to your navigation setup
+      params: { reportId: selectedReportId }, // Pass the selected report ID
+    });
+  };
   const [fname, setfName] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [requirements, setRequirements] = useState<{ type: string; quantityNeeded: string; quantityCollected: string; }[]>([]);
@@ -28,6 +40,7 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [numCamps, setNumCamps] = useState(0);
   const [campCounts, setCampCounts] = useState<number[]>([]);
+  const [numDays, setNumDays] = useState(0); // New state for Number of Days
 
   const fetchRequirements = async (reportId: string) => {
     try {
@@ -44,6 +57,7 @@ export default function App() {
         setRequirements(formattedRequirements);
         setNumCamps(data.numCamps || 0);
         setCampCounts(data.campCounts || []);
+        setNumDays(data.numDays || 0);
       }
     } catch (error) {
       console.error("Error fetching requirements: ", error);
@@ -78,6 +92,7 @@ export default function App() {
         const newData = snapshot.docs.map((doc) => {
           const docData = doc.data();
           const timestamp = docData.timestamp?.toDate();
+          
           const formattedTimestamp = timestamp
             ? moment(timestamp).format("MMM D, YYYY h:mm A")
             : "Unknown Time";
@@ -102,10 +117,12 @@ export default function App() {
     return () => unsubscribe();
   }, []);
 
-  const handleShowRequirements = (reportId: string) => {
+  const handleShowRequirements = async (reportId: string) => {
+    await AsyncStorage.setItem('selectedReportId', reportId); 
     fetchRequirements(reportId);
     setSelectedReportId(reportId);
     setModalVisible(true);
+   
   };
 
   return (
@@ -184,8 +201,11 @@ export default function App() {
             <ScrollView>
               <Text style={styles.modalTitle}>Submitted Requirements</Text>
               <Text style={styles.modalSubtitle}>Number of Camps: {numCamps}</Text>
+              <Text style={styles.modalSubtitle}>Number of Days: {numDays}</Text> 
+
               {campCounts.map((members, index) => (
                 <Text key={index} style={styles.modalSubtitle}>Members in Camp {index + 1}: {members}</Text>
+                
               ))}
               {requirements.map((req, index) => (
                 <View key={index} style={styles.requirementItem}>
@@ -196,13 +216,22 @@ export default function App() {
               ))}
             </ScrollView>
 
+           
+            <TouchableOpacity onPress={() => markComp()} style={styles.modalButton}>
+            <Text style={styles.modalButtonText}>Operation Completed</Text>
+            </TouchableOpacity>
+
+
+            <TouchableOpacity onPress={() => editpage()} style={styles.modalButton}>
+            <Text style={styles.modalButtonText}>Edit</Text>
+            </TouchableOpacity> 
+
             
-            <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.modalButton}>
-
-
-
+            <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.modalButtonClose}>
               <Text style={styles.modalButtonText}>Close</Text>
             </TouchableOpacity>
+
+
           </View>
         </View>
       </Modal>
@@ -427,7 +456,15 @@ const styles = StyleSheet.create({
   },
   modalButton: {
     marginTop: 20,
-    backgroundColor: '#A53821',
+    backgroundColor: '#DE5959',
+    paddingVertical: 10,
+    paddingHorizontal: 40,
+    borderRadius: 150,
+  },
+
+  modalButtonClose: {
+    marginTop: 20,
+    backgroundColor: '#580202',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 10,

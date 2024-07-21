@@ -1,140 +1,270 @@
-// import React, { useState, useEffect } from 'react';
-// import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
-// import { useNavigation, useRoute } from '@react-navigation/native';
-// import { firestore } from '@/constants/firebaseConfig';
-// import { doc, getDoc, updateDoc } from 'firebase/firestore';
-// import { Ionicons } from '@expo/vector-icons';
+import React, { useEffect, useState } from "react";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView } from "react-native";
+import { Picker } from "@react-native-picker/picker";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { firestore } from "@/constants/firebaseConfig";
+import { router } from "expo-router";
 
-// export default function EditReport() {
-//   const navigation = useNavigation();
-//   const route = useRoute();
-//   const { reportId } = route.params;
-//   const [reportData, setReportData] = useState(null);
-//   const [newRequirement, setNewRequirement] = useState('');
+const EditPage = () => {
+  const [reportId, setReportId] = useState<string | null>(null);
+  const [requirements, setRequirements] = useState<{ type: string; quantityNeeded: string; quantityCollected: string; }[]>([]);
+  const [numCamps, setNumCamps] = useState<number>(0);
+  const [campCounts, setCampCounts] = useState<number[]>([]);
+  const [numDays, setNumDays] = useState<number>(0);
 
-//   useEffect(() => {
-//     const fetchReportData = async () => {
-//       const docRef = doc(firestore, "DisasterReports", reportId);
-//       const docSnap = await getDoc(docRef);
+  useEffect(() => {
+    const fetchReportId = async () => {
+      try {
+        const id = await AsyncStorage.getItem('selectedReportId');
+        setReportId(id);
+        if (id) {
+          fetchReportDetails(id);
+        }
+      } catch (error) {
+        console.error("Error fetching report ID: ", error);
+      }
+    };
 
-//       if (docSnap.exists()) {
-//         setReportData(docSnap.data());
-//       } else {
-//         console.log("No such document!");
-//       }
-//     };
+    fetchReportId();
+  }, []);
 
-//     fetchReportData();
-//   }, [reportId]);
+  const fetchReportDetails = async (reportId: string) => {
+    try {
+      const reportRef = doc(firestore, 'DisasterReports', reportId);
+      const docSnap = await getDoc(reportRef);
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        setRequirements(data.requirements || []);
+        setNumCamps(data.numCamps || 0);
+        setCampCounts(data.campCounts || []);
+        setNumDays(data.numDays || 0);
+      }
+    } catch (error) {
+      console.error("Error fetching report details: ", error);
+    }
+  };
+  
+    const handleClose = () => {
+        
+        router.back()
 
-//   const handleUpdateReport = async () => {
-//     const docRef = doc(firestore, "DisasterReports", reportId);
 
-//     await updateDoc(docRef, reportData);
-//     navigation.goBack();
-//   };
+    };
 
-//   const handleAddRequirement = () => {
-//     if (newRequirement) {
-//       setReportData({
-//         ...reportData,
-//         requirements: [...(reportData.requirements || []), newRequirement],
-//       });
-//       setNewRequirement('');
-//     }
-//   };
+  const handleSave = async () => {
+    if (reportId) {
+      try {
+        const reportRef = doc(firestore, 'DisasterReports', reportId);
+        await updateDoc(reportRef, {
+          requirements,
+          numCamps,
+          campCounts,
+          numDays
+        });
+        Alert.alert("Success", "Report updated successfully");
+      } catch (error) {
+        console.error("Error updating report: ", error);
+        Alert.alert("Error", "Failed to update report");
+      }
+    }
+  };
 
-//   return (
-//     <View style={styles.container}>
-//       <Text style={styles.header}>Edit Report</Text>
-//       {reportData && (
-//         <ScrollView>
-//           <Text style={styles.label}>Location:</Text>
-//           <TextInput
-//             style={styles.input}
-//             value={reportData.locationName}
-//             onChangeText={(text) => setReportData({ ...reportData, locationName: text })}
-//           />
-//           <Text style={styles.label}>On-duty:</Text>
-//           <TextInput
-//             style={styles.input}
-//             value={reportData.onduty}
-//             onChangeText={(text) => setReportData({ ...reportData, onduty: text })}
-//           />
-//           <Text style={styles.label}>Requirements:</Text>
-//           {reportData.requirements && reportData.requirements.map((requirement, index) => (
-//             <TextInput
-//               key={index}
-//               style={styles.input}
-//               value={requirement}
-//               onChangeText={(text) => {
-//                 const newRequirements = [...reportData.requirements];
-//                 newRequirements[index] = text;
-//                 setReportData({ ...reportData, requirements: newRequirements });
-//               }}
-//             />
-//           ))}
-//           <View style={styles.addRequirementContainer}>
-//             <TextInput
-//               style={styles.input}
-//               placeholder="Add new requirement"
-//               value={newRequirement}
-//               onChangeText={setNewRequirement}
-//             />
-//             <TouchableOpacity onPress={handleAddRequirement} style={styles.addButton}>
-//               <Ionicons name="add-circle" size={24} color="green" />
-//             </TouchableOpacity>
-//           </View>
-//           <TouchableOpacity onPress={handleUpdateReport} style={styles.updateButton}>
-//             <Text style={styles.updateButtonText}>Update Report</Text>
-//           </TouchableOpacity>
-//         </ScrollView>
-//       )}
-//     </View>
-//   );
-// }
+  const handleRequirementChange = (index: number, field: string, value: string) => {
+    const updatedRequirements = [...requirements];
+    updatedRequirements[index] = { ...updatedRequirements[index], [field]: value };
+    setRequirements(updatedRequirements);
+  };
 
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     padding: 20,
-//     backgroundColor: 'white',
-//   },
-//   header: {
-//     fontSize: 24,
-//     fontWeight: 'bold',
-//     marginBottom: 20,
-//   },
-//   label: {
-//     fontSize: 16,
-//     fontWeight: 'bold',
-//     marginTop: 10,
-//   },
-//   input: {
-//     borderWidth: 1,
-//     borderColor: '#ccc',
-//     borderRadius: 5,
-//     padding: 10,
-//     marginTop: 5,
-//   },
-//   addRequirementContainer: {
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//     marginTop: 10,
-//   },
-//   addButton: {
-//     marginLeft: 10,
-//   },
-//   updateButton: {
-//     backgroundColor: '#007BFF',
-//     padding: 15,
-//     borderRadius: 5,
-//     alignItems: 'center',
-//     marginTop: 20,
-//   },
-//   updateButtonText: {
-//     color: 'white',
-//     fontWeight: 'bold',
-//     fontSize: 16,
-//   },
-// });
+  const handleAddRequirement = () => {
+    setRequirements([...requirements, { type: '', quantityNeeded: '', quantityCollected: '' }]);
+  };
+
+  const handleRemoveRequirement = (index: number) => {
+    const reqToRemove = requirements[index];
+    Alert.alert(
+      "Confirm Removal",
+      "Are you sure you want to remove this requirement? This action will only proceed if details match exactly.",
+      [
+        {
+          text: "Cancel",
+          style: "cancel"
+        },
+        {
+          text: "Remove",
+          onPress: () => {
+            const updatedRequirements = requirements.filter((_, i) => i !== index);
+            setRequirements(updatedRequirements);
+          }
+        }
+      ]
+    );
+  };
+
+  return (
+    <ScrollView style={styles.container}>
+      <Text style={styles.title}>Edit Disaster Report</Text>
+      {requirements.map((req, index) => (
+        <View key={index} style={styles.formGroup}>
+          <Text style={styles.label}>Type:</Text>
+          <Picker
+            selectedValue={req.type}
+            style={styles.picker}
+            onValueChange={(itemValue: string) => handleRequirementChange(index, 'type', itemValue)}
+          >
+            <Picker.Item label="Select Requirement" value="" />
+            <Picker.Item label="Apple" value="Apple" />
+            <Picker.Item label="Banana" value="Banana" />
+            <Picker.Item label="Grapes" value="Grapes" />
+            <Picker.Item label="Jackfruit" value="Jackfruit" />
+            <Picker.Item label="Lemon" value="Lemon" />
+            <Picker.Item label="Litchi" value="Litchi" />
+            <Picker.Item label="Mango" value="Mango" />
+            <Picker.Item label="Papaya" value="Papaya" />
+          </Picker>
+          <Text style={styles.label}>Quantity Needed:</Text>
+          <TextInput
+            style={styles.input}
+            keyboardType="numeric"
+            value={req.quantityNeeded}
+            onChangeText={(text) => handleRequirementChange(index, 'quantityNeeded', text)}
+          />
+          <Text style={styles.label}>Quantity Collected:</Text>
+          <TextInput
+            style={styles.input}
+            keyboardType="numeric"
+            value={req.quantityCollected}
+            onChangeText={(text) => handleRequirementChange(index, 'quantityCollected', text)}
+          />
+          <TouchableOpacity
+            style={styles.removeButton}
+            onPress={() => handleRemoveRequirement(index)}
+          >
+            <Text style={styles.removeButtonText}>Remove</Text>
+          </TouchableOpacity>
+        </View>
+      ))}
+      <TouchableOpacity style={styles.addButton} onPress={handleAddRequirement}>
+        <Text style={styles.addButtonText}>Add Requirement</Text>
+      </TouchableOpacity>
+      <View style={styles.formGroup}>
+        <Text style={styles.label}>Number of Camps:</Text>
+        <TextInput
+          style={styles.input}
+          keyboardType="numeric"
+          value={numCamps.toString()}
+          onChangeText={(text) => setNumCamps(Number(text))}
+        />
+      </View>
+      <View style={styles.formGroup}>
+        <Text style={styles.label}>Camp Counts (comma separated):</Text>
+        <TextInput
+          style={styles.input}
+          value={campCounts.join(',')}
+          onChangeText={(text) => setCampCounts(text.split(',').map(Number))}
+        />
+      </View>
+      <View style={styles.formGroup}>
+        <Text style={styles.label}>Number of Days:</Text>
+        <TextInput
+          style={styles.input}
+          keyboardType="numeric"
+          value={numDays.toString()}
+          onChangeText={(text) => setNumDays(Number(text))}
+        />
+      </View>
+      <TouchableOpacity style={styles.button} onPress={handleSave}>
+        <Text style={styles.buttonText}>Save</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.buttonclose} onPress={handleClose}>
+        <Text style={styles.buttonText}>Close</Text>
+      </TouchableOpacity>
+
+    </ScrollView>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    
+    flex: 1,
+    padding: 46,
+
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 16,
+  },
+  formGroup: {
+    marginBottom: 16,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 4,
+    padding: 8,
+    fontSize: 16,
+  },
+  picker: {
+    height: 50,
+    width: '100%',
+    borderColor: '#ddd',
+    borderWidth: 1,
+    borderRadius: 4,
+    marginBottom: 16,
+  },
+  button: {
+    backgroundColor: '#460707',
+    padding: 16,
+    borderRadius: 40,
+    alignItems: 'center',
+    marginBottom:90
+  },
+  buttonclose: {
+    backgroundColor: '#460707',
+    padding: 16,
+    borderRadius: 900,
+    alignItems: 'center',
+    marginBottom:90,
+    top:-65,
+   
+  },
+  
+  buttonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  addButton: {
+    backgroundColor: '#28a745',
+    padding: 16,
+    borderRadius: 4,
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  addButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  removeButton: {
+    backgroundColor: '#dc3545',
+    padding: 8,
+    borderRadius: 4,
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  removeButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+});
+
+export default EditPage;
