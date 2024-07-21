@@ -379,7 +379,8 @@ export default function App() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <View >
+
+      {/* <View >
       <Text>Latitude: {lat}</Text>
       <Text>Longitude: {lon}</Text>
       <Text>humidity: {dis_humidity}</Text>
@@ -388,16 +389,12 @@ export default function App() {
         <Text>Travel Time to Disaster Location: {travelTime} days</Text>
       )}
     </View>
-    {/* const [humidity, setHumidity] = useState<number | null>(null);
-  const [dis_temperature,dis_setTemperature] = useState<number | null>(null);
-  const [dis_humidity, dis_setHumidity] = useState<number | null>(null);
-  const [averageTemp, setAverageTemp] = useState<number | null>(null);
-  const [averageHumidity, setAverageHumidity] = useState<number | null>(null); */}
+ 
       <Text style={styles.paragraph}>{text}</Text>
       <Text style={styles.paragraph}>Temperature: {temperature}°C</Text>
       <Text style={styles.paragraph}>Humidity: {humidity}%</Text>
       <Text style={styles.paragraph}>av_temp: {averageTemp}%</Text>
-      <Text style={styles.paragraph}>av_hum: {averageHumidity}%</Text>
+      <Text style={styles.paragraph}>av_hum: {averageHumidity}%</Text> */}
      
       <Text style={styles.heading}>Select a Fruit:</Text>
       <View style={styles.requirementsContainer}>
