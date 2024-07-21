@@ -11,6 +11,7 @@ import { useRouter, useGlobalSearchParams } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import moment from 'moment';
 
+
 interface Requirement {
   type: string;
   quantityNeeded: number;
@@ -46,13 +47,18 @@ export default function App() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [temperature, setTemperature] = useState<number | null>(null);
   const [humidity, setHumidity] = useState<number | null>(null);
+  const [dis_temperature,dis_setTemperature] = useState<number | null>(null);
+  const [dis_humidity, dis_setHumidity] = useState<number | null>(null);
+  const [averageTemp, setAverageTemp] = useState<number | null>(null);
+  const [averageHumidity, setAverageHumidity] = useState<number | null>(null);
   const [fruitDetails, setFruitDetails] = useState<FruitDetail[]>([]);
   const [requirements, setRequirements] = useState<Requirement[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
   const [dataChanged, setDataChanged] = useState<boolean>(false);
+  const [tempFetched, setTempFetched] = useState({ current: false, disaster: false });
   const router = useRouter();
   const { param ,lat,lon} = useGlobalSearchParams();
-  // const [travelTime, setTravelTime] = useState<string | null>(null);
+ 
   const [travelTime, setTravelTime] = useState<string | null>(null);
 
   useEffect(() => {
@@ -75,10 +81,11 @@ export default function App() {
       try {
         const location = await Location.getCurrentPositionAsync({});
         setLocation(location);
-        if (location.coords.latitude && location.coords.longitude) {
+        if (location.coords.latitude && location.coords.longitude && lat && lon) {
           const travelTime = await fetchRouteDirections(location.coords.latitude, location.coords.longitude, lat, lon);
           setTravelTime(travelTime);
-          fetchWeather(location.coords.latitude, location.coords.longitude);
+          fetchWeather(location.coords.latitude, location.coords.longitude,'current');
+          fetchWeather(Number(lat), Number(lon), 'disaster');
         }
       } catch (error) {
         setErrorMsg('Error fetching location');
@@ -144,7 +151,7 @@ export default function App() {
   };
   
 
-  const fetchWeather = async (latitude: number, longitude: number) => {
+  const fetchWeather = async (latitude: number, longitude: number,locationType: 'current' | 'disaster') => {
     const options = {
       method: 'GET',
       url: 'https://tomorrow-io1.p.rapidapi.com/v4/weather/forecast',
@@ -161,13 +168,33 @@ export default function App() {
     try {
       const response = await axios.request(options);
       const hourlyData = response.data.timelines.hourly[0].values;
-      setTemperature(hourlyData.temperature);
-      setHumidity(hourlyData.humidity);
+      const temp = hourlyData.temperature;
+      const hum = hourlyData.humidity;
+      if (locationType === 'current') {
+        setTemperature(temp);
+        setHumidity(hum);
+        setTempFetched(prev => ({ ...prev, current: true }));
+      } else if (locationType === 'disaster') {
+        dis_setTemperature(temp);
+        dis_setHumidity(hum);
+        setTempFetched(prev => ({ ...prev, disaster: true }));
+      }
     } catch (error) {
       console.error('Error fetching weather:', error);
       setErrorMsg('Error fetching weather data');
     }
   };
+
+  useEffect(() => {
+    if (tempFetched.current && tempFetched.disaster) {
+      const avgTemp = ((temperature + dis_temperature) / 2).toFixed(0);
+      const avgHumidity = ((humidity + dis_humidity) / 2).toFixed(0);
+  
+      setAverageTemp(Number(avgTemp));
+      setAverageHumidity(Number(avgHumidity));
+    }
+  }, [tempFetched, temperature, dis_temperature, humidity, dis_humidity]);
+  
 
   const handleRequirementClick = (item: string) => {
     const detailIndex = fruitDetails.findIndex(detail => detail.fruit === item);
@@ -177,8 +204,8 @@ export default function App() {
     } else {
       const apiEndpoint = 'https://expiry-food.onrender.com/predict';
       const basePayload = {
-        Temp: temperature ?? 0,
-        Humidity: humidity ?? 0,
+        Temp: averageTemp ?? 0,
+        Humidity: averageHumidity ?? 0,
         CO2: 300, // should fetch from CO2 API here
       };
       const fruitPayload = fruitPayloads[item] || {};
@@ -352,16 +379,25 @@ export default function App() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* <View >
+      <View >
       <Text>Latitude: {lat}</Text>
       <Text>Longitude: {lon}</Text>
+      <Text>humidity: {dis_humidity}</Text>
+      <Text>temp: {dis_temperature}</Text>
       {travelTime && (
         <Text>Travel Time to Disaster Location: {travelTime} days</Text>
       )}
     </View>
-      <Text style={styles.paragraph}>{cur_lat}</Text>
+    {/* const [humidity, setHumidity] = useState<number | null>(null);
+  const [dis_temperature,dis_setTemperature] = useState<number | null>(null);
+  const [dis_humidity, dis_setHumidity] = useState<number | null>(null);
+  const [averageTemp, setAverageTemp] = useState<number | null>(null);
+  const [averageHumidity, setAverageHumidity] = useState<number | null>(null); */}
+      <Text style={styles.paragraph}>{text}</Text>
       <Text style={styles.paragraph}>Temperature: {temperature}°C</Text>
-      <Text style={styles.paragraph}>Humidity: {humidity}%</Text> */}
+      <Text style={styles.paragraph}>Humidity: {humidity}%</Text>
+      <Text style={styles.paragraph}>av_temp: {averageTemp}%</Text>
+      <Text style={styles.paragraph}>av_hum: {averageHumidity}%</Text>
      
       <Text style={styles.heading}>Select a Fruit:</Text>
       <View style={styles.requirementsContainer}>
