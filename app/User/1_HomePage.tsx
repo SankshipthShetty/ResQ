@@ -81,7 +81,7 @@ export default function App() {
         <Text style={styles.boxText}>Donation</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => router.push("../Offline/Offlinep1")} style={styles.box}>
+      <TouchableOpacity onPress={() => router.push("./10_BloodDonations")} style={styles.box}>
       
         <Image
           style={styles.post5Icon}
