@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView,
 import { Picker } from "@react-native-picker/picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { firestore } from "@/constants/firebaseConfig";
+import { firestore } from "../../constants/firebaseConfig";
 import { useRouter } from 'expo-router';
 
 const EditPage = () => {

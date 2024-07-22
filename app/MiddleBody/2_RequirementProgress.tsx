@@ -1,10 +1,13 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Linking } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Linking, Modal, Alert } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import IconButton from '@/components/IconButton';
+import { doc, deleteDoc } from 'firebase/firestore';
+import { firestore } from '../../constants/firebaseConfig';
 
 interface TestData {
   id: string;
+  completed: boolean;
   imageURL: string;
   lOC: string;
   NAME: string;
@@ -24,6 +27,7 @@ const MB2: React.FC = () => {
   const { report } = useLocalSearchParams<{ report: string }>();
   const parsedReport: TestData = report ? JSON.parse(report) : null;
   const imageURL = parsedReport?.imageURL.replace('/ReportedPictures/', '/ReportedPictures%2F');
+  const [showModal, setShowModal] = useState(false);
 
   if (!parsedReport) {
     return (
@@ -35,7 +39,7 @@ const MB2: React.FC = () => {
 
   // Calculate the ratio of fully collected requirements
   const requirements = parsedReport.requirements || [];
-  const fullyCollectedRequirements = requirements.filter(req => req.quantityNeeded == '0' );
+  const fullyCollectedRequirements = requirements.filter(req => req.quantityNeeded === '0');
   const totalRequirements = requirements.length;
   const collectedRatio = `${fullyCollectedRequirements.length}/${totalRequirements}`;
 
@@ -45,18 +49,77 @@ const MB2: React.FC = () => {
     Linking.openURL(url);
   };
 
-  const handleViewDonations =()=>{
+  const handleViewDonations = () => {
     router.push({
       pathname: './3_ViewDonors',
-      params: { report: JSON.stringify(parsedReport) }
+      params: { report: JSON.stringify(parsedReport) },
     });
   };
 
+  useEffect(() => {
+    if (parsedReport.completed) {
+      setShowModal(true);
+    }
+  }, [parsedReport.completed]);
+
+  const handleDeleteReport = () => {
+    Alert.alert(
+      "Delete Report",
+      "Are you sure you want to delete this report?",
+      [
+        {
+          text: "Cancel",
+          onPress: () => {},
+          style: "cancel"
+        },
+        {
+          text: "Yes",
+          onPress: async () => {
+            try {
+              await deleteDoc(doc(firestore, 'DisasterReports', parsedReport.id));
+              Alert.alert("Report deleted successfully");
+              console.log('Deleted record', parsedReport);
+              setShowModal(false);
+              router.back(); // Navigate back to the previous screen
+            } catch (error) {
+              Alert.alert("Error deleting report");
+            }
+          }
+        }
+      ]
+    );
+  };
+
+  console.log('Parsed Report:', parsedReport); // Debug statement
+  console.log('Collected Ratio:', collectedRatio); // Debug statement
+
   return (
     <View style={styles.container}>
+      {showModal && (
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={showModal}
+          onRequestClose={() => setShowModal(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContainer}>
+              <Text style={styles.modalTitle}>Rescue Requirement marked Completed</Text>
+              <Text style={styles.modalText}>Would you like to delete the disaster report?</Text>
+              <TouchableOpacity style={styles.button1} onPress={handleDeleteReport}>
+                <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 20, textAlign: 'center' }}>Yes</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.button2} onPress={() => setShowModal(false)}>
+                <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 20, textAlign: 'center' }}>No</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+      )}
+
       <View
         style={{
-          position: "absolute",
+          position: 'absolute',
           zIndex: 1,
           paddingTop: 50,
           left: 15,
@@ -65,8 +128,8 @@ const MB2: React.FC = () => {
       >
         <IconButton
           onPress={() => router.back()} // This will navigate back to the previous screen
-          iosName={"arrow.left.circle"}
-          androidName="arrow-back"
+          iosName={'arrow.left.circle'}
+          androidName='arrow-back'
         />
       </View>
       <View style={styles.headerContainer}>
@@ -99,7 +162,7 @@ const MB2: React.FC = () => {
         </View>
       </View>
 
-      <Text style={{ fontSize: 20, fontWeight: 'bold', marginTop: 30, marginBottom: 25 }}>Submitted Requirements:</Text>
+      <Text style={{ fontSize: 20, fontWeight: 'bold', marginTop: 15, marginBottom: 25 }}>Submitted Requirements:</Text>
 
       <View style={styles.card2}>
         <View style={styles.rowContainer}>
@@ -110,21 +173,36 @@ const MB2: React.FC = () => {
         </View>
         <View style={styles.separator} />
         <View style={{ width: '100%', alignItems: 'flex-start' }}>
-          <Text style={{ textAlign: 'left', fontWeight: 'bold', marginBottom: 2 ,marginTop:5}}>Last updated on:</Text>
+          <Text style={{ textAlign: 'left', fontWeight: 'bold', marginBottom: 2, marginTop: 5 }}>Last updated on:</Text>
           <Text style={{ textAlign: 'left', fontWeight: 'bold' }}>Last updated by: {parsedReport.dutystatus}</Text>
         </View>
       </View>
 
       <View>
-        <Text style={{ textAlign: 'center', fontWeight: 'bold', marginTop: 40, marginBottom: 20, fontSize: 25 }}>Donations From Users</Text>
+        <Text style={{ textAlign: 'center', fontWeight: 'bold', marginTop: 15, marginBottom: 20, fontSize: 25 }}>Donations From Users</Text>
       </View>
-      <View style={styles.card2}>
-        <Text style={{ textAlign: 'center', fontWeight: 'bold', marginTop: 2, fontSize: 20 }}>Requirements Satisfied:</Text>
-        <Text style={{ textAlign: 'center', fontWeight: 'bold', marginTop: 10, fontSize: 22 }}>{`${collectedRatio}`}</Text>
-        <TouchableOpacity style={styles.button}  onPress={handleViewDonations}>
-          <Text style={{ color: '#fff', fontWeight: 'bold',fontSize:20, textAlign:'center' }}>View Donations</Text>
-        </TouchableOpacity>
-      </View>
+
+      {/* Conditionally render the button */}
+      {totalRequirements > 0 && (
+        <View style={styles.card2}>
+          <Text style={{ textAlign: 'center', fontWeight: 'bold', marginTop: 2, fontSize: 20 }}>Requirements Satisfied:</Text>
+          <Text style={{ textAlign: 'center', fontWeight: 'bold', marginTop: 10, fontSize: 22 }}>{`${collectedRatio}`}</Text>
+          <TouchableOpacity style={styles.button} onPress={handleViewDonations}>
+            <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 20, textAlign: 'center' }}>View Donations</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {totalRequirements == 0 && (
+        <View style={styles.card2}>
+          <Text style={{ textAlign: 'center', fontWeight: 'bold', marginTop: 2, fontSize: 20 }}>Requirements Satisfied:</Text>
+          <Text style={{ textAlign: 'center', fontWeight: 'bold', marginTop: 10, fontSize: 22 }}>{`${collectedRatio}`}</Text>
+          {/* <TouchableOpacity style={styles.button} onPress={handleViewDonations}>
+            <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 20, textAlign: 'center' }}>View Donations</Text>
+          </TouchableOpacity> */}
+        </View>
+      )}
+
     </View>
   );
 };
@@ -168,6 +246,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.8,
     shadowRadius: 1,
     position: 'relative',
+    marginBottom: 20,
   },
   rowContainer: {
     flexDirection: 'row',
@@ -238,6 +317,44 @@ const styles = StyleSheet.create({
     marginTop: 10,
     width: 200,
     height: 40,
+  },
+  button1: {
+    backgroundColor: 'green', // Brown color
+    padding: 10,
+    borderRadius: 25,
+    marginTop: 10,
+    width: 160,
+    height: 40,
+  },
+  button2: {
+    backgroundColor: 'maroon', // Brown color
+    padding: 10,
+    borderRadius: 25,
+    marginTop: 10,
+    width: 160,
+    height: 40,
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContainer: {
+    width: '90%',
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 19,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  modalText: {
+    fontSize: 16,
+    marginBottom: 10,
   },
 });
 
