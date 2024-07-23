@@ -87,7 +87,7 @@ export default function App() {
           style={styles.post5Icon}
           source={require("../../assets/images/blood-test.png")}
         />
-        <Text style={styles.boxText}>Blood bank</Text>
+        <Text style={styles.boxText}>Blood Donation required</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={handleSignOut} style={styles.signOutButton}>
         <Text style={styles.signOutText}>Sign Out</Text>
