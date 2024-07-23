@@ -74,6 +74,12 @@ const MiddleBody = () => {
           completed: docData.completed,
         } as TestData;
       });
+      // Sort data by timestamp in descending order
+      newData.sort((a, b) => {
+        const dateA = moment(a.timestamp, 'MMM D, YYYY h:mm A');
+        const dateB = moment(b.timestamp, 'MMM D, YYYY h:mm A');
+        return dateB.diff(dateA);
+      });
       setData(newData);
       setLoading(false); // Set loading to false when data is fetched
     });
@@ -138,7 +144,7 @@ const MiddleBody = () => {
       enableOnAndroid={true}
       extraScrollHeight={30}
     >
-            <View
+      <View
         style={{
           position: 'absolute',
           zIndex: 1,

@@ -174,8 +174,7 @@ const MB2: React.FC = () => {
         </View>
         <View style={styles.separator} />
         <View style={{ width: '100%', alignItems: 'flex-start' }}>
-          <Text style={{ textAlign: 'left', fontWeight: 'bold', marginBottom: 2, marginTop: 5 }}>Last updated on:</Text>
-          <Text style={{ textAlign: 'left', fontWeight: 'bold' }}>Last updated by: {parsedReport.dutystatus}</Text>
+          <Text style={{ textAlign: 'left', fontWeight: 'bold' , marginTop:10}}>Updated by: {parsedReport.dutystatus}</Text>
         </View>
       </View>
 
