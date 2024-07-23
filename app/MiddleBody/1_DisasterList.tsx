@@ -16,10 +16,10 @@ import { collection, onSnapshot, DocumentData } from 'firebase/firestore';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import moment from 'moment';
 import { useRouter } from 'expo-router';
-import IconButton from '@/components/IconButton';
+import IconButton from '../../components/IconButton';
 import { signOut } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { auth } from '@/constants/firebaseConfig';
+import { auth } from '../../constants/firebaseConfig';
 
 interface TestData {
   id: string;

@@ -6,7 +6,7 @@ import { collection, onSnapshot, updateDoc, doc, DocumentData } from 'firebase/f
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import moment from 'moment';
 import { useRouter } from 'expo-router';
-import IconButton from '@/components/IconButton';
+import IconButton from '../../components/IconButton';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface TestData {
@@ -83,7 +83,7 @@ const RealTimeChecker = () => {
   };
 
   const handleNavigate = () => {
-    router.push('./Userpage6'); // Change './Userpage6' to the actual path of your next page
+    router.push('./5_RequirementForm'); // Change './Userpage6' to the actual path of your next page
     handleCloseModal();
   };
 
@@ -129,7 +129,7 @@ const RealTimeChecker = () => {
         }}
       >
         <IconButton
-          onPress={() => router.replace('../auth/Login')} // This will navigate back to the previous screen
+          onPress={() => router.back()} // This will navigate back to the previous screen
           iosName={'arrow.left.circle'}
           androidName="arrow-back"
         />

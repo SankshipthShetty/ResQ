@@ -13,7 +13,7 @@ import React, { useEffect, useState } from "react";
 import { Link, router } from "expo-router";
 import { signOut } from "firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { auth } from "@/constants/firebaseConfig";
+import { auth } from "../../constants/firebaseConfig";
 
 export default function App() {
   const [fname, setfName] = useState('');

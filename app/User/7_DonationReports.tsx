@@ -4,7 +4,7 @@ import { firestore } from '../../constants/firebaseConfig';
 import { collection, onSnapshot, DocumentData } from 'firebase/firestore';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useRouter } from 'expo-router';
-import IconButton from '@/components/IconButton';
+import IconButton from '../../components/IconButton';
 
 interface FundraiserData {
   id: string;

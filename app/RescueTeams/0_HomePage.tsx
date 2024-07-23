@@ -12,11 +12,11 @@ import React, { useEffect, useState } from "react";
 import { Link, router } from "expo-router";
 import { signOut } from "firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { auth } from "@/constants/firebaseConfig";
+import { auth } from "../../constants/firebaseConfig";
 import logo from '../../assets/images/image1.png';
 
 import { onSnapshot, collection, query, where, doc, getDoc } from "firebase/firestore";
-import { firestore } from "@/constants/firebaseConfig";
+import { firestore } from "../../constants/firebaseConfig";
 import moment from "moment";
 
 const markComp = () => {
