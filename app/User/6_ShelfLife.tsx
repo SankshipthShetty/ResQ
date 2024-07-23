@@ -138,7 +138,7 @@ export default function App() {
       if (response.data.routes && response.data.routes.length > 0) {
         const travelTimeInSeconds = response.data.routes[0].summary.travelTimeInSeconds;
         const travelTimeInHours = travelTimeInSeconds / 3600
-        const travelTimeIndays = Math.round(travelTimeInHours / 10).toFixed(0);
+        const travelTimeIndays = Math.round(travelTimeInHours / 6).toFixed(0);
         return travelTimeIndays;
       } else {
         throw new Error('No route found');
@@ -380,7 +380,7 @@ export default function App() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
 
-      {/* <View >
+      <View >
       <Text>Latitude: {lat}</Text>
       <Text>Longitude: {lon}</Text>
       <Text>humidity: {dis_humidity}</Text>
@@ -394,7 +394,7 @@ export default function App() {
       <Text style={styles.paragraph}>Temperature: {temperature}°C</Text>
       <Text style={styles.paragraph}>Humidity: {humidity}%</Text>
       <Text style={styles.paragraph}>av_temp: {averageTemp}%</Text>
-      <Text style={styles.paragraph}>av_hum: {averageHumidity}%</Text> */}
+      <Text style={styles.paragraph}>av_hum: {averageHumidity}%</Text>
      
       <Text style={styles.heading}>Select a Fruit:</Text>
       <View style={styles.requirementsContainer}>

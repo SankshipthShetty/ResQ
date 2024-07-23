@@ -3,6 +3,7 @@ import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, Activi
 import { useRouter } from 'expo-router';
 import { firestore } from '../../constants/firebaseConfig';
 import { collection, addDoc } from 'firebase/firestore';
+import IconButton from '@/components/IconButton';
 
 export default function BloodDonationForm() {
   const [patientName, setPatientName] = useState('');
@@ -62,12 +63,23 @@ export default function BloodDonationForm() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()}>
-          <Text style={styles.backButton}>{'< Back'}</Text>
-        </TouchableOpacity>
-        <Text style={styles.heading}>Blood Donation Request Form</Text>
+      <View
+        style={{
+          position: 'absolute',
+          zIndex: 1,
+          paddingTop: 50,
+          left: 20,
+          top: -38,
+          
+        }}
+      >
+        <IconButton
+          onPress={() => router.back()}
+          iosName="arrow.left.circle"
+          androidName="arrow-back"
+        />
       </View>
+        <Text style={styles.heading}>Blood Donation</Text>
 
       <Text style={styles.title}>Patient Name</Text>
       <TextInput
@@ -200,32 +212,39 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginLeft: 10,
+    marginBottom: 25
   },
   title: {
     fontSize: 16,
-    fontWeight: 'bold',
+    
     marginBottom: 6,
     textAlign: 'left',
     width: '100%',
-    color: 'grey',
+    color: '#495057',
   },
   input: {
     width: '100%',
     height: 50,
-    borderColor: 'gray',
+    borderColor: '#CED4DA',
     borderWidth: 1,
-    borderRadius: 10,
+    borderRadius: 8,
     marginBottom: 15,
     paddingHorizontal: 15,
+    backgroundColor: '#FFF',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
     fontSize: 16,
+    elevation: 5,
   },
   button: {
     width: '100%',
     height: 50,
-    backgroundColor: '#D9534F',
+    backgroundColor: '#bf3924',
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 10,
+    borderRadius: 8,
     marginTop: 20,
   },
   buttonText: {
