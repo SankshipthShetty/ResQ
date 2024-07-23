@@ -58,8 +58,39 @@ export default function App() {
   const [tempFetched, setTempFetched] = useState({ current: false, disaster: false });
   const router = useRouter();
   const { param ,lat,lon} = useGlobalSearchParams();
- 
+  const [co2, setCO2] = useState<number | null>(null);
   const [travelTime, setTravelTime] = useState<string | null>(null);
+
+  const fetchCO2 = async () => {
+    const options = {
+      method: 'GET',
+      url: 'https://daily-atmosphere-carbon-dioxide-concentration.p.rapidapi.com/api/co2-api',
+      headers: {
+        'x-rapidapi-key': '4d86c6faaemshcecb8787a078cd8p18f5bajsn7133309cd12f',
+        'x-rapidapi-host': 'daily-atmosphere-carbon-dioxide-concentration.p.rapidapi.com',
+      },
+    };
+
+    try {
+      const response = await axios.request(options);
+      const data = response.data;
+
+      // console.log('API response data:', data);
+
+      if (Array.isArray(data.co2) && data.co2.length > 0) {
+        // Access the latest entry (last element in the array)
+        const latestEntry = data.co2[data.co2.length - 1];
+        console.log('Latest CO2 entry:', latestEntry);
+        setCO2(latestEntry['cycle']);
+      }  else {
+      console.error('Expected an array but got:', data);
+    }
+    } catch (error) {
+      console.error('Error fetching CO2 data:', error);
+    }
+  };
+
+
 
   useEffect(() => {
     if (param && lat && lon) {
@@ -86,6 +117,8 @@ export default function App() {
           setTravelTime(travelTime);
           fetchWeather(location.coords.latitude, location.coords.longitude,'current');
           fetchWeather(Number(lat), Number(lon), 'disaster');
+          fetchCO2();
+        
         }
       } catch (error) {
         setErrorMsg('Error fetching location');
@@ -93,7 +126,12 @@ export default function App() {
       }
     };
     getLocation();
+    
+
+   
  
+
+
     // Fetch the requirements from Firestore
     const fetchRequirements = async () => {
       const disasterDocRef = doc(firestore, 'DisasterReports', param as string);
@@ -138,7 +176,7 @@ export default function App() {
       if (response.data.routes && response.data.routes.length > 0) {
         const travelTimeInSeconds = response.data.routes[0].summary.travelTimeInSeconds;
         const travelTimeInHours = travelTimeInSeconds / 3600
-        const travelTimeIndays = Math.round(travelTimeInHours / 6).toFixed(0);
+        const travelTimeIndays = Math.round(travelTimeInHours / 24).toFixed(0);
         return travelTimeIndays;
       } else {
         throw new Error('No route found');
@@ -206,7 +244,7 @@ export default function App() {
       const basePayload = {
         Temp: averageTemp ?? 0,
         Humidity: averageHumidity ?? 0,
-        CO2: 300, // should fetch from CO2 API here
+        CO2: co2, 
       };
       const fruitPayload = fruitPayloads[item] || {};
       const data = { ...basePayload, ...fruitPayload };
@@ -395,7 +433,7 @@ export default function App() {
       <Text style={styles.paragraph}>Humidity: {humidity}%</Text>
       <Text style={styles.paragraph}>av_temp: {averageTemp}%</Text>
       <Text style={styles.paragraph}>av_hum: {averageHumidity}%</Text>
-     
+      <Text>CO2 Level: {co2}</Text>
       <Text style={styles.heading}>Select a Fruit:</Text>
       <View style={styles.requirementsContainer}>
         {requirements.map((item, index) => {
