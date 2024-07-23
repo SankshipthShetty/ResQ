@@ -1,4 +1,4 @@
-import { View } from "react-native";
+ import { View } from "react-native";
 import IconButton from "./IconButton";
 import { FlashMode } from "expo-camera";
 import React from "react";

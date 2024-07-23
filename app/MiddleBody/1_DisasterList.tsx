@@ -71,6 +71,7 @@ const MiddleBody = () => {
           reqstatus: docData.requirements,
           timestamp: formattedTimestamp,
           requirements: docData.requirements || [],
+          completed: docData.completed,
         } as TestData;
       });
       setData(newData);
@@ -137,12 +138,20 @@ const MiddleBody = () => {
       enableOnAndroid={true}
       extraScrollHeight={30}
     >
-      <View> 
-      {/*style={styles.headerContainer}> */}
-        {/* <Text style={styles.headerText}>Hello, {name} 👋</Text> */}
-        <TouchableOpacity onPress={handleSignOut} style={styles.signOutButton}>
-          <Text style={styles.signOutText}>Sign Out</Text>
-        </TouchableOpacity>
+            <View
+        style={{
+          position: 'absolute',
+          zIndex: 1,
+          paddingTop: 50,
+          left: 15,
+          top: -40,
+        }}
+      >
+        <IconButton
+          onPress={() => router.back()} // This will navigate back to the previous screen
+          iosName={'arrow.left.circle'}
+          androidName='arrow-back'
+        />
       </View>
       <Text style={styles.title}>Disasters in your Locality</Text>
       {data.map((user, index) => (
