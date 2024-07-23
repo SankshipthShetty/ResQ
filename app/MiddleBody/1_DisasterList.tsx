@@ -239,11 +239,13 @@ const styles = StyleSheet.create({
   },
   card: {
     flexDirection: 'row',
-    backgroundColor: '#f8f8f8',
+    backgroundColor: '#faefed',
     padding: 15,
     borderRadius: 10,
     marginBottom: 10,
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#0000000', 
   },
   image: {
     width: 80,

@@ -1,10 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Pressable, ActivityIndicator, Modal, TouchableOpacity } from 'react-native';
+import { View, Image, Text, StyleSheet, Pressable, ActivityIndicator, Modal, TouchableOpacity, ScrollView } from 'react-native';
 import { firestore } from '../../constants/firebaseConfig';
 import { collection, onSnapshot, DocumentData } from 'firebase/firestore';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useRouter } from 'expo-router';
 import IconButton from '@/components/IconButton';
+
+// Importing the blood group images
+const bloodGroupImages: { [key: string]: any } = {
+  'A+': require('../../assets/images/bloodgroup_A+.png'),
+  'A-': require('../../assets/images/bloodgroup_A-.png'),
+  'B+': require('../../assets/images/bloodgroup_B+.png'),
+  'B-': require('../../assets/images/bloodgroup_B-.png'),
+  'AB+': require('../../assets/images/bloodgroup_AB+.png'),
+  'AB-': require('../../assets/images/bloodgroup_AB-.png'),
+  'O+': require('../../assets/images/bloodgroup_O+.png'),
+  'O-': require('../../assets/images/bloodgroup_O-.png'),
+};
 
 interface BloodDonationData {
   id: string;
@@ -69,6 +80,10 @@ const BloodDonationListScreen = () => {
     setModalVisible(true);
   };
 
+  const getBloodGroupImage = (bloodType: string) => {
+    return bloodGroupImages[bloodType] || require('../../assets/images/default_bloodgroup.png');
+  };
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -78,11 +93,7 @@ const BloodDonationListScreen = () => {
   }
 
   return (
-    <KeyboardAwareScrollView
-      contentContainerStyle={styles.container}
-      enableOnAndroid={true}
-      extraScrollHeight={30}
-    >
+    <>
       <View
         style={{
           position: 'absolute',
@@ -99,61 +110,74 @@ const BloodDonationListScreen = () => {
         />
       </View>
   
-      <Text style={styles.title}>Blood Donations</Text>
-      {donations.length === 0 ? (
-        <Text>No donations available</Text>
-      ) : (
-        donations.map((donation) => (
-          <Pressable
-            key={donation.id}
-            style={styles.card}
-            onPress={() => handleCardPress(donation)}
-          >
-            <View style={styles.textContainer}>
-              <Text style={styles.cardTitle}>Patient Name: {donation.patientName}</Text>
-              <Text style={styles.cardText}>Blood Type: {donation.bloodType}</Text>
-              <Text style={styles.cardText}>Units Needed: {donation.unitsNeeded}</Text>
-              <Text style={styles.cardText}>Urgency Level: {donation.urgencyLevel}</Text>
-              <Text style={styles.cardText}>Date Required By: {donation.dateRequiredBy}</Text>
-            </View>
-          </Pressable>
-        ))
-      )}
-      {selectedDonation && (
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => setModalVisible(false)}
-        >
-          <View style={styles.modalContainer}>
-            <View style={styles.modalView}>
-              <Text style={styles.modalTitle}>Donation Details</Text>
-              <Text style={styles.modalText}>Patient Name: {selectedDonation.patientName}</Text>
-              <Text style={styles.modalText}>Age: {selectedDonation.age}</Text>
-              <Text style={styles.modalText}>Gender: {selectedDonation.gender}</Text>
-              <Text style={styles.modalText}>Blood Type: {selectedDonation.bloodType}</Text>
-              <Text style={styles.modalText}>Units Needed: {selectedDonation.unitsNeeded}</Text>
-              <Text style={styles.modalText}>Medical Condition: {selectedDonation.medicalCondition}</Text>
-              <Text style={styles.modalText}>Hospital Name: {selectedDonation.hospitalName}</Text>
-              <Text style={styles.modalText}>Hospital Address: {selectedDonation.hospitalAddress}</Text>
-              <Text style={styles.modalText}>Ward/Room Number: {selectedDonation.wardRoomNumber}</Text>
-              <Text style={styles.modalText}>Contact Person: {selectedDonation.contactPerson}</Text>
-              <Text style={styles.modalText}>Contact Number: {selectedDonation.contactNumber}</Text>
-              <Text style={styles.modalText}>Email Address: {selectedDonation.emailAddress}</Text>
-              <Text style={styles.modalText}>Urgency Level: {selectedDonation.urgencyLevel}</Text>
-              <Text style={styles.modalText}>Date Required By: {selectedDonation.dateRequiredBy}</Text>
-              <TouchableOpacity
-                style={styles.closeButton}
-                onPress={() => setModalVisible(false)}
+      <Image
+        source={require('../../assets/images/bloodgroup.png')} // Adjust the path to your image
+        style={styles.headerImage}
+      />
+      <ScrollView contentContainerStyle={styles.container}>
+        <Text style={styles.title}>Blood Donations</Text>
+  
+        {donations.length === 0 ? (
+          <Text>No donations available</Text>
+        ) : (
+          <View style={styles.cardContainer}>
+            {donations.map((donation) => (
+              <Pressable
+                key={donation.id}
+                style={styles.card}
+                onPress={() => handleCardPress(donation)}
               >
-                <Text style={styles.closeButtonText}>Close</Text>
-              </TouchableOpacity>
-            </View>
+                <Image
+                  source={getBloodGroupImage(donation.bloodType)}
+                  style={styles.bloodGroupImage}
+                />
+                <View style={styles.textContainer}>
+                  <Text style={styles.cardTitle}>Patient Name: {donation.patientName}</Text>
+                  <Text style={styles.cardText}>Blood Type: {donation.bloodType}</Text>
+                  <Text style={styles.cardText}>Units Needed: {donation.unitsNeeded}</Text>
+                  <Text style={styles.cardText}>Urgency Level: {donation.urgencyLevel}</Text>
+                  <Text style={styles.cardText}>Date Required By: {donation.dateRequiredBy}</Text>
+                </View>
+              </Pressable>
+            ))}
           </View>
-        </Modal>
-      )}
-    </KeyboardAwareScrollView>
+        )}
+        {selectedDonation && (
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={modalVisible}
+            onRequestClose={() => setModalVisible(false)}
+          >
+            <View style={styles.modalContainer}>
+              <View style={styles.modalView}>
+                <Text style={styles.modalTitle}>Donation Details</Text>
+                <Text style={styles.modalText}>Patient Name: {selectedDonation.patientName}</Text>
+                <Text style={styles.modalText}>Age: {selectedDonation.age}</Text>
+                <Text style={styles.modalText}>Gender: {selectedDonation.gender}</Text>
+                <Text style={styles.modalText}>Blood Type: {selectedDonation.bloodType}</Text>
+                <Text style={styles.modalText}>Units Needed: {selectedDonation.unitsNeeded}</Text>
+                <Text style={styles.modalText}>Medical Condition: {selectedDonation.medicalCondition}</Text>
+                <Text style={styles.modalText}>Hospital Name: {selectedDonation.hospitalName}</Text>
+                <Text style={styles.modalText}>Hospital Address: {selectedDonation.hospitalAddress}</Text>
+                <Text style={styles.modalText}>Ward/Room Number: {selectedDonation.wardRoomNumber}</Text>
+                <Text style={styles.modalText}>Contact Person: {selectedDonation.contactPerson}</Text>
+                <Text style={styles.modalText}>Contact Number: {selectedDonation.contactNumber}</Text>
+                <Text style={styles.modalText}>Email Address: {selectedDonation.emailAddress}</Text>
+                <Text style={styles.modalText}>Urgency Level: {selectedDonation.urgencyLevel}</Text>
+                <Text style={styles.modalText}>Date Required By: {selectedDonation.dateRequiredBy}</Text>
+                <TouchableOpacity
+                  style={styles.closeButton}
+                  onPress={() => setModalVisible(false)}
+                >
+                  <Text style={styles.closeButtonText}>Close</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
+        )}
+      </ScrollView>
+    </>
   );
 };
 
@@ -169,6 +193,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 25,
     top: -5,
+  },
+  cardContainer: {
+    flexGrow: 1,
+    alignItems: 'center',
   },
   card: {
     flexDirection: 'row',
@@ -186,6 +214,11 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 2,
     backgroundColor: '#fff',
+  },
+  bloodGroupImage: {
+    width: 90,
+    height: '100%',
+    marginRight: 10,
   },
   textContainer: {
     flex: 1,
@@ -236,6 +269,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  headerImage: {
+    width: '60%',
+    height: '30%',
+    //centre
+    alignSelf: 'center',
   },
 });
 
