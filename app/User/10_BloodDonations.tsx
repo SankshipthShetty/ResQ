@@ -3,7 +3,7 @@ import { View, Image, Text, StyleSheet, Pressable, ActivityIndicator, Modal, Tou
 import { firestore } from '../../constants/firebaseConfig';
 import { collection, onSnapshot, DocumentData } from 'firebase/firestore';
 import { useRouter } from 'expo-router';
-import IconButton from '@/components/IconButton';
+import IconButton from '../../components/IconButton';
 
 // Importing the blood group images
 const bloodGroupImages: { [key: string]: any } = {

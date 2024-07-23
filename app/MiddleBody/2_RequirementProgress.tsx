@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Linking, Modal, Alert } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
-import IconButton from '@/components/IconButton';
+import IconButton from '../../components/IconButton';
 import { doc, deleteDoc } from 'firebase/firestore';
 import { firestore } from '../../constants/firebaseConfig';
 
@@ -22,6 +22,7 @@ interface TestData {
     type: string;
   }>;
 }
+
 
 const MB2: React.FC = () => {
   const { report } = useLocalSearchParams<{ report: string }>();
@@ -173,8 +174,7 @@ const MB2: React.FC = () => {
         </View>
         <View style={styles.separator} />
         <View style={{ width: '100%', alignItems: 'flex-start' }}>
-          <Text style={{ textAlign: 'left', fontWeight: 'bold', marginBottom: 2, marginTop: 5 }}>Last updated on:</Text>
-          <Text style={{ textAlign: 'left', fontWeight: 'bold' }}>Last updated by: {parsedReport.dutystatus}</Text>
+          <Text style={{ textAlign: 'left', fontWeight: 'bold' , marginTop:10}}>Updated by: {parsedReport.dutystatus}</Text>
         </View>
       </View>
 

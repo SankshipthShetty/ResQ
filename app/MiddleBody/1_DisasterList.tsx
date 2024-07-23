@@ -16,10 +16,10 @@ import { collection, onSnapshot, DocumentData } from 'firebase/firestore';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import moment from 'moment';
 import { useRouter } from 'expo-router';
-import IconButton from '@/components/IconButton';
+import IconButton from '../../components/IconButton';
 import { signOut } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { auth } from '@/constants/firebaseConfig';
+import { auth } from '../../constants/firebaseConfig';
 
 interface TestData {
   id: string;
@@ -73,6 +73,12 @@ const MiddleBody = () => {
           requirements: docData.requirements || [],
           completed: docData.completed,
         } as TestData;
+      });
+      // Sort data by timestamp in descending order
+      newData.sort((a, b) => {
+        const dateA = moment(a.timestamp, 'MMM D, YYYY h:mm A');
+        const dateB = moment(b.timestamp, 'MMM D, YYYY h:mm A');
+        return dateB.diff(dateA);
       });
       setData(newData);
       setLoading(false); // Set loading to false when data is fetched
@@ -138,7 +144,7 @@ const MiddleBody = () => {
       enableOnAndroid={true}
       extraScrollHeight={30}
     >
-            <View
+      <View
         style={{
           position: 'absolute',
           zIndex: 1,

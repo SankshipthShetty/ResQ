@@ -5,7 +5,7 @@ import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, Activi
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { firestore } from '../../constants/firebaseConfig';
 import { collection, addDoc } from 'firebase/firestore';
-import IconButton from '@/components/IconButton';
+import IconButton from '../../components/IconButton';
 import * as Location from 'expo-location';
 
 export default function Userpage4() {

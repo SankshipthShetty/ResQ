@@ -5,7 +5,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { firestore, storage } from '../../constants/firebaseConfig';
 import { collection, addDoc } from 'firebase/firestore';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
-import IconButton from '@/components/IconButton';
+import IconButton from '../../components/IconButton';
 
 export default function MB2Page() {
   const [amount, setAmount] = useState('');
