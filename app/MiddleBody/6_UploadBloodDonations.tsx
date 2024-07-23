@@ -3,6 +3,7 @@ import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, Activi
 import { useRouter } from 'expo-router';
 import { firestore } from '../../constants/firebaseConfig';
 import { collection, addDoc } from 'firebase/firestore';
+import { Picker } from '@react-native-picker/picker';
 import IconButton from '@/components/IconButton';
 
 export default function BloodDonationForm() {
@@ -70,7 +71,6 @@ export default function BloodDonationForm() {
           paddingTop: 50,
           left: 20,
           top: -38,
-          
         }}
       >
         <IconButton
@@ -79,7 +79,7 @@ export default function BloodDonationForm() {
           androidName="arrow-back"
         />
       </View>
-        <Text style={styles.heading}>Blood Donation</Text>
+      <Text style={styles.heading}>Blood Donation</Text>
 
       <Text style={styles.title}>Patient Name</Text>
       <TextInput
@@ -104,11 +104,23 @@ export default function BloodDonationForm() {
       />
 
       <Text style={styles.title}>Blood Type</Text>
-      <TextInput
-        style={styles.input}
-        value={bloodType}
-        onChangeText={setBloodType}
-      />
+      <View style={styles.pickerContainer}>
+        <Picker
+          selectedValue={bloodType}
+          onValueChange={(itemValue) => setBloodType(itemValue)}
+          style={styles.picker}
+        >
+          <Picker.Item label="Select Blood Type" value="" />
+          <Picker.Item label="A+" value="A+" />
+          <Picker.Item label="A-" value="A-" />
+          <Picker.Item label="B+" value="B+" />
+          <Picker.Item label="B-" value="B-" />
+          <Picker.Item label="AB+" value="AB+" />
+          <Picker.Item label="AB-" value="AB-" />
+          <Picker.Item label="O+" value="O+" />
+          <Picker.Item label="O-" value="O-" />
+        </Picker>
+      </View>
 
       <Text style={styles.title}>Units Needed</Text>
       <TextInput
@@ -216,7 +228,6 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 16,
-    
     marginBottom: 6,
     textAlign: 'left',
     width: '100%',
@@ -237,6 +248,25 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     fontSize: 16,
     elevation: 5,
+  },
+  pickerContainer: {
+    width: '100%',
+    height: 50,
+    borderColor: '#CED4DA',
+    borderWidth: 1,
+    borderRadius: 8,
+    marginBottom: 15,
+    backgroundColor: '#FFF',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 5,
+    justifyContent: 'center',
+  },
+  picker: {
+    width: '100%',
+    height: 50,
   },
   button: {
     width: '100%',

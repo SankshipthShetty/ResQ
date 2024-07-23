@@ -13,7 +13,7 @@ import React, { useEffect, useState } from "react";
 import { Link, router } from "expo-router";
 import { signOut } from "firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { auth } from "@/constants/firebaseConfig";
+import { auth } from "../../constants/firebaseConfig";
 
 export default function App() {
   const [fname, setfName] = useState('');
@@ -87,7 +87,7 @@ export default function App() {
           style={styles.post5Icon}
           source={require("../../assets/images/blood-test.png")}
         />
-        <Text style={styles.boxText}>Blood bank</Text>
+        <Text style={styles.boxText}>Blood Donation required</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={handleSignOut} style={styles.signOutButton}>
         <Text style={styles.signOutText}>Sign Out</Text>

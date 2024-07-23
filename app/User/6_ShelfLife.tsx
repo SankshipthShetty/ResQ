@@ -182,7 +182,7 @@ export default function App() {
         throw new Error('No route found');
       }
       // return response;
-    } catch (error) {
+    } catch (error:any) {
       console.error('Error fetching route directions:', error.response ? error.response.data : error.message);
       throw error;
     }

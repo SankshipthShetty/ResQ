@@ -13,7 +13,7 @@ import { firestore } from '../../constants/firebaseConfig';
 
 import { collection, addDoc } from 'firebase/firestore';
 
-import IconButton from '@/components/IconButton';
+import IconButton from '../../components/IconButton';
 
 import * as Location from 'expo-location';
 

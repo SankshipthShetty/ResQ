@@ -4,10 +4,10 @@ import * as React from "react";
 import { SafeAreaView, View, TouchableOpacity, Text, StyleSheet } from "react-native";
 import { CameraMode, CameraView, FlashMode } from "expo-camera";
 import { useRouter } from 'expo-router';
-import MainRowActions from "@/components/MainRowActions";
-import CameraTools from "@/components/CameraTools";
-import PictureView from "@/components/PictureView_User";
-import IconButton from "@/components/IconButton";
+import MainRowActions from "../../components/MainRowActions";
+import CameraTools from "../../components/CameraTools";
+import PictureView from "../../components/PictureView_User";
+import IconButton from "../../components/IconButton";
 
 export default function Userpage3() {
   const cameraRef = React.useRef<CameraView>(null);
