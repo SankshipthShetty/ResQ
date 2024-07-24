@@ -109,11 +109,13 @@ const BloodDonationListScreen = () => {
           androidName="arrow-back"
         />
       </View>
+      <View style={styles.imgview}>
   
       <Image
         source={require('../../assets/images/bloodgroup.png')} // Adjust the path to your image
         style={styles.headerImage}
       />
+      </View>
       <ScrollView contentContainerStyle={styles.container}>
         <Text style={styles.title}>Blood Donations needed </Text>
   
@@ -272,9 +274,16 @@ const styles = StyleSheet.create({
   },
   headerImage: {
     width: '60%',
-    height: '30%',
+    height: '80%',
     //centre
     alignSelf: 'center',
+  },
+  imgview: {
+    width: '100%',
+    height: 400,
+    backgroundColor: '#fff',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
