@@ -106,7 +106,8 @@ export default function App() {
     
     const getLocation = async () => {
       
-     
+      const userstate=await AsyncStorage.getItem('UserId');
+      setUserId(userstate);
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         setErrorMsg('Permission to access location was denied');
