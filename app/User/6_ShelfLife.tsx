@@ -5,8 +5,8 @@ import { StyleSheet, Text, View, TouchableOpacity, Alert, ScrollView } from 'rea
 import * as Location from 'expo-location';
 import Slider from '@react-native-community/slider';
 import axios from 'axios';
-import { firestore } from '@/constants/firebaseConfig';
-import { arrayUnion, doc, getDoc, increment, setDoc, updateDoc } from 'firebase/firestore';
+import { firestore } from '../../constants/firebaseConfig';
+import { arrayUnion, collection, doc, getDoc, getDocs, increment, query, setDoc, updateDoc, where } from 'firebase/firestore';
 import { useRouter, useGlobalSearchParams } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import moment from 'moment';
@@ -58,21 +58,53 @@ export default function App() {
   const [tempFetched, setTempFetched] = useState({ current: false, disaster: false });
   const router = useRouter();
   const { param ,lat,lon} = useGlobalSearchParams();
- 
-  const [travelTime, setTravelTime] = useState<string | null>(null);
+  const [co2, setCO2] = useState<number | null>(null);
+  const [travelTime, setTravelTime] = useState<number | null>(null);
+  const [numDays, setNumDays] = useState<number | null>(null);
+
+  const fetchCO2 = async () => {
+    const options = {
+      method: 'GET',
+      url: 'https://daily-atmosphere-carbon-dioxide-concentration.p.rapidapi.com/api/co2-api',
+      headers: {
+        'x-rapidapi-key': '4d86c6faaemshcecb8787a078cd8p18f5bajsn7133309cd12f',
+        'x-rapidapi-host': 'daily-atmosphere-carbon-dioxide-concentration.p.rapidapi.com',
+      },
+    };
+
+    try {
+      const response = await axios.request(options);
+      const data = response.data;
+
+      // console.log('API response data:', data);
+
+      if (Array.isArray(data.co2) && data.co2.length > 0) {
+        // Access the latest entry (last element in the array)
+        const latestEntry = data.co2[data.co2.length - 1];
+        console.log('Latest CO2 entry:', latestEntry);
+        setCO2(latestEntry['cycle']);
+      }  else {
+      console.error('Expected an array but got:', data);
+    }
+    } catch (error) {
+      console.error('Error fetching CO2 data:', error);
+    }
+  };
+
+
 
   useEffect(() => {
     if (param && lat && lon) {
       // You can now use param, lat, and lon in your component
-
+        
       console.log(`disaster Latitude: ${lat}`);
       console.log(`disaster Longitude: ${lon}`);
     }
 
-
+    
     const getLocation = async () => {
-      const userstate=await AsyncStorage.getItem('UserId');
-      setUserId(userstate);
+      
+     
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         setErrorMsg('Permission to access location was denied');
@@ -82,10 +114,18 @@ export default function App() {
         const location = await Location.getCurrentPositionAsync({});
         setLocation(location);
         if (location.coords.latitude && location.coords.longitude && lat && lon) {
-          const travelTime = await fetchRouteDirections(location.coords.latitude, location.coords.longitude, lat, lon);
-          setTravelTime(travelTime);
           fetchWeather(location.coords.latitude, location.coords.longitude,'current');
           fetchWeather(Number(lat), Number(lon), 'disaster');
+          fetchCO2();
+          
+          const travelTime = await fetchRouteDirections(location.coords.latitude, location.coords.longitude, lat, lon);
+          
+          const disasterData = await fetchDisasterDataByUserId(param);
+          let  a=Number(travelTime);
+          let b=Number(disasterData?.numDays)
+          const totalTravelTime = a+b;
+          
+          setTravelTime(totalTravelTime);
         }
       } catch (error) {
         setErrorMsg('Error fetching location');
@@ -93,7 +133,12 @@ export default function App() {
       }
     };
     getLocation();
+    
+
+   
  
+
+
     // Fetch the requirements from Firestore
     const fetchRequirements = async () => {
       const disasterDocRef = doc(firestore, 'DisasterReports', param as string);
@@ -101,7 +146,7 @@ export default function App() {
 
         const disasterDoc = await getDoc(disasterDocRef);
         if (disasterDoc.exists()) {
-          const disasterData = disasterDoc.data();
+          const disasterData: DisasterData | undefined = disasterDoc.data();
           const fetchedRequirements = disasterData?.requirements || [];
           const normalizedRequirements = fetchedRequirements.map((req: any) => ({
             ...req,
@@ -119,6 +164,49 @@ export default function App() {
   }, []);
 
 
+  const fetchDisasterDataByUserId = async (param: string | null) => {
+    if (!param) {
+        console.error('User ID is null');
+        return null;
+    }
+
+    try {
+        const disasterReportsCollection = collection(firestore, 'DisasterReports');
+        console.log('Collection Reference:', disasterReportsCollection);
+        
+        // Create a DocumentReference for the specific userId
+        const docRef = doc(disasterReportsCollection, param);
+        
+        // Log the userId being queried
+        console.log('UserId being queried:', param);
+
+        // Fetch the document using getDoc()
+        const docSnapshot = await getDoc(docRef);
+
+        if (!docSnapshot.exists()) {
+            console.error('No disaster report found for userId:', param);
+            alert('No disaster report found for the specified user.');
+            return null; // or handle accordingly
+        }
+
+        console.log('Document data:', docSnapshot.data());
+
+        const disasterData = docSnapshot.data();
+       
+        setNumDays(disasterData.numDays); // Store numDays in state
+        const requirements: Requirement[] = disasterData.requirements || [];
+        setRequirements(requirements);
+        return disasterData;
+
+    } catch (error) {
+        console.error('Error fetching disaster reports:', error);
+        alert('An error occurred while fetching disaster reports. Please try again later.');
+    }
+};
+
+  
+  
+  
   const fetchRouteDirections = async (sourceLat: number, sourceLon: number, destLat: number, destLon: number) => {
     const apiKey = 'GBbSOvkTtCg7bF3sUzKJFsM0okvNfxAj4B0xPcLcyXGNqO1qNVguJQQJ99AGACYeBjFPDDZUAAAgAZMPw3AT';
     const apiUrl = `https://atlas.microsoft.com/route/directions/json`;
@@ -138,7 +226,7 @@ export default function App() {
       if (response.data.routes && response.data.routes.length > 0) {
         const travelTimeInSeconds = response.data.routes[0].summary.travelTimeInSeconds;
         const travelTimeInHours = travelTimeInSeconds / 3600
-        const travelTimeIndays = Math.round(travelTimeInHours / 6).toFixed(0);
+        const travelTimeIndays = Math.round(travelTimeInHours / 24).toFixed(0);
         return travelTimeIndays;
       } else {
         throw new Error('No route found');
@@ -161,7 +249,8 @@ export default function App() {
         units: 'metric',
       },
       headers: {
-        'x-rapidapi-key': '4d86c6faaemshcecb8787a078cd8p18f5bajsn7133309cd12f',
+        // 'x-rapidapi-key': '4d86c6faaemshcecb8787a078cd8p18f5bajsn7133309cd12f',
+        'x-rapidapi-key': '4cec644d1cmshbd2029c23acc174p1a26c4jsne748cabdc8f4',
         'x-rapidapi-host': 'tomorrow-io1.p.rapidapi.com',
       },
     };
@@ -206,7 +295,7 @@ export default function App() {
       const basePayload = {
         Temp: averageTemp ?? 0,
         Humidity: averageHumidity ?? 0,
-        CO2: 300, // should fetch from CO2 API here
+        CO2: co2, 
       };
       const fruitPayload = fruitPayloads[item] || {};
       const data = { ...basePayload, ...fruitPayload };
@@ -385,9 +474,8 @@ export default function App() {
       <Text>Longitude: {lon}</Text>
       <Text>humidity: {dis_humidity}</Text>
       <Text>temp: {dis_temperature}</Text>
-      {travelTime && (
-        <Text>Travel Time to Disaster Location: {travelTime} days</Text>
-      )}
+  
+       <Text>Travel Time to Disaster Location: {travelTime} days</Text>
     </View>
  
       <Text style={styles.paragraph}>{text}</Text>
@@ -395,7 +483,7 @@ export default function App() {
       <Text style={styles.paragraph}>Humidity: {humidity}%</Text>
       <Text style={styles.paragraph}>av_temp: {averageTemp}%</Text>
       <Text style={styles.paragraph}>av_hum: {averageHumidity}%</Text>
-     
+      <Text>CO2 Level: {co2}</Text>
       <Text style={styles.heading}>Select a Fruit:</Text>
       <View style={styles.requirementsContainer}>
         {requirements.map((item, index) => {
