@@ -248,6 +248,7 @@ const styles = StyleSheet.create({
   phone: {
     fontSize: 14,
     marginTop: 5,
+    
   },
   loadingContainer: {
     flex: 1,
@@ -306,6 +307,8 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'white',
     textAlign: 'center',
+    
+    
     //fontWeight: 'bold',
     // top:-10,
     // left:10
@@ -314,7 +317,7 @@ const styles = StyleSheet.create({
     padding: 5,
     borderRadius: 5,
     marginTop: 10,
-    width: 60,
+    width: 70,
     left: 170,
     top: -60,
     alignItems: 'center',

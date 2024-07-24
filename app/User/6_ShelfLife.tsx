@@ -1,7 +1,7 @@
 //Show requirements posted(AI)
 
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Alert, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Alert, ScrollView,Image } from 'react-native';
 import * as Location from 'expo-location';
 import Slider from '@react-native-community/slider';
 import axios from 'axios';
@@ -10,7 +10,9 @@ import { arrayUnion, collection, doc, getDoc, getDocs, increment, query, setDoc,
 import { useRouter, useGlobalSearchParams } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import moment from 'moment';
-
+import IconButton from '@/components/IconButton';
+import remove from '../../assets/images/remove.png';
+import check from '../../assets/images/check.png';
 
 interface Requirement {
   type: string;
@@ -468,8 +470,24 @@ export default function App() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-
-      <View >
+      <View
+        style={{
+          position: 'absolute',
+          zIndex: 1,
+          paddingTop: 50,
+          left: 20,
+          top: -38,
+        }}
+      >
+        <IconButton
+          onPress={() => router.back()}
+          iosName="arrow.left.circle"
+          androidName="arrow-back"
+        />
+      </View >
+      {/* <View >
+    
+   
       <Text>Latitude: {lat}</Text>
       <Text>Longitude: {lon}</Text>
       <Text>humidity: {dis_humidity}</Text>
@@ -483,7 +501,7 @@ export default function App() {
       <Text style={styles.paragraph}>Humidity: {humidity}%</Text>
       <Text style={styles.paragraph}>av_temp: {averageTemp}%</Text>
       <Text style={styles.paragraph}>av_hum: {averageHumidity}%</Text>
-      <Text>CO2 Level: {co2}</Text>
+      <Text>CO2 Level: {co2}</Text> */}
       <Text style={styles.heading}>Select a Fruit:</Text>
       <View style={styles.requirementsContainer}>
         {requirements.map((item, index) => {
@@ -514,7 +532,7 @@ export default function App() {
               {travelTime && (
         <Text>Travel Time to Disaster Location: {travelTime} days</Text>
       )}
-              <Text style={styles.paragraph}>{detail.donationMessage}</Text>
+              <Text style={styles.paragraph}>{detail.donationMessage} {detail.canDonate ? <Image source={check} style={styles.image} /> : <Image source={remove} style={styles.image} />}</Text>
               {detail.canDonate && (
                 <>
                   <Text style={styles.sliderLabel}>Quantity to donate:</Text>
@@ -576,6 +594,10 @@ const styles = StyleSheet.create({
   },
   buttonSelected: {
     backgroundColor: '#32CD32',
+  },
+  image: {
+    width: 15,
+    height: 15,
   },
   buttonText: {
     color: '#000',
