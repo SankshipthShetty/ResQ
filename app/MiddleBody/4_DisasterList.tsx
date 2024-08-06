@@ -16,10 +16,10 @@ import { collection, onSnapshot, DocumentData } from 'firebase/firestore';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import moment from 'moment';
 import { useRouter } from 'expo-router';
-import IconButton from '@/components/IconButton';
+import IconButton from '../../components/IconButton';
 import { signOut } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { auth } from '@/constants/firebaseConfig';
+import { auth } from '../../constants/firebaseConfig';
 
 interface TestData {
   id: string;
@@ -71,7 +71,14 @@ const MiddleBody = () => {
           reqstatus: docData.requirements,
           timestamp: formattedTimestamp,
           requirements: docData.requirements || [],
+          completed: docData.completed,
         } as TestData;
+      });
+      // Sort data by timestamp in descending order
+      newData.sort((a, b) => {
+        const dateA = moment(a.timestamp, 'MMM D, YYYY h:mm A');
+        const dateB = moment(b.timestamp, 'MMM D, YYYY h:mm A');
+        return dateB.diff(dateA);
       });
       setData(newData);
       setLoading(false); // Set loading to false when data is fetched
@@ -104,7 +111,7 @@ const MiddleBody = () => {
   const handleNavigate = () => {
     if (selectedReport) {
       router.push({
-        pathname: './2_RequirementProgress',
+        pathname: './5_RequirementProgress',
         params: { report: JSON.stringify(selectedReport) },
       });
       handleCloseModal();
@@ -137,12 +144,20 @@ const MiddleBody = () => {
       enableOnAndroid={true}
       extraScrollHeight={30}
     >
-      <View> 
-      {/*style={styles.headerContainer}> */}
-        {/* <Text style={styles.headerText}>Hello, {name} 👋</Text> */}
-        <TouchableOpacity onPress={handleSignOut} style={styles.signOutButton}>
-          <Text style={styles.signOutText}>Sign Out</Text>
-        </TouchableOpacity>
+      <View
+        style={{
+          position: 'absolute',
+          zIndex: 1,
+          paddingTop: 50,
+          left: 15,
+          top: -5,
+        }}
+      >
+        <IconButton
+          onPress={() => router.back()} // This will navigate back to the previous screen
+          iosName={'arrow.left.circle'}
+          androidName='arrow-back'
+        />
       </View>
       <Text style={styles.title}>Disasters in your Locality</Text>
       {data.map((user, index) => (
@@ -223,23 +238,27 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   title: {
-    fontSize: 25,
+    marginTop:40,
+    fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 10,
+    marginBottom: 25,
+    alignContent:'center',
     textAlign:'center',
   },
   card: {
     flexDirection: 'row',
-    backgroundColor: '#f8f8f8',
+    backgroundColor: 'white',
     padding: 15,
     borderRadius: 10,
-    marginBottom: 10,
+    marginBottom: 20,
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#0000000', 
   },
   image: {
     width: 80,
     height: 80,
-    borderRadius: 0,
+    borderRadius: 5,
     marginRight: 10,
   },
   textContainer: {

@@ -13,7 +13,7 @@ import React, { useEffect, useState } from "react";
 import { Link, router } from "expo-router";
 import { signOut } from "firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { auth } from "@/constants/firebaseConfig";
+import { auth } from "../../constants/firebaseConfig";
 
 export default function App() {
   const [fname, setfName] = useState('');
@@ -46,7 +46,7 @@ export default function App() {
       <View style={styles.textContainer}>
 
       <View style={styles.headerContainer}>
-        <Text style={styles.header}>User Details</Text>
+        <Text style={styles.header}></Text>
         <TouchableOpacity onPress={() => router.push("../../ProfilePageEdit/UserProf")} style={styles.profileButton}>
           <Image
             source={require('../../assets/images/profilepic.png')} // Adjust the path to your image
@@ -81,13 +81,13 @@ export default function App() {
         <Text style={styles.boxText}>Donation</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => router.push("../Offline/Offlinep1")} style={styles.box}>
+      <TouchableOpacity onPress={() => router.push("./10_BloodDonations")} style={styles.box}>
       
         <Image
           style={styles.post5Icon}
           source={require("../../assets/images/blood-test.png")}
         />
-        <Text style={styles.boxText}>Blood bank</Text>
+        <Text style={styles.boxText}>Blood Donation required</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={handleSignOut} style={styles.signOutButton}>
         <Text style={styles.signOutText}>Sign Out</Text>
@@ -95,9 +95,9 @@ export default function App() {
       <View>
         <Text style={styles.resq}>ResQ</Text>
 
-       <TouchableOpacity  onPress={() => router.push("../Offline/Offlinep1")} style={styles.check} >
+       {/* <TouchableOpacity  onPress={() => router.push("../Offline/Offlinep1")} style={styles.check} >
         <Text >Just for Checking Purpose</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
       
       
       </View>
@@ -117,9 +117,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#A53821',
     padding: 10,
     borderRadius: 10
-
 },
- 
   container: {
     top:-30,
     display:"flex",
@@ -131,7 +129,7 @@ const styles = StyleSheet.create({
     width: "100%",
     overflow:"hidden",
     marginBottom: -40,
-    marginTop: -40,
+    marginTop: -70,
     
   },
   textContainer: {
@@ -220,7 +218,8 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     width: 50, // Adjust the width and height as needed
     height: 50,
-    left:-50
+    left:-50,
+    bottom:-95,
   },
   headerImage: {
     width: '100%',

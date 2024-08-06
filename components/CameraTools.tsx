@@ -52,13 +52,13 @@ export default function CameraTools({
         height={21}
       />
 
-      <IconButton
+      {/* <IconButton
         onPress={() =>
           setCameraFlash((prevValue) => (prevValue === "off" ? "on" : "off"))
         }
         iosName={cameraFlash === "on" ? "bolt.circle" : "bolt.slash.circle"}
         androidName="flash"
-      />
+      /> */}
 
       <IconButton
         onPress={() => {

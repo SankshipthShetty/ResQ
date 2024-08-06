@@ -3,10 +3,10 @@ import { View, Text, StyleSheet, Image, Pressable, ActivityIndicator, Modal, Tou
 import { firestore } from '../../constants/firebaseConfig';
 import { doc, getDoc } from 'firebase/firestore';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import IconButton from '@/components/IconButton';
+import IconButton from '../../components/IconButton';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { ReactNode } from 'react';
-import DonationUI from '@/components/donationui';  // Import the new component
+import DonationUI from '../../components/donationui';  // Import the new component
 
 interface FundraiserData {
   description: ReactNode;

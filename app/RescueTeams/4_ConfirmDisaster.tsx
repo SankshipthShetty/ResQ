@@ -1,4 +1,3 @@
-//
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, Pressable, ActivityIndicator, Modal, TouchableOpacity, Linking, Alert } from 'react-native';
 import { firestore } from '../../constants/firebaseConfig';
@@ -6,7 +5,7 @@ import { collection, onSnapshot, updateDoc, doc, DocumentData } from 'firebase/f
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import moment from 'moment';
 import { useRouter } from 'expo-router';
-import IconButton from '@/components/IconButton';
+import IconButton from '../../components/IconButton';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface TestData {
@@ -83,7 +82,7 @@ const RealTimeChecker = () => {
   };
 
   const handleNavigate = () => {
-    router.push('./Userpage6'); // Change './Userpage6' to the actual path of your next page
+    router.push('./5_RequirementForm'); // Change './Userpage6' to the actual path of your next page
     handleCloseModal();
   };
 
@@ -125,11 +124,11 @@ const RealTimeChecker = () => {
           zIndex: 1,
           paddingTop: 50,
           left: 20,
-          top: -38,
+          top: -7,
         }}
       >
         <IconButton
-          onPress={() => router.replace('../auth/Login')} // This will navigate back to the previous screen
+          onPress={() => router.back()} // This will navigate back to the previous screen
           iosName={'arrow.left.circle'}
           androidName="arrow-back"
         />
@@ -204,13 +203,16 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: 'white',
     alignItems: 'center',
+    marginTop: 0,
   },
   title: {
     fontSize: 20,
     fontWeight: 'bold',
+    marginTop: 40,
     marginBottom: 25,
+    alignContent: 'center',
     top: -5,
   },
   card: {
@@ -233,7 +235,7 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     flex: 1,
-    top:10,
+    top:17,
     left:-15
   },
   location: {
@@ -248,6 +250,7 @@ const styles = StyleSheet.create({
   phone: {
     fontSize: 14,
     marginTop: 5,
+    
   },
   loadingContainer: {
     flex: 1,
@@ -306,6 +309,8 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'white',
     textAlign: 'center',
+    
+    
     //fontWeight: 'bold',
     // top:-10,
     // left:10
@@ -314,7 +319,7 @@ const styles = StyleSheet.create({
     padding: 5,
     borderRadius: 5,
     marginTop: 10,
-    width: 60,
+    width: 70,
     left: 170,
     top: -60,
     alignItems: 'center',

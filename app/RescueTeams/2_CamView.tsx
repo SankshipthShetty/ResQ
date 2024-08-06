@@ -1,13 +1,11 @@
-//camera view
-
 import * as React from "react";
 import { SafeAreaView, View, StyleSheet } from "react-native";
 import { CameraMode, CameraView, FlashMode } from "expo-camera";
 import { useRouter } from 'expo-router';
-import MainRowActions from "@/components/MainRowActions";
-import CameraTools from "@/components/CameraTools";
-import PictureView from "@/components/PictureView_Rescue";
-import IconButton from "@/components/IconButton";
+import MainRowActions from "../../components/MainRowActions";
+import CameraTools from "../../components/CameraTools";
+import PictureView from "../../components/PictureView_Rescue";
+import IconButton from "../../components/IconButton";
 
 export default function RescuePage2() {
   const cameraRef = React.useRef<CameraView>(null);
@@ -39,8 +37,8 @@ export default function RescuePage2() {
         facing={cameraFacing}
         style={{ flex: 1 }}
       >
-        <SafeAreaView style={{ flex: 1 }}>
-          <View style={{ flex: 1 }}>
+        <SafeAreaView style={{ flex: 1 ,top:25}}>
+          <View style={{ flex: 1,height:10 }}>
             <IconButton
             onPress={() => router.push('./0_HomePage')}
             iosName={"xmark"}

@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, Button, StyleSheet, Image, Pressable } from "react-native";
 import { useRouter } from "expo-router";
-import DotIndicator from "@/components/dotindicator";
+import DotIndicator from "../../components/dotindicator";
 
 import logo from "../../assets/images/image20.png";
 
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
   },
   skipButton: {
     position: "absolute",
-    top: 70,
+    top: 90,
     right: 20,
     padding: 10,
   },

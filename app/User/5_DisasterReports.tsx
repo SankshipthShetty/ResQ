@@ -1,4 +1,3 @@
-//Diaster in your area 
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, Pressable, ActivityIndicator, Modal, TouchableOpacity, Linking, Alert } from 'react-native';
 import { firestore } from '../../constants/firebaseConfig';
@@ -6,7 +5,7 @@ import { collection, onSnapshot, DocumentData } from 'firebase/firestore';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import moment from 'moment';
 import { useRouter } from 'expo-router';
-import IconButton from '@/components/IconButton';
+import IconButton from '../../components/IconButton';
 
 interface TestData {
   id: string;
@@ -65,12 +64,20 @@ const RealTimeChecker = () => {
     setSelectedReport(null);
   };
 
-  const handleNavigate = (selectedReport:TestData) => {
-    const parameter=selectedReport.id;
-    // console.log(parameter);
-    router.push(`./6_ShelfLife?param=${parameter}`); // Change './NextPage' to the actual path of your next page
+  const handleNavigate = (selectedReport: TestData) => {
+    const parameter = selectedReport.id;
+    const coordinates = selectedReport.lOC.match(/Lat: ([\d.]+), Lon: ([\d.]+)/);
+  
+    if (coordinates && coordinates.length === 3) {
+      const lat = coordinates[1];
+      const lon = coordinates[2];
+      router.push(`./6_ShelfLife?param=${parameter}&lat=${lat}&lon=${lon}`);
+    } else {
+      Alert.alert('Invalid location format');
+    }
     handleCloseModal();
   };
+  
 
   const handleOpenInMaps = (location: string) => {
     const coordinates = location.match(/Lat: ([\d.]+), Lon: ([\d.]+)/);
@@ -107,7 +114,7 @@ const RealTimeChecker = () => {
           zIndex: 1,
           paddingTop: 50,
           left: 20,
-          top: -38,
+          top: 0,
         }}
       >
         <IconButton
@@ -168,14 +175,17 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: 'white',
     alignItems: 'center',
+    marginTop: 0,
   },
   title: {
     fontSize: 20,
     fontWeight: 'bold',
+    marginTop: 30,
     marginBottom: 25,
-    top: -5,
+    alignContent: 'center',
+    top: 0,
   },
   card: {
     flexDirection: 'row',

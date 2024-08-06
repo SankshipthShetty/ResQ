@@ -6,9 +6,9 @@ import { StyleProp, TouchableOpacity, ViewStyle } from "react-native";
 import { Link } from "expo-router";
 import React from "react";
 
-const CONTAINER_PADDING = 5;
-const CONTAINER_WIDTH = 40;
-const ICON_SIZE = 25;
+const CONTAINER_PADDING = 6;
+const CONTAINER_WIDTH = 45;
+const ICON_SIZE = 30;
 
 interface IconButtonProps {
   iosName: SFSymbol;
@@ -36,6 +36,10 @@ export default function IconButton({
           padding: CONTAINER_PADDING,
           borderRadius: (CONTAINER_WIDTH + CONTAINER_PADDING * 2) / 2,
           width: CONTAINER_WIDTH,
+          justifyContent: "center",
+          alignItems: "center",
+          top:0,
+          margin:5
         },
         containerStyle,
       ]}

@@ -1,7 +1,3 @@
-//report form
-
-
-
 
 import React, { useState } from 'react';
 
@@ -13,7 +9,7 @@ import { firestore } from '../../constants/firebaseConfig';
 
 import { collection, addDoc } from 'firebase/firestore';
 
-import IconButton from '@/components/IconButton';
+import IconButton from '../../components/IconButton';
 
 import * as Location from 'expo-location';
 
@@ -172,7 +168,7 @@ export default function Userpage4() {
 
           left: 6,
 
-          top: -30,
+          top: -10,
 
         }}
 
@@ -308,7 +304,7 @@ const styles = StyleSheet.create({
 
     fontWeight: 'bold',
 
-    marginTop: 10,
+    marginTop: 30,
 
     marginBottom: 20,
 
@@ -322,6 +318,8 @@ const styles = StyleSheet.create({
 
     fontWeight: 'bold',
 
+    marginTop: 30,
+    
     marginBottom: 6,
 
     textAlign: 'left', // Align title to the left

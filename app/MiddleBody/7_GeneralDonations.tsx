@@ -5,7 +5,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { firestore, storage } from '../../constants/firebaseConfig';
 import { collection, addDoc } from 'firebase/firestore';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
-import IconButton from '@/components/IconButton';
+import IconButton from '../../components/IconButton';
 
 export default function MB2Page() {
   const [amount, setAmount] = useState('');
@@ -154,7 +154,7 @@ export default function MB2Page() {
           zIndex: 1,
           paddingTop: 50,
           left: 20,
-          top: -38,
+          top: 0,
         }}
       >
         <IconButton
@@ -254,6 +254,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: '600',
     color: '#212529',
+    marginTop:40,
     marginBottom: 25,
     textAlign: 'center',
     

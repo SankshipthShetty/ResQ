@@ -12,14 +12,26 @@ import React, { useEffect, useState } from "react";
 import { Link, router } from "expo-router";
 import { signOut } from "firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { auth } from "@/constants/firebaseConfig";
+import { auth } from "../../constants/firebaseConfig";
 import logo from '../../assets/images/image1.png';
 
 import { onSnapshot, collection, query, where, doc, getDoc } from "firebase/firestore";
-import { firestore } from "@/constants/firebaseConfig";
+import { firestore } from "../../constants/firebaseConfig";
 import moment from "moment";
 
+const markComp = () => {
+  console.log("Operation marked as completed");
+};
+
 export default function App() {
+  // Define the editpage function
+  const editpage = () => {
+    console.log("Edit page function called");
+    router.push({
+      pathname: './6_EditForm', // Adjust the path according to your navigation setup
+      params: { reportId: selectedReportId }, // Pass the selected report ID
+    });
+  };
   const [fname, setfName] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [requirements, setRequirements] = useState<{ type: string; quantityNeeded: string; quantityCollected: string; }[]>([]);
@@ -28,6 +40,7 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [numCamps, setNumCamps] = useState(0);
   const [campCounts, setCampCounts] = useState<number[]>([]);
+  const [numDays, setNumDays] = useState(0); // New state for Number of Days
 
   const fetchRequirements = async (reportId: string) => {
     try {
@@ -44,6 +57,7 @@ export default function App() {
         setRequirements(formattedRequirements);
         setNumCamps(data.numCamps || 0);
         setCampCounts(data.campCounts || []);
+        setNumDays(data.numDays || 0);
       }
     } catch (error) {
       console.error("Error fetching requirements: ", error);
@@ -78,6 +92,7 @@ export default function App() {
         const newData = snapshot.docs.map((doc) => {
           const docData = doc.data();
           const timestamp = docData.timestamp?.toDate();
+          
           const formattedTimestamp = timestamp
             ? moment(timestamp).format("MMM D, YYYY h:mm A")
             : "Unknown Time";
@@ -102,17 +117,19 @@ export default function App() {
     return () => unsubscribe();
   }, []);
 
-  const handleShowRequirements = (reportId: string) => {
+  const handleShowRequirements = async (reportId: string) => {
+    await AsyncStorage.setItem('selectedReportId', reportId); 
     fetchRequirements(reportId);
     setSelectedReportId(reportId);
     setModalVisible(true);
+   
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.textContainerfirst}>
         <View style={styles.headerContainer}>
-          <Text style={styles.header}>Rescue Team Details</Text>
+          <Text style={styles.header}></Text>
           <TouchableOpacity onPress={() => router.push("../../ProfilePageEdit/RescueProf")} style={styles.profileButton}>
             <Image
               source={require('../../assets/images/profilepic.png')}
@@ -122,10 +139,10 @@ export default function App() {
         </View>
         <Text style={styles.text}>Hi, {fname} 👋</Text>
       </View>
-
-      <View>
+      
+      {/* <View>
         <Image source={logo} style={styles.iii} />
-      </View>
+      </View> */}
 
       <TouchableOpacity onPress={() => router.push("./1_CamPermission")} style={styles.box}>
         <Image
@@ -166,12 +183,7 @@ export default function App() {
         </ScrollView>
       </View>
 
-      <TouchableOpacity onPress={handleSignOut} style={styles.signOutButton}>
-        <Text style={styles.signOutText}>Sign Out</Text>
-      </TouchableOpacity>
-      <View>
-        <Text style={styles.resq}>ResQ</Text>
-      </View>
+    
 
       <Modal
         visible={modalVisible}
@@ -184,8 +196,11 @@ export default function App() {
             <ScrollView>
               <Text style={styles.modalTitle}>Submitted Requirements</Text>
               <Text style={styles.modalSubtitle}>Number of Camps: {numCamps}</Text>
+              <Text style={styles.modalSubtitle}>Number of Days: {numDays}</Text> 
+
               {campCounts.map((members, index) => (
                 <Text key={index} style={styles.modalSubtitle}>Members in Camp {index + 1}: {members}</Text>
+                
               ))}
               {requirements.map((req, index) => (
                 <View key={index} style={styles.requirementItem}>
@@ -196,23 +211,30 @@ export default function App() {
               ))}
             </ScrollView>
 
-            
-            <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.modalButton}>
 
-
-
+            <TouchableOpacity onPress={() => editpage()} style={styles.modalButton}>
+            <Text style={styles.modalButtonText}>Edit</Text>
+            </TouchableOpacity> 
+          </View>
+          <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.modalButtonClose}>
               <Text style={styles.modalButtonText}>Close</Text>
             </TouchableOpacity>
-          </View>
+         
         </View>
       </Modal>
+      <TouchableOpacity onPress={handleSignOut} style={styles.signOutButton}>
+        <Text style={styles.signOutText}>Sign Out</Text>
+      </TouchableOpacity>
+      <View>
+         <Text style={styles.resq}>ResQ</Text>
+          </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    top: -10,
+    top: -30,
     display: "flex",
     flex: 1,
     justifyContent: "center",
@@ -222,7 +244,7 @@ const styles = StyleSheet.create({
     width: "100%",
     overflow: "hidden",
     marginBottom: -40,
-    marginTop: -150,
+    marginTop: -70,
   },
   textContainer: {
     width: '100%',
@@ -233,16 +255,17 @@ const styles = StyleSheet.create({
   },
   textContainerfirst: {
     width: '100%',
+    textAlign: "left",
     marginBottom: 0,
-    marginLeft: 105,
-    top: -10
+    marginTop:15,
+    marginLeft:55,
   },
   text: {
-    fontSize: 30,
+    fontSize: 27,
     fontWeight: "bold",
     marginBottom: 20,
-    textAlign: "left",
-    top: 39
+    textAlign:"left",
+    
   },
   iii: {
     width: 250,
@@ -332,7 +355,8 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     width: 50,
     height: 50,
-    left: -50
+    left: -50,
+    bottom:-7
   },
   headerImage: {
     width: '100%',
@@ -427,7 +451,15 @@ const styles = StyleSheet.create({
   },
   modalButton: {
     marginTop: 20,
-    backgroundColor: '#A53821',
+    backgroundColor: '#DE5959',
+    paddingVertical: 10,
+    paddingHorizontal: 40,
+    borderRadius: 150,
+  },
+
+  modalButtonClose: {
+    marginTop: 20,
+    backgroundColor: '#580202',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 10,

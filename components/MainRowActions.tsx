@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     height: 100,
     position: "absolute",
-    bottom: 45,
+    bottom: 75,
   },
   fallbackView: {
     width: 80,

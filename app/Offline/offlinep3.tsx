@@ -1,5 +1,3 @@
-//Uh Oh! Network Not found PAGE 
-//This page is displayed when the user is offline and the network is not found
 import { View, Text, Image, StyleSheet, Pressable } from "react-native";
 import React from "react";
 import {useRouter} from 'expo-router';

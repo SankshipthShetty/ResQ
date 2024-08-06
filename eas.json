@@ -18,6 +18,9 @@
     },
     "preview": {
       "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      },
       "env": {
         "GOOGLE_SERVICES_JSON": "@GOOGLE_SERVICES_JSON",
         "API_KEY": "@API_KEY",
@@ -28,15 +31,20 @@
       }
     },
     "production": {
-      "env": {
-        "GOOGLE_SERVICES_JSON": "@GOOGLE_SERVICES_JSON",
-        "API_KEY": "@API_KEY",
-        "AUTH_DOMAIN": "@AUTH_DOMAIN",
-        "PROJECT_ID": "@PROJECT_ID",
-        "STORAGE_BUCKET": "@STORAGE_BUCKET",
-        "APP_ID": "@APP_ID"
+    "distribution": "internal",
+      "android": {
+        "buildType": "apk"
       }
+  ,
+    "env": {
+      "GOOGLE_SERVICES_JSON": "@GOOGLE_SERVICES_JSON",
+      "API_KEY": "@API_KEY",
+      "AUTH_DOMAIN": "@AUTH_DOMAIN",
+      "PROJECT_ID": "@PROJECT_ID",
+      "STORAGE_BUCKET": "@STORAGE_BUCKET",
+      "APP_ID": "@APP_ID"
     }
+  }
   },
   "submit": {
     "production": {}

@@ -1,11 +1,9 @@
-//report form
-
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, Image, Alert } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { firestore } from '../../constants/firebaseConfig';
 import { collection, addDoc } from 'firebase/firestore';
-import IconButton from '@/components/IconButton';
+import IconButton from '../../components/IconButton';
 import * as Location from 'expo-location';
 
 export default function Userpage4() {
@@ -21,6 +19,7 @@ export default function Userpage4() {
   const [locationLoading, setLocationLoading] = useState(false);
   const [onduty, setOnduty] = useState('None');
   const [requirementstatus, setRequirements] = useState(false);
+  const [completed, setCompleted] = useState(false);
 
   const router = useRouter();
 
@@ -35,6 +34,7 @@ export default function Userpage4() {
         imageUrl: decodedImageUrl,
         onduty,
         requirementstatus,
+        completed: false, // Provide a default value for 'completed'
         timestamp: new Date() 
       });
       Alert.alert(
@@ -80,8 +80,8 @@ export default function Userpage4() {
           position: "absolute",
           zIndex: 1,
           paddingTop: 50,
-          left: 6,
-          top: -30,
+          left: 15,
+          top: -5,
         }}
       >
         <IconButton
