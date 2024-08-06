@@ -1,5 +1,3 @@
-// report a disaster ,disaster in your area , donations page
-
 import {
   View,
   Text,

@@ -81,8 +81,8 @@ const UserPage7 = () => {
             <Text style={styles.cardTitle}>{fundraiser.name}</Text>
             <Text style={styles.organization}>{fundraiser.organization}</Text>
             <Text style={styles.amount}>₹{fundraiser.amount.toLocaleString()} Raised</Text>
-            <Pressable style={styles.donateButton}>
-              <Text style={styles.donateButtonText} onPress={() => router.push({ pathname: './8_DonationDescription', params: { fundraiser: fundraiser.id } })}>Donate</Text>
+            <Pressable style={styles.donateButton} onPress={() => router.push({ pathname: './8_DonationDescription', params: { fundraiser: fundraiser.id } })}>
+              <Text style={styles.donateButtonText} >Donate</Text>
             </Pressable>
           </View>
         </Pressable>
@@ -102,8 +102,8 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: 'bold',
-    marginTop: 30,
-    marginBottom: 25,
+    marginTop: 40,
+    marginBottom: 15,
     alignContent: 'center',
     top: -5,
   },

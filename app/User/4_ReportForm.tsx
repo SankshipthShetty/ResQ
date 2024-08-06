@@ -155,6 +155,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 15,
     fontWeight: 'bold',
+    marginTop: -3,
     marginBottom: 6,
     textAlign: 'left', // Align title to the left
     width: '100%', // Ensure it takes full width of container

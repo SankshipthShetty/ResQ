@@ -17,8 +17,8 @@ interface TestData {
   reqstatus: boolean;
   timestamp: string;
   requirements: Array<{
-    quantityCollected: string;
-    quantityNeeded: string;
+    quantityCollected: number;
+    quantityNeeded: number;
     type: string;
   }>;
 }
@@ -40,7 +40,7 @@ const MB2: React.FC = () => {
 
   // Calculate the ratio of fully collected requirements
   const requirements = parsedReport.requirements || [];
-  const fullyCollectedRequirements = requirements.filter(req => req.quantityNeeded === '0');
+  const fullyCollectedRequirements = requirements.filter(req => req.quantityNeeded === 0);
   const totalRequirements = requirements.length;
   const collectedRatio = `${fullyCollectedRequirements.length}/${totalRequirements}`;
 

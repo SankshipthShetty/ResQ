@@ -81,7 +81,7 @@ const BloodDonationListScreen = () => {
   };
 
   const getBloodGroupImage = (bloodType: string) => {
-    return bloodGroupImages[bloodType] || require('../../assets/images/bloodgroup.png');
+    return bloodGroupImages[bloodType] || require('../../assets/images/default_bloodgroup.png');
   };
 
   if (loading) {

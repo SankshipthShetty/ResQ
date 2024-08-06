@@ -241,13 +241,14 @@ export default function App() {
     textContainer: {
       width: '100%',
       textAlign: "center",
-      top:10,
-      marginBottom: 10,
+      top:15,
+      marginBottom: 0,
       justifyContent: 'center',
     },
     text: {
-      fontSize: 30,
-      top:20,
+      fontSize: 25,
+      top:30,
+      marginBottom: 15,
       fontWeight: "bold",
       textAlign: "center",
       color: "#333",

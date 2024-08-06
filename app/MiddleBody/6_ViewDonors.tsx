@@ -93,7 +93,7 @@ const ViewDonors: React.FC = () => {
             {donors[req.type]?.length ? (
               donors[req.type].map((donor, index) => (
                 <View key={index} style={styles.donorBox}>
-                  <Text style={styles.donorText}>{donor.userfname} {donor.userlname} - {donor.quantityDonated} unit</Text>
+                  <Text style={styles.donorText}>{donor.userfname} {donor.userlname} - {donor.quantityDonated} units</Text>
                 </View>
               ))
             ) : (

@@ -69,7 +69,7 @@ const UserPage8 = () => {
             zIndex: 1,
             paddingTop: 50,
             left: 20,
-            top: -38,
+            top: 5,
           }}
         >
           <IconButton
@@ -82,12 +82,13 @@ const UserPage8 = () => {
           <View style={styles.header}>
             <Text style={styles.title}>Donations</Text>
           </View>
-          <View style={styles.header}>
-            <Text style={styles.fundraiserTitle}>{fundraiserData.name}</Text>
-          </View>
+          
+            
+          
           <View style={styles.imageContainer}>
             <Image source={{ uri: fundraiserData.img }} style={styles.image} />
           </View>
+          <Text style={styles.fundraiserTitle}>Fundraiser for: {fundraiserData.name}</Text>
           <Text style={styles.organization}>By {fundraiserData.organization}</Text>
           <Text style={styles.amount}>₹{fundraiserData.amount.toLocaleString()} Raised</Text>
           <Text style={styles.description}>{fundraiserData.description}</Text>
@@ -127,26 +128,31 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   backButton: {
+    top:20,
     position: 'absolute',
     left: 0,
   },
   title: {
+    top:45,
+    marginBottom:55,
     fontSize: 24,
     fontWeight: 'bold',
     color: '#333',
   },
   arange: {
-    marginBottom: 20,
+    marginBottom: 0,
+    
   },
   fundraiserTitle: {
-    fontSize: 26,
+    fontSize: 21,
     fontWeight: 'bold',
-    marginVertical: 10,
+    marginTop: 0,
     color: '#A53821',
+    alignItems:'center',
   },
   imageContainer: {
     alignItems: 'center',
-    marginVertical: 20,
+    marginVertical: 15,
   },
   image: {
     width: '100%',

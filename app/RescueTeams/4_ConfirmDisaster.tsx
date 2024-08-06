@@ -128,7 +128,7 @@ const RealTimeChecker = () => {
         }}
       >
         <IconButton
-          onPress={() => router.back()} // This will navigate back to the previous screen
+          onPress={() => router.replace('./0_HomePage')} // This will navigate back to the previous screen
           iosName={'arrow.left.circle'}
           androidName="arrow-back"
         />

@@ -1,5 +1,3 @@
-//report form
-
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, Image, Alert } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -82,8 +80,8 @@ export default function Userpage4() {
           position: "absolute",
           zIndex: 1,
           paddingTop: 50,
-          left: 6,
-          top: -30,
+          left: 15,
+          top: -5,
         }}
       >
         <IconButton
@@ -157,6 +155,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 15,
     fontWeight: 'bold',
+    marginTop: -3,
     marginBottom: 6,
     textAlign: 'left', // Align title to the left
     width: '100%', // Ensure it takes full width of container

@@ -183,15 +183,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#f0f0f0',
     padding: 20,
+    top:25,
   },
   header: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: 10,
   },
   inputContainer: {
     width: '100%',
-    marginBottom: 15,
+    marginBottom: 10,
   },
   label: {
     fontSize: 14,

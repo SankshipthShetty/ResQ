@@ -76,7 +76,7 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
         Role:role
       });
       console.log('User registered and data submitted successfully');
-      router.push('login');
+      router.push('./Login');
     } catch (error: any) {
       console.log(error.message);
       Alert.alert("Error", error.message);

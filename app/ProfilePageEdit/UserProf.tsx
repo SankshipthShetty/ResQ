@@ -146,9 +146,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#f0f0f0',
     padding: 20,
+    marginTop: 40,
   },
   header: {
-    fontSize: 34,
+    fontSize: 30,
     fontWeight: 'bold',
     marginBottom: 5,
   },
@@ -156,11 +157,11 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: '#fff',
     borderRadius: 10,
-    padding: 15,
-    marginBottom: 20,
+    padding: 10,
+    marginBottom:10,
   },
   inputContainer: {
-    marginBottom: 15,
+    marginBottom: 10,
   },
   label: {
     fontSize: 14,
