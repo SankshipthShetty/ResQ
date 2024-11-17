@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Modal,
+  Alert
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Link, router } from "expo-router";
@@ -14,8 +15,8 @@ import { signOut } from "firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { auth } from "../../constants/firebaseConfig";
 import logo from '../../assets/images/image1.png';
-
-import { onSnapshot, collection, query, where, doc, getDoc } from "firebase/firestore";
+import * as Location from 'expo-location';
+import { onSnapshot, collection, query, where, doc, getDoc, addDoc } from "firebase/firestore";
 import { firestore } from "../../constants/firebaseConfig";
 import moment from "moment";
 
@@ -74,6 +75,64 @@ export default function App() {
     }
   };
 
+  
+  const handleReportDisaster = () => {
+    Alert.alert(
+      "Report a Disaster",
+      "Choose a reporting option",
+      [
+        {
+          text: "Report with Image",
+          onPress: () => router.push("./1_CamPermission"),
+        },
+        {
+          text: "Quick Report",
+          onPress: handleQuickReport,
+        },
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+      ]
+    );
+  };
+
+  const handleQuickReport = async () => {
+    try {
+      const location = await getCurrentLocation();
+      await addDoc(collection(firestore, 'DisasterReports'), {
+        name: `${fname}`,
+        locationName: location || "Unknown Location",
+        location: location,
+        phoneNumber: "6362531671", // Add default or empty fields as required
+        onduty: "None",
+        requirementstatus: false,
+        completed: false,
+        timestamp: new Date(),
+      });
+      Alert.alert("Quick Report Submitted Successfully!");
+    } catch (error) {
+      console.error("Error adding document: ", error);
+      Alert.alert("Failed to submit report. Try again.");
+    }
+  };
+
+  
+  const getCurrentLocation = async () => {
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert("Permission to access location was denied");
+        return null;
+      }
+      const { coords } = await Location.getCurrentPositionAsync({});
+      return `Lat: ${coords.latitude}, Lon: ${coords.longitude}`;
+    } catch (error) {
+      console.error("Error fetching location: ", error);
+      return "Unknown";
+    }
+  };
+  
   useEffect(() => {
     const fetchName = async () => {
       const fname = await AsyncStorage.getItem("FirstName");
@@ -144,7 +203,14 @@ export default function App() {
         <Image source={logo} style={styles.iii} />
       </View> */}
 
-      <TouchableOpacity onPress={() => router.push("./1_CamPermission")} style={styles.box}>
+      {/* <TouchableOpacity onPress={() => router.push("./1_CamPermission")} style={styles.box}>
+        <Image
+          style={styles.post5Icon}
+          source={require("../../assets/images/alert.png")}
+        />
+        <Text style={styles.boxText}>Report a Disaster</Text>
+      </TouchableOpacity> */}
+      <TouchableOpacity onPress={handleReportDisaster} style={styles.box}>
         <Image
           style={styles.post5Icon}
           source={require("../../assets/images/alert.png")}

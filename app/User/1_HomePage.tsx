@@ -1,3 +1,112 @@
+// import {
+//   View,
+//   Text,
+//   StatusBar,
+//   Image,
+//   StyleSheet,
+//   TouchableOpacity,
+//   Pressable,
+// } from "react-native";
+// import React, { useEffect, useState } from "react";
+// import { Link, router } from "expo-router";
+// import { signOut } from "firebase/auth";
+// import AsyncStorage from "@react-native-async-storage/async-storage";
+// import { auth } from "../../constants/firebaseConfig";
+
+// export default function App() {
+//   const [fname, setfName] = useState('');
+//   const [lname, setlName] = useState('');
+//   const handleSignOut = async () => {
+//     try {
+//       await signOut(auth);
+//       await AsyncStorage.removeItem('isLoggedIn');
+//       router.replace('../auth/Login'); // Adjust the path to your login page
+//     } catch (error) {
+//       console.error('Error signing out: ', error);
+//     }
+//   };
+
+//   useEffect(() => {
+//     const fetchName = async () => {
+//       const fname = await AsyncStorage.getItem("FirstName");
+//       const lname= await AsyncStorage.getItem("LastName");
+//       if (fname && lname) {
+//         setfName(fname);
+//         setlName(lname);
+//       }
+//     };
+
+//     fetchName();
+//   }, []);
+
+//   return (
+//     <View style={styles.container}>
+//       <View style={styles.textContainer}>
+
+//       <View style={styles.headerContainer}>
+//         <Text style={styles.header}></Text>
+//         <TouchableOpacity onPress={() => router.push("../../ProfilePageEdit/UserProf")} style={styles.profileButton}>
+//           <Image
+//             source={require('../../assets/images/profilepic.png')} // Adjust the path to your image
+//             style={styles.headerImage}
+//           />
+//         </TouchableOpacity>
+//       </View>
+
+//         <Text style={styles.text}>Hi,{fname} {lname} 👋</Text>
+//       </View>
+//       <TouchableOpacity onPress={() => router.push("./2_CamPermission")} style={styles.box}>
+//         <Image
+//           style={styles.post5Icon}
+//           source={require("../../assets/images/alert.png")}
+//         />
+//         <Text style={styles.boxText}>Report a Disaster</Text>
+//       </TouchableOpacity>
+
+//       <TouchableOpacity onPress={() => router.push("./5_DisasterReports")} style={styles.box}>
+//         <Image
+//           style={styles.post5Icon}
+//           source={require("../../assets/images/map.png")}
+//         />
+//         <Text style={styles.boxText}>Disaster in your area</Text>
+//       </TouchableOpacity>
+
+//       <TouchableOpacity style={styles.box} onPress={() => router.push("./7_DonationReports")} >
+//         <Image
+//           style={styles.post5Icon}
+//           source={require("../../assets/images/Donation.png")}
+//         />
+//         <Text style={styles.boxText}>Donation</Text>
+//       </TouchableOpacity>
+
+//       <TouchableOpacity onPress={() => router.push("./10_BloodDonations")} style={styles.box}>
+      
+//         <Image
+//           style={styles.post5Icon}
+//           source={require("../../assets/images/blood-test.png")}
+//         />
+//         <Text style={styles.boxText}>Blood Donation required</Text>
+//       </TouchableOpacity>
+//       <TouchableOpacity onPress={handleSignOut} style={styles.signOutButton}>
+//         <Text style={styles.signOutText}>Sign Out</Text>
+//       </TouchableOpacity>
+//       <View>
+//         <Text style={styles.resq}>ResQ</Text>
+
+//        {/* <TouchableOpacity  onPress={() => router.push("../Offline/Offlinep1")} style={styles.check} >
+//         <Text >Just for Checking Purpose</Text>
+//       </TouchableOpacity> */}
+      
+      
+//       </View>
+
+
+     
+
+//     </View>
+//   );
+// }
+
 import {
   View,
   Text,
@@ -5,24 +114,83 @@ import {
   Image,
   StyleSheet,
   TouchableOpacity,
-  Pressable,
+  Alert,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Link, router } from "expo-router";
 import { signOut } from "firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { auth } from "../../constants/firebaseConfig";
+import { auth, firestore } from "../../constants/firebaseConfig";
+import { collection, addDoc } from "firebase/firestore";
+import * as Location from 'expo-location';
 
 export default function App() {
   const [fname, setfName] = useState('');
   const [lname, setlName] = useState('');
+
   const handleSignOut = async () => {
     try {
       await signOut(auth);
       await AsyncStorage.removeItem('isLoggedIn');
-      router.replace('../auth/Login'); // Adjust the path to your login page
+      router.replace('../auth/Login');
     } catch (error) {
       console.error('Error signing out: ', error);
+    }
+  };
+
+  const handleReportDisaster = () => {
+    Alert.alert(
+      "Report a Disaster",
+      "Choose a reporting option",
+      [
+        {
+          text: "Report with Image",
+          onPress: () => router.push("./2_CamPermission"),
+        },
+        {
+          text: "Quick Report",
+          onPress: handleQuickReport,
+        },
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+      ]
+    );
+  };
+
+  const handleQuickReport = async () => {
+    try {
+      const location = await getCurrentLocation();
+      await addDoc(collection(firestore, 'DisasterReports'), {
+        name: `${fname} ${lname}`,
+        locationName: location || "Unknown Location",
+        location: location,
+        phoneNumber: "6362531671", // Add default or empty fields as required
+        onduty: "None",
+        requirementstatus: false,
+        completed: false,
+        timestamp: new Date(),
+      });
+      Alert.alert("Quick Report Submitted Successfully!");
+    } catch (error) {
+      console.error("Error adding document: ", error);
+      Alert.alert("Failed to submit report. Try again.");
+    }
+  };
+
+  const getCurrentLocation = async () => {
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert("Permission to access location was denied");
+        return null;
+      }
+      const { coords } = await Location.getCurrentPositionAsync({});
+      return `Lat: ${coords.latitude}, Lon: ${coords.longitude}`;
+    } catch (error) {
+      console.error("Error fetching location: ", error);
+      return "Unknown";
     }
   };
 
@@ -35,27 +203,25 @@ export default function App() {
         setlName(lname);
       }
     };
-
     fetchName();
   }, []);
 
   return (
     <View style={styles.container}>
       <View style={styles.textContainer}>
-
-      <View style={styles.headerContainer}>
-        <Text style={styles.header}></Text>
-        <TouchableOpacity onPress={() => router.push("../../ProfilePageEdit/UserProf")} style={styles.profileButton}>
-          <Image
-            source={require('../../assets/images/profilepic.png')} // Adjust the path to your image
-            style={styles.headerImage}
-          />
-        </TouchableOpacity>
+        <View style={styles.headerContainer}>
+          <Text style={styles.header}></Text>
+          <TouchableOpacity onPress={() => router.push("../../ProfilePageEdit/UserProf")} style={styles.profileButton}>
+            <Image
+              source={require('../../assets/images/profilepic.png')}
+              style={styles.headerImage}
+            />
+          </TouchableOpacity>
+        </View>
+        <Text style={styles.text}>Hi, {fname} {lname} 👋</Text>
       </View>
 
-        <Text style={styles.text}>Hi,{fname} {lname} 👋</Text>
-      </View>
-      <TouchableOpacity onPress={() => router.push("./2_CamPermission")} style={styles.box}>
+      <TouchableOpacity onPress={handleReportDisaster} style={styles.box}>
         <Image
           style={styles.post5Icon}
           source={require("../../assets/images/alert.png")}
@@ -63,8 +229,16 @@ export default function App() {
         <Text style={styles.boxText}>Report a Disaster</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => router.push("./5_DisasterReports")} style={styles.box}>
-        <Image
+      {/* Other buttons */}
+      
+      {/* <TouchableOpacity onPress={handleSignOut} style={styles.signOutButton}>
+        <Text style={styles.signOutText}>Sign Out</Text>
+      </TouchableOpacity>
+      <Text style={styles.resq}>ResQ</Text> */}
+
+      
+             <TouchableOpacity onPress={() => router.push("./5_DisasterReports")} style={styles.box}>
+         <Image
           style={styles.post5Icon}
           source={require("../../assets/images/map.png")}
         />
@@ -106,6 +280,9 @@ export default function App() {
     </View>
   );
 }
+  
+
+// Styles go here (same as your original styles)
 
 const styles = StyleSheet.create({
   check:{
@@ -226,3 +403,5 @@ const styles = StyleSheet.create({
   },
  
 });
+
+
