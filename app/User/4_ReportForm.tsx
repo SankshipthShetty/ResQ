@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, Image, Alert } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { firestore } from '../../constants/firebaseConfig';
-import { collection, addDoc } from 'firebase/firestore';
+import { collection, addDoc, getDocs, updateDoc, doc, getDoc } from 'firebase/firestore';
+import messaging from '@react-native-firebase/messaging';
 import IconButton from '../../components/IconButton';
 import * as Location from 'expo-location';
 
@@ -37,6 +38,61 @@ export default function Userpage4() {
         completed: false, // Provide a default value for 'completed'
         timestamp: new Date() 
       });
+         
+      const coordinates = location.match(/Lat:\s*(-?[0-9.-]+),\s*Lon:\s*(-?[0-9.-]+)/);
+  if (coordinates) {
+    const latitude = parseFloat(coordinates[1]);
+    const longitude = parseFloat(coordinates[2]);
+    console.log('Latitude:', latitude);
+    console.log('Longitude:', longitude);
+  }
+
+  
+
+    
+    if (coordinates) {
+      const rescueTeamsSnapshot = await getDocs(collection(firestore, 'RescueTeamData'));
+      const rescueTeams = rescueTeamsSnapshot.docs.map(doc => {
+        const locationString = doc.data().location;
+        if (!locationString || typeof locationString !== 'string') {
+          console.error(`Invalid or missing location for rescue team: ${doc.id}`);
+          return null;
+        }
+        const match = locationString.match(/Lat:\s*(-?[0-9.-]+),\s*Lon:\s*(-?[0-9.-]+)/);
+
+        if (!match) {
+          console.error(`Invalid location format for rescue team: ${doc.id}`);
+          return null;
+        }
+        const latitude = parseFloat(match[1]);
+      const longitude = parseFloat(match[2]);
+       console.log('Latitude:', latitude);
+        console.log('Longitude:', longitude);
+        return {
+          id: doc.id,
+          ...doc.data(),
+          name:doc.data().TeamName,
+          distance: getDistance(
+            parseFloat(coordinates[1]),
+            parseFloat(coordinates[2]),
+            latitude,
+          longitude
+          ),
+        };
+      }).filter(Boolean);
+
+      rescueTeams.sort((a, b) => a.distance - b.distance);
+     
+  
+      
+      for (const rescueTeam of rescueTeams) {
+        console.log("resque team: ",rescueTeam?.name," distance: ", rescueTeam?.distance);
+      }
+      // console.log("All Rescue Teams sorted by distance:", rescueTeams[0]?.distance);
+      
+    }
+
+
       Alert.alert(
         "Details uploaded successfully!",
         "",
@@ -52,6 +108,23 @@ export default function Userpage4() {
     }
     setLoading(false);
   };
+
+  const getDistance = (lat1, lon1, lat2, lon2) => {
+    const toRad = (val) => (val * Math.PI) / 180;
+    const R = 6371; // Earth's radius in km
+    const dLat = toRad(lat2 - lat1);
+    const dLon = toRad(lon2 - lon1);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  };
+
+  
+  
+  
+
 
   const handleGetCurrentLocation = async () => {
     setLocationLoading(true);

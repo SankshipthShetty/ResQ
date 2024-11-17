@@ -1,10 +1,11 @@
 import React, { useCallback, useState } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View, Alert ,Image,Pressable} from 'react-native';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View, Alert ,Image,Pressable,ActivityIndicator} from 'react-native';
 import { addDoc, collection, doc, getDocs, query, setDoc, where } from "firebase/firestore";
 import { auth, firestore, createUser } from '../../constants/firebaseConfig';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import {useRouter} from 'expo-router';
 import debounce from 'lodash.debounce';
+import * as Location from 'expo-location';
 
 
 //import logo from '../../assets/images/image10.png';
@@ -20,6 +21,13 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
   const [numMem, setNoOfMembers] = useState('');
   const [role, setRole] = useState('RescueTeam');
   const [emailError, setEmailError] = useState('');
+  const [locationLoading, setLocationLoading] = useState(false);
+  const [location, setLocation] = useState('');
+  const [isManualInput, setIsManualInput] = useState(false);
+
+  const [useManualLocation, setUseManualLocation] = useState(false); // Toggle between manual and current location input
+  const [manualLocation, setManualLocation] = useState(''); 
+
 
   const checkIfUserExists = async (email: string) => {
     const collections = ["UserData", "RescueTeamData", "MiddleBodyData"]; // Replace with your collection names
@@ -72,7 +80,8 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
         ContactName: contactName,
         ContactNumber: phoneNumber,
         EmailID: email,
-        Password: password,    
+        Password: password, 
+        location,   
         Role:role
       });
       console.log('User registered and data submitted successfully');
@@ -80,6 +89,33 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
     } catch (error: any) {
       console.log(error.message);
       Alert.alert("Error", error.message);
+    }
+  };
+
+  const handleGetCurrentLocation = async () => {
+    setLocationLoading(true);
+    try {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission to access location was denied');
+        setLocationLoading(false);
+        return;
+      }
+
+      let { coords } = await Location.getCurrentPositionAsync({});
+      const { latitude, longitude } = coords;
+      setLocation(`Lat: ${latitude}, Lon: ${longitude}`);
+    } catch (error) {
+      console.error('Error fetching location: ', error);
+      Alert.alert('Could not fetch location. Please try again.');
+    }
+    setLocationLoading(false);
+  };
+
+  const toggleLocationInput = () => {
+    setIsManualInput(!isManualInput);
+    if (!isManualInput) {
+      setLocation(''); // Clear location when switching to manual input
     }
   };
 
@@ -145,14 +181,60 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
           secureTextEntry
           placeholderTextColor="#a9a9a9"
         />
-      </View>
+        <View style={styles.locationSection}>
 
+  
+  <View style={styles.locationToggle}>
+    <TouchableOpacity 
+      style={[styles.toggleButton, !isManualInput && styles.toggleButtonActive]}
+      onPress={() => setIsManualInput(false)}
+    >
+      <Text style={[styles.toggleButtonText, !isManualInput && styles.toggleButtonTextActive]}>
+        Automatic
+      </Text>
+    </TouchableOpacity>
+    <TouchableOpacity 
+      style={[styles.toggleButton, isManualInput && styles.toggleButtonActive]}
+      onPress={() => setIsManualInput(true)}
+    >
+      <Text style={[styles.toggleButtonText, isManualInput && styles.toggleButtonTextActive]}>
+        Manual
+      </Text>
+    </TouchableOpacity>
+  </View>
+
+  <TextInput
+    style={styles.input}
+    value={location}
+    onChangeText={text => isManualInput ? setLocation(text) : null}
+    editable={isManualInput}
+    placeholder={isManualInput ? "Enter as 'Lat: X, Lon: Y'" : "Location will appear here"}
+    placeholderTextColor="#a9a9a9"
+  />
+
+  {!isManualInput && (
+    <TouchableOpacity 
+      style={styles.locationButton} 
+      onPress={handleGetCurrentLocation} 
+      disabled={locationLoading}
+    >
+      {locationLoading ? (
+        <ActivityIndicator color="#FFF" />
+      ) : (
+        <Text style={styles.buttonText}>Use My Current Location</Text>
+      )}
+    </TouchableOpacity>
+  )}
+</View>
+           
+      </View>
       <TouchableOpacity
         onPress={handleRegister}
         style={styles.button}
       >
         <Text style={styles.buttonText}>Register</Text>
       </TouchableOpacity>
+ 
 
       <Text style={styles.footerText}>Already have an account?</Text>
       <Pressable onPress={() => router.push('./Login')}>
@@ -239,6 +321,48 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 30,
   },
+  locationButton: {
+    width: '100%',
+    height: 50,
+    backgroundColor: '#5bc0de',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 10,
+    marginBottom: 20,
+  },
+  locationSection: {
+    marginBottom: 20,
+  },
+  locationTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 10,
+    color: '#000',
+  },
+  locationToggle: {
+    flexDirection: 'row',
+    marginBottom: 10,
+    borderRadius: 10,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: '#A53821',
+  },
+  toggleButton: {
+    flex: 1,
+    paddingVertical: 8,
+    alignItems: 'center',
+    backgroundColor: '#FFF',
+  },
+  toggleButtonActive: {
+    backgroundColor: '#A53821',
+  },
+  toggleButtonText: {
+    color: '#A53821',
+    fontWeight: '500',
+  },
+  toggleButtonTextActive: {
+    color: '#FFF',
+  }
 });
 
 export default RegisterScreen;

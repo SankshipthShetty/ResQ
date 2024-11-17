@@ -250,8 +250,8 @@ export default function App() {
         units: 'metric',
       },
       headers: {
-        // 'x-rapidapi-key': '4d86c6faaemshcecb8787a078cd8p18f5bajsn7133309cd12f',
-        'x-rapidapi-key': '4cec644d1cmshbd2029c23acc174p1a26c4jsne748cabdc8f4',
+        'x-rapidapi-key': '4d86c6faaemshcecb8787a078cd8p18f5bajsn7133309cd12f',
+        // 'x-rapidapi-key': '4cec644d1cmshbd2029c23acc174p1a26c4jsne748cabdc8f4',
         'x-rapidapi-host': 'tomorrow-io1.p.rapidapi.com',
       },
     };
