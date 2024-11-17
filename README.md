@@ -1,4 +1,11 @@
-# Welcome to your Expo app 👋
+
+![project-1](https://github.com/user-attachments/assets/ad3bfcbc-31ba-452e-ad27-013fabf37e45)
+
+<h3>A mobile application for disaster management with crowd-sourced reporting and resource coordination. Integrated IoT using
+LoRa for SOS signals during network outages and AI to manage food shelf life. Features include real-time reporting, donation
+tracking, and role-based navigation for normal users, rescue teams, and NGOs.</h3>
+
+   # Welcome to your Expo app 👋
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
