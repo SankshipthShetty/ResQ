@@ -209,7 +209,7 @@ export default function App() {
   
   
   const fetchRouteDirections = async (sourceLat: number, sourceLon: number, destLat: number, destLon: number) => {
-    const apiKey = 'GBbSOvkTtCg7bF3sUzKJFsM0okvNfxAj4B0xPcLcyXGNqO1qNVguJQQJ99AGACYeBjFPDDZUAAAgAZMPw3AT';
+    const apiKey = 'A1cyAE4UzuPrdn3zlcZeHJIDd5Bfq2xJ4ejGIjrFkPvPpXgMusvmJQQJ99ALACYeBjFPDDZUAAAgAZMP3lRt';
     const apiUrl = `https://atlas.microsoft.com/route/directions/json`;
   
     const params = {
@@ -250,8 +250,8 @@ export default function App() {
         units: 'metric',
       },
       headers: {
-        'x-rapidapi-key': '4d86c6faaemshcecb8787a078cd8p18f5bajsn7133309cd12f',
-        // 'x-rapidapi-key': '4cec644d1cmshbd2029c23acc174p1a26c4jsne748cabdc8f4',
+        // 'x-rapidapi-key': '4d86c6faaemshcecb8787a078cd8p18f5bajsn7133309cd12f',
+        'x-rapidapi-key': '4cec644d1cmshbd2029c23acc174p1a26c4jsne748cabdc8f4',
         'x-rapidapi-host': 'tomorrow-io1.p.rapidapi.com',
       },
     };
@@ -484,7 +484,7 @@ export default function App() {
           androidName="arrow-back"
         />
       </View >
-      {/* <View >
+       {/* <View >
     
    
       <Text>Latitude: {lat}</Text>
@@ -493,15 +493,15 @@ export default function App() {
       <Text>temp: {dis_temperature}</Text>
   
        <Text>Travel Time to Disaster Location: {travelTime} days</Text>
-    </View>
+    </View> */}
  
-      <Text style={styles.paragraph}>{text}</Text>
+      {/* <Text style={styles.paragraph}>{text}</Text>
       <Text style={styles.paragraph}>Temperature: {temperature}°C</Text>
       <Text style={styles.paragraph}>Humidity: {humidity}%</Text>
       <Text style={styles.paragraph}>av_temp: {averageTemp}%</Text>
       <Text style={styles.paragraph}>av_hum: {averageHumidity}%</Text>
-      <Text>CO2 Level: {co2}</Text> */}
-      <Text style={styles.heading}>Select a Fruit:</Text>
+      <Text>CO2 Level: {co2}</Text>  */}
+      <Text style={styles.heading}>Select Food:</Text>
       <View style={styles.requirementsContainer}>
         {requirements.map((item, index) => {
            const detail = fruitDetails.find(detail => detail.fruit === item.type);
