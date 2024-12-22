@@ -362,7 +362,7 @@
 
 
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert, PermissionsAndroid, Platform } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Alert, PermissionsAndroid, Platform, TouchableOpacity } from 'react-native';
 import { NetworkInfo } from 'react-native-network-info';
 
 const WifiInfoPage = () => {
@@ -445,24 +445,30 @@ const WifiInfoPage = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Connected Wi-Fi Information</Text>
+      <Text style={styles.title}>LoRa Device Info</Text>
       {loading ? (
         <Text style={styles.info}>Loading...</Text>
       ) : (
-        <Text style={styles.info}>IP Address: {ipAddress}</Text>
+        <Text style={styles.info}>LoRa found at IP Address: {ipAddress}</Text>
       )}
+      <View style={styles.inputContainer}>
       <TextInput
         style={styles.input}
         placeholder="Enter your message"
         value={message}
         onChangeText={setMessage}
       />
-      <Button title="Send Message" onPress={handleSendMessage} />
-      {response ? <Text style={styles.response}>{response}</Text> : null}
-      <Button title="Refresh IP" onPress={fetchIpAddress} />
-    </View>
-  );
-};
+      </View>
+      <TouchableOpacity style={styles.sosButton} onPress={handleSendMessage}>
+         <Text style={styles.sosButtonText}>SOS</Text>
+       </TouchableOpacity>
+       {response ? <Text style={styles.response}>{response}</Text> : null}
+       <TouchableOpacity style={styles.refreshButton} onPress={fetchIpAddress}>
+         <Text style={styles.refreshButtonText}>Refresh IP</Text>
+       </TouchableOpacity>
+     </View>
+   );
+ };
 
 const styles = StyleSheet.create({
   container: {
@@ -470,26 +476,79 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 16,
+    backgroundColor: '#f5f5f5',
   },
   title: {
     fontSize: 24,
     marginBottom: 16,
+    fontWeight: 'bold',
   },
   info: {
     fontSize: 18,
+    marginBottom: 16,
+  },
+  inputContainer: {
+    width: '80%',
+    marginBottom: 20,
   },
   input: {
     height: 40,
     borderColor: 'gray',
     borderWidth: 1,
-    width: '80%',
-    marginBottom: 16,
-    paddingLeft: 8,
+    width: '100%',
+    paddingHorizontal: 8,
+    backgroundColor: '#fff',
+    borderRadius: 5,
+  },
+  sosButton: {
+    backgroundColor: '#A52A2A',
+    borderRadius: 100, // Makes it round
+    width: 200,
+    height: 200,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 50,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.8,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  sosButtonText: {
+    color: '#fff',
+    fontSize: 32,
+    fontWeight: 'bold',
+    textShadowColor: '#000',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 5,
   },
   response: {
     marginTop: 16,
     fontSize: 18,
     color: 'green',
+  },
+  refreshButton: {
+    backgroundColor: '#A52A2A',
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    marginTop: 35,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.8,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  refreshButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });
 
