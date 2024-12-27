@@ -1,26 +1,37 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, Pressable, ActivityIndicator, Modal, TouchableOpacity, ScrollView } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  Pressable,
+  ActivityIndicator,
+  Modal,
+  TextInput,
+  TouchableOpacity,
+  Linking,
+} from 'react-native';
 import { firestore } from '../../constants/firebaseConfig';
 import { doc, getDoc } from 'firebase/firestore';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import IconButton from '../../components/IconButton';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { ReactNode } from 'react';
-import DonationUI from '../../components/donationui';  // Import the new component
 
 interface FundraiserData {
-  description: ReactNode;
+  description: string;
   id: string;
   img: string;
   name: string;
   organization: string;
   amount: number;
+  upiId: string;
 }
 
 const UserPage8 = () => {
   const [fundraiserData, setFundraiserData] = useState<FundraiserData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [showDonationUI, setShowDonationUI] = useState(false);  // State to control donation UI visibility
+  const [showDonationModal, setShowDonationModal] = useState(false);
+  const [selectedAmount, setSelectedAmount] = useState<number | string>('');
   const router = useRouter();
   const { fundraiser } = useLocalSearchParams();
 
@@ -55,8 +66,23 @@ const UserPage8 = () => {
     );
   }
 
+  const handleDonate = () => {
+    if (selectedAmount && fundraiserData) {
+      const upiLink = `upi://pay?pa=${fundraiserData.upiId}&pn=${fundraiserData.organization}&am=${selectedAmount}&cu=INR&tn=Donation`;
+
+      Linking.openURL(upiLink).catch((err) => {
+        console.error('Error opening UPI app: ', err);
+      });
+
+      // Close modal after UPI opens
+      setShowDonationModal(false);
+    }
+  };
+
+  const predefinedAmounts = [100, 500, 1000, 2000];
+
   return (
-    <View style={{ flex: 1 }}>
+     <View style={{ flex: 1 }}>
       <KeyboardAwareScrollView
       contentContainerStyle={[styles.container, { paddingBottom: 1880 }]}
       enableOnAndroid={true}
@@ -95,20 +121,48 @@ const UserPage8 = () => {
         </View>
       </KeyboardAwareScrollView>
 
-      <Pressable style={styles.donateButton} onPress={() => setShowDonationUI(true)}>
+      <Pressable style={styles.donateButton} onPress={() => setShowDonationModal(true)}>
         <Text style={styles.donateButtonText}>Donate</Text>
       </Pressable>
 
-      <Modal visible={showDonationUI} transparent={true}>
-        <TouchableOpacity
-          style={styles.modalBackground}
-          activeOpacity={1}
-          onPressOut={() => setShowDonationUI(false)}
-        >
+
+      <Modal visible={showDonationModal} transparent={true} animationType="slide">
+        <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <DonationUI onClose={() => setShowDonationUI(false)} />
+            <Text style={styles.modalTitle}>Select Donation Amount</Text>
+
+            <View style={styles.amountOptions}>
+              {predefinedAmounts.map((amount) => (
+                <TouchableOpacity
+                  key={amount}
+                  style={[
+                    styles.amountButton,
+                    selectedAmount === amount && styles.selectedAmountButton,
+                  ]}
+                  onPress={() => setSelectedAmount(amount)}
+                >
+                  <Text style={styles.amountText}>₹{amount}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <TextInput
+              style={styles.input}
+              placeholder="Enter Custom Amount"
+              keyboardType="numeric"
+              value={selectedAmount.toString()}
+              onChangeText={(text) => setSelectedAmount(text)}
+            />
+
+            <Pressable style={styles.modalDonateButton} onPress={handleDonate}>
+              <Text style={styles.modalDonateButtonText}>Donate</Text>
+            </Pressable>
+
+            <Pressable onPress={() => setShowDonationModal(false)}>
+              <Text style={styles.closeModalText}>Cancel</Text>
+            </Pressable>
           </View>
-        </TouchableOpacity>
+        </View>
       </Modal>
     </View>
   );
@@ -119,36 +173,15 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     padding: 20,
     backgroundColor: '#FAFAFA',
-  
   },
   header: {
     flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        position: 'relative',
+  },
+  content: {
     alignItems: 'center',
-    justifyContent: 'center',
-    position: 'relative',
-  },
-  backButton: {
-    top:20,
-    position: 'absolute',
-    left: 0,
-  },
-  title: {
-    top:45,
-    marginBottom:55,
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  arange: {
-    marginBottom: 0,
-    
-  },
-  fundraiserTitle: {
-    fontSize: 21,
-    fontWeight: 'bold',
-    marginTop: 0,
-    color: '#A53821',
-    alignItems:'center',
   },
   imageContainer: {
     alignItems: 'center',
@@ -164,11 +197,12 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 5,
   },
-  description: {
-    fontSize: 16,
-    color: '#555',
-    marginVertical: 10,
-    lineHeight: 24,
+  fundraiserTitle: {
+    fontSize: 21,
+    fontWeight: 'bold',
+    marginTop: 0,
+    color: '#A53821',
+    alignItems:'center',
   },
   organization: {
     fontSize: 18,
@@ -180,42 +214,103 @@ const styles = StyleSheet.create({
     color: '#A53821',
     marginVertical: 5,
   },
+  description: {
+    fontSize: 16,
+        color: '#555',
+        marginVertical: 10,
+        lineHeight: 24,
+  },
   donateButton: {
     backgroundColor: '#A53821',
-    borderRadius: 10,
     paddingVertical: 15,
     alignItems: 'center',
     justifyContent: 'center',
     position: 'absolute',
-    bottom: 20, // Adjust bottom position as needed
+    bottom: 20,
     left: 20,
     right: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    elevation: 5,
+    borderRadius: 10,
   },
   donateButtonText: {
     color: '#FFF',
     fontSize: 18,
     fontWeight: 'bold',
   },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    width: '90%',
+    backgroundColor: '#FFF',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  amountOptions: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    marginBottom: 20,
+  },
+  amountButton: {
+    backgroundColor: '#EEE',
+    padding: 10,
+    borderRadius: 5,
+  },
+  selectedAmountButton: {
+    backgroundColor: '#A53821',
+  },
+  amountText: {
+    color: '#333',
+    fontSize: 16,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#CCC',
+    padding: 10,
+    width: '100%',
+    borderRadius: 5,
+    marginBottom: 20,
+  },
+  modalDonateButton: {
+    backgroundColor: '#A53821',
+    padding: 15,
+    borderRadius: 10,
+    width: '100%',
+    alignItems: 'center',
+  },
+  modalDonateButtonText: {
+    color: '#FFF',
+    fontSize: 18,
+  },
+  closeModalText: {
+    color: '#A53821',
+    marginTop: 10,
+    fontSize: 16,
+  },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  modalBackground: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'flex-end',
+    title: {
+      top:45,
+      marginBottom:55,
+      fontSize: 24,
+      fontWeight: 'bold',
+      color: '#333',
   },
-  modalContent: {
-    backgroundColor: '#fff',
-    padding: 20,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+  arange: {
+    marginBottom: 0,
+    
   },
 });
 
