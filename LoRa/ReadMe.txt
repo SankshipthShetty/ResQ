@@ -1,0 +1,1 @@
+Please remove the LoRa folder if you are building this app from the repo
